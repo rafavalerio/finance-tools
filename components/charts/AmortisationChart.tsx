@@ -1,4 +1,4 @@
-"use client";
+'use client'
 
 import {
   AreaChart,
@@ -8,13 +8,13 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-} from "recharts";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
-import { AmortisationDataPoint } from "@/types/mortgage";
-import { formatCurrency } from "@/lib/calculations/mortgage";
+} from 'recharts'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { AmortisationDataPoint } from '@/types/mortgage'
+import { formatCurrency } from '@/lib/calculations/mortgage'
 
 interface AmortisationChartProps {
-  data: AmortisationDataPoint[];
+  data: AmortisationDataPoint[]
 }
 
 export function AmortisationChart({ data }: AmortisationChartProps) {
@@ -30,7 +30,7 @@ export function AmortisationChart({ data }: AmortisationChartProps) {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -41,47 +41,40 @@ export function AmortisationChart({ data }: AmortisationChartProps) {
       <CardContent>
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={data}
-              margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-            >
+            <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="rgb(217, 119, 87)" stopOpacity={0.3} />
                   <stop offset="95%" stopColor="rgb(217, 119, 87)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="rgb(68, 68, 64)"
-                vertical={false}
-              />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgb(68, 68, 64)" vertical={false} />
               <XAxis
                 dataKey="date"
                 stroke="rgb(128, 126, 120)"
-                tick={{ fill: "rgb(128, 126, 120)", fontSize: 12 }}
+                tick={{ fill: 'rgb(128, 126, 120)', fontSize: 12 }}
                 tickLine={false}
-                axisLine={{ stroke: "rgb(68, 68, 64)" }}
+                axisLine={{ stroke: 'rgb(68, 68, 64)' }}
                 interval="preserveStartEnd"
                 minTickGap={50}
               />
               <YAxis
                 stroke="rgb(128, 126, 120)"
-                tick={{ fill: "rgb(128, 126, 120)", fontSize: 12 }}
+                tick={{ fill: 'rgb(128, 126, 120)', fontSize: 12 }}
                 tickLine={false}
-                axisLine={{ stroke: "rgb(68, 68, 64)" }}
+                axisLine={{ stroke: 'rgb(68, 68, 64)' }}
                 tickFormatter={(value) => formatCurrency(value)}
                 width={80}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgb(48, 48, 46)",
-                  border: "1px solid rgb(68, 68, 64)",
-                  borderRadius: "8px",
-                  color: "rgb(194, 192, 182)",
+                  backgroundColor: 'rgb(48, 48, 46)',
+                  border: '1px solid rgb(68, 68, 64)',
+                  borderRadius: '8px',
+                  color: 'rgb(194, 192, 182)',
                 }}
-                labelStyle={{ color: "rgb(194, 192, 182)", fontWeight: "bold" }}
-                formatter={(value: number) => [formatCurrency(value), "Balance"]}
+                labelStyle={{ color: 'rgb(194, 192, 182)', fontWeight: 'bold' }}
+                formatter={(value: number) => [formatCurrency(value), 'Balance']}
               />
               <Area
                 type="monotone"
@@ -95,6 +88,5 @@ export function AmortisationChart({ data }: AmortisationChartProps) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
-

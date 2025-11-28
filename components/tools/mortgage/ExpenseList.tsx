@@ -1,35 +1,35 @@
-"use client";
+'use client'
 
-import { Button, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
-import { Expense } from "@/types/mortgage";
-import { ExpenseItem } from "./ExpenseItem";
+import { Button, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { Expense } from '@/types/mortgage'
+import { ExpenseItem } from './ExpenseItem'
 
 interface ExpenseListProps {
-  expenses: Expense[];
-  onChange: (expenses: Expense[]) => void;
+  expenses: Expense[]
+  onChange: (expenses: Expense[]) => void
 }
 
 export function ExpenseList({ expenses, onChange }: ExpenseListProps) {
   const addExpense = () => {
     const newExpense: Expense = {
       id: crypto.randomUUID(),
-      name: "",
+      name: '',
       amount: 0,
-      frequency: "monthly",
-    };
-    onChange([...expenses, newExpense]);
-  };
+      frequency: 'monthly',
+    }
+    onChange([...expenses, newExpense])
+  }
 
   const updateExpense = (index: number, expense: Expense) => {
-    const updated = [...expenses];
-    updated[index] = expense;
-    onChange(updated);
-  };
+    const updated = [...expenses]
+    updated[index] = expense
+    onChange(updated)
+  }
 
   const removeExpense = (index: number) => {
-    const updated = expenses.filter((_, i) => i !== index);
-    onChange(updated);
-  };
+    const updated = expenses.filter((_, i) => i !== index)
+    onChange(updated)
+  }
 
   return (
     <Card>
@@ -79,6 +79,5 @@ export function ExpenseList({ expenses, onChange }: ExpenseListProps) {
         )}
       </CardContent>
     </Card>
-  );
+  )
 }
-

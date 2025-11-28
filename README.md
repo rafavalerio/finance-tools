@@ -5,9 +5,11 @@ A personal finance toolkit to help with budgeting, mortgage planning, and other 
 ## Available Tools
 
 ### Mortgage Calculator
+
 Plan your mortgage repayments with Australian (Victoria) specific calculations.
 
 **Features:**
+
 - Calculate repayments for weekly, fortnightly, or monthly frequencies
 - Victorian stamp duty calculations with support for:
   - Standard buyers
@@ -27,6 +29,7 @@ Plan your mortgage repayments with Australian (Victoria) specific calculations.
 ## Upcoming Tools
 
 More finance utilities will be added as needed:
+
 - Savings calculator
 - Investment returns
 - Budget tracker

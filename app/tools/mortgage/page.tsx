@@ -1,121 +1,121 @@
-"use client";
+'use client'
 
-import { Suspense, useState, useMemo, useEffect, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
+import { Suspense, useState, useMemo, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import {
   MortgageForm,
   ExpenseList,
   ResultsSummary,
   PurchaseCostsCard,
-} from "@/components/tools/mortgage";
-import { AmortisationChart, ExpenseBreakdownChart } from "@/components/charts";
-import { Button, Modal } from "@/components/ui";
-import { MortgageInputs, Expense, ExpenseBreakdownItem } from "@/types/mortgage";
+} from '@/components/tools/mortgage'
+import { AmortisationChart, ExpenseBreakdownChart } from '@/components/charts'
+import { Button, Modal } from '@/components/ui'
+import { MortgageInputs, Expense, ExpenseBreakdownItem } from '@/types/mortgage'
 import {
   calculateMortgageResults,
   calculatePurchaseCosts,
   convertToMonthly,
-} from "@/lib/calculations/mortgage";
+} from '@/lib/calculations/mortgage'
 import {
   saveMortgageData,
   loadMortgageData,
   clearMortgageData,
   decodeMortgageData,
   generateShareUrl,
-} from "@/lib/storage";
+} from '@/lib/storage'
 
 const EXPENSE_COLORS = [
-  "rgb(139, 195, 156)", // green
-  "rgb(147, 178, 212)", // blue
-  "rgb(219, 182, 136)", // gold
-  "rgb(198, 146, 184)", // purple
-  "rgb(168, 198, 184)", // teal
-  "rgb(212, 163, 156)", // coral
-  "rgb(176, 176, 168)", // gray
-];
+  'rgb(139, 195, 156)', // green
+  'rgb(147, 178, 212)', // blue
+  'rgb(219, 182, 136)', // gold
+  'rgb(198, 146, 184)', // purple
+  'rgb(168, 198, 184)', // teal
+  'rgb(212, 163, 156)', // coral
+  'rgb(176, 176, 168)', // gray
+]
 
 const DEFAULT_INPUTS: MortgageInputs = {
   loanAmount: 0,
   deposit: 0,
   interestRate: 0,
   loanTermYears: 30,
-  repaymentFrequency: "monthly",
+  repaymentFrequency: 'monthly',
   offsetBalance: 0,
-  buyerType: "standard",
+  buyerType: 'standard',
   includeLegalFees: true,
   includeBuildingInspection: true,
-};
+}
 
 function MortgageCalculatorContent() {
-  const searchParams = useSearchParams();
-  const [inputs, setInputs] = useState<MortgageInputs>(DEFAULT_INPUTS);
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [showShareModal, setShowShareModal] = useState(false);
-  const [shareUrl, setShareUrl] = useState("");
-  const [copied, setCopied] = useState(false);
+  const searchParams = useSearchParams()
+  const [inputs, setInputs] = useState<MortgageInputs>(DEFAULT_INPUTS)
+  const [expenses, setExpenses] = useState<Expense[]>([])
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [shareUrl, setShareUrl] = useState('')
+  const [copied, setCopied] = useState(false)
 
   // Load data from URL params or localStorage on mount
   useEffect(() => {
-    const urlData = searchParams.get("data");
+    const urlData = searchParams.get('data')
 
     if (urlData) {
       // Try to decode URL data first
-      const decoded = decodeMortgageData(urlData);
+      const decoded = decodeMortgageData(urlData)
       if (decoded) {
-        setInputs(decoded.inputs);
-        setExpenses(decoded.expenses);
-        setIsLoaded(true);
-        return;
+        setInputs(decoded.inputs)
+        setExpenses(decoded.expenses)
+        setIsLoaded(true)
+        return
       }
     }
 
     // Fall back to localStorage
-    const savedData = loadMortgageData();
+    const savedData = loadMortgageData()
     if (savedData) {
-      setInputs(savedData.inputs);
-      setExpenses(savedData.expenses);
+      setInputs(savedData.inputs)
+      setExpenses(savedData.expenses)
     }
-    setIsLoaded(true);
-  }, [searchParams]);
+    setIsLoaded(true)
+  }, [searchParams])
 
   // Save to localStorage whenever inputs or expenses change
   useEffect(() => {
     if (isLoaded) {
-      saveMortgageData({ inputs, expenses });
+      saveMortgageData({ inputs, expenses })
     }
-  }, [inputs, expenses, isLoaded]);
+  }, [inputs, expenses, isLoaded])
 
   // Reset form handler
   const handleReset = useCallback(() => {
-    if (confirm("Are you sure you want to reset the form? This will clear all your data.")) {
-      setInputs(DEFAULT_INPUTS);
-      setExpenses([]);
-      clearMortgageData();
+    if (confirm('Are you sure you want to reset the form? This will clear all your data.')) {
+      setInputs(DEFAULT_INPUTS)
+      setExpenses([])
+      clearMortgageData()
       // Clear URL params
-      window.history.replaceState({}, "", "/tools/mortgage");
+      window.history.replaceState({}, '', '/tools/mortgage')
     }
-  }, []);
+  }, [])
 
   // Share handler
   const handleShare = useCallback(() => {
-    const url = generateShareUrl({ inputs, expenses });
-    setShareUrl(url);
-    setShowShareModal(true);
-    setCopied(false);
-  }, [inputs, expenses]);
+    const url = generateShareUrl({ inputs, expenses })
+    setShareUrl(url)
+    setShowShareModal(true)
+    setCopied(false)
+  }, [inputs, expenses])
 
   // Copy to clipboard handler
   const handleCopy = useCallback(async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
     } catch (error) {
-      console.error("Failed to copy:", error);
+      console.error('Failed to copy:', error)
     }
-  }, [shareUrl]);
+  }, [shareUrl])
 
   // Calculate purchase costs
   const purchaseCosts = useMemo(() => {
@@ -125,17 +125,17 @@ function MortgageCalculatorContent() {
         inputs.deposit,
         inputs.buyerType,
         inputs.includeLegalFees,
-        inputs.includeBuildingInspection
-      );
+        inputs.includeBuildingInspection,
+      )
     }
-    return null;
+    return null
   }, [
     inputs.loanAmount,
     inputs.deposit,
     inputs.buyerType,
     inputs.includeLegalFees,
     inputs.includeBuildingInspection,
-  ]);
+  ])
 
   // Calculate mortgage results using effective loan amount (after costs)
   const results = useMemo(() => {
@@ -144,22 +144,22 @@ function MortgageCalculatorContent() {
       const adjustedInputs = {
         ...inputs,
         deposit: purchaseCosts?.effectiveDeposit ?? inputs.deposit,
-      };
-      return calculateMortgageResults(adjustedInputs, expenses);
+      }
+      return calculateMortgageResults(adjustedInputs, expenses)
     }
-    return null;
-  }, [inputs, expenses, purchaseCosts]);
+    return null
+  }, [inputs, expenses, purchaseCosts])
 
   const expenseBreakdownData = useMemo<ExpenseBreakdownItem[]>(() => {
-    if (!results) return [];
+    if (!results) return []
 
     const items: ExpenseBreakdownItem[] = [
       {
-        name: "Mortgage",
+        name: 'Mortgage',
         value: results.monthlyMortgagePayment,
-        color: "rgb(217, 119, 87)",
+        color: 'rgb(217, 119, 87)',
       },
-    ];
+    ]
 
     expenses.forEach((expense, index) => {
       if (expense.name && expense.amount > 0) {
@@ -167,12 +167,12 @@ function MortgageCalculatorContent() {
           name: expense.name,
           value: convertToMonthly(expense.amount, expense.frequency),
           color: EXPENSE_COLORS[index % EXPENSE_COLORS.length],
-        });
+        })
       }
-    });
+    })
 
-    return items;
-  }, [results, expenses]);
+    return items
+  }, [results, expenses])
 
   return (
     <>
@@ -181,10 +181,7 @@ function MortgageCalculatorContent() {
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link
-                href="/"
-                className="text-muted hover:text-foreground transition-colors"
-              >
+              <Link href="/" className="text-muted hover:text-foreground transition-colors">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="20"
@@ -201,9 +198,7 @@ function MortgageCalculatorContent() {
                 </svg>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">
-                  Mortgage Calculator
-                </h1>
+                <h1 className="text-2xl font-bold text-foreground">Mortgage Calculator</h1>
                 <p className="text-sm text-muted">
                   Plan your mortgage with Victorian stamp duty and purchase costs
                 </p>
@@ -212,12 +207,7 @@ function MortgageCalculatorContent() {
 
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleShare}
-                title="Share calculator"
-              >
+              <Button variant="secondary" size="sm" onClick={handleShare} title="Share calculator">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -300,8 +290,8 @@ function MortgageCalculatorContent() {
       >
         <div className="space-y-4">
           <p className="text-sm text-muted">
-            Share this link to let others see your mortgage calculation with all
-            the details pre-filled.
+            Share this link to let others see your mortgage calculation with all the details
+            pre-filled.
           </p>
 
           {/* URL Display */}
@@ -310,10 +300,13 @@ function MortgageCalculatorContent() {
               type="text"
               readOnly
               value={shareUrl}
-              className="w-full px-4 py-3 pr-24 bg-background border border-border rounded-lg text-sm text-foreground font-mono truncate"
+              className={`
+                w-full px-4 py-3 pr-24 bg-background border border-border rounded-lg
+                text-sm text-foreground font-mono truncate
+              `}
             />
             <Button
-              variant={copied ? "primary" : "secondary"}
+              variant={copied ? 'primary' : 'secondary'}
               size="sm"
               onClick={handleCopy}
               className="absolute right-2 top-1/2 -translate-y-1/2"
@@ -366,7 +359,7 @@ function MortgageCalculatorContent() {
         </div>
       </Modal>
     </>
-  );
+  )
 }
 
 // Loading fallback for Suspense
@@ -374,11 +367,16 @@ function LoadingFallback() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">
-        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <div
+          className={`
+            w-8 h-8 border-2 border-accent border-t-transparent
+            rounded-full animate-spin mx-auto mb-4
+          `}
+        />
         <p className="text-muted">Loading calculator...</p>
       </div>
     </div>
-  );
+  )
 }
 
 export default function MortgageCalculatorPage() {
@@ -388,5 +386,5 @@ export default function MortgageCalculatorPage() {
         <MortgageCalculatorContent />
       </Suspense>
     </div>
-  );
+  )
 }

@@ -1,25 +1,33 @@
-import Link from "next/link";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
+import Link from 'next/link'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
 
 interface ToolCardProps {
-  title: string;
-  description: string;
-  href: string;
-  icon: React.ReactNode;
+  title: string
+  description: string
+  href: string
+  icon: React.ReactNode
 }
 
 function ToolCard({ title, description, href, icon }: ToolCardProps) {
   return (
     <Link href={href} className="block group">
-      <Card className="h-full transition-all duration-200 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5">
+      <Card
+        className={`
+          h-full transition-all duration-200
+          hover:border-accent/50 hover:shadow-lg hover:shadow-accent/5
+        `}
+      >
         <CardHeader>
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-accent/10 text-accent group-hover:bg-accent/20 transition-colors">
+            <div
+              className={`
+                p-3 rounded-lg bg-accent/10 text-accent
+                group-hover:bg-accent/20 transition-colors
+              `}
+            >
               {icon}
             </div>
-            <CardTitle className="group-hover:text-accent transition-colors">
-              {title}
-            </CardTitle>
+            <CardTitle className="group-hover:text-accent transition-colors">{title}</CardTitle>
           </div>
         </CardHeader>
         <CardContent>
@@ -27,7 +35,7 @@ function ToolCard({ title, description, href, icon }: ToolCardProps) {
         </CardContent>
       </Card>
     </Link>
-  );
+  )
 }
 
 export default function HomePage() {
@@ -46,9 +54,7 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <section>
-          <h2 className="text-xl font-semibold text-foreground mb-6">
-            Available Tools
-          </h2>
+          <h2 className="text-xl font-semibold text-foreground mb-6">Available Tools</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <ToolCard
               title="Mortgage Calculator"
@@ -98,8 +104,8 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted">
-                  Savings calculators, interest tools, and more finance utilities
-                  will be added here.
+                  Savings calculators, interest tools, and more finance utilities will be added
+                  here.
                 </p>
               </CardContent>
             </Card>
@@ -110,11 +116,9 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-border mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-sm text-muted text-center">
-            Finance Tools — Built with Next.js
-          </p>
+          <p className="text-sm text-muted text-center">Finance Tools — Built with Next.js</p>
         </div>
       </footer>
     </div>
-  );
+  )
 }

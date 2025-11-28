@@ -1,3 +1,2 @@
-export { AmortisationChart } from "./AmortisationChart";
-export { ExpenseBreakdownChart } from "./ExpenseBreakdownChart";
-
+export { AmortisationChart } from './AmortisationChart'
+export { ExpenseBreakdownChart } from './ExpenseBreakdownChart'

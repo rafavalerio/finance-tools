@@ -1,48 +1,49 @@
-"use client";
+'use client'
 
-import { useEffect, useRef } from "react";
-import { Button } from "./Button";
+import { useEffect, useRef } from 'react'
+import { Button } from './Button'
 
 interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title: string;
-  children: React.ReactNode;
+  isOpen: boolean
+  onClose: () => void
+  title: string
+  children: React.ReactNode
 }
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
+      if (e.key === 'Escape') onClose()
+    }
 
     if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
+      document.addEventListener('keydown', handleEscape)
+      document.body.style.overflow = 'hidden'
     }
 
     return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "";
-    };
-  }, [isOpen, onClose]);
+      document.removeEventListener('keydown', handleEscape)
+      document.body.style.overflow = ''
+    }
+  }, [isOpen, onClose])
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
       <div
         ref={modalRef}
-        className="relative bg-card border border-border rounded-xl shadow-2xl w-full max-w-md mx-4 p-6 animate-in fade-in zoom-in-95 duration-200"
+        className={`
+          relative bg-card border border-border rounded-xl shadow-2xl
+          w-full max-w-md mx-4 p-6
+          animate-in fade-in zoom-in-95 duration-200
+        `}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -69,6 +70,5 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         {children}
       </div>
     </div>
-  );
+  )
 }
-

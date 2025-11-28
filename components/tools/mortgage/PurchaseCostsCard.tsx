@@ -1,13 +1,13 @@
-"use client";
+'use client'
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
-import { PurchaseCosts } from "@/types/mortgage";
-import { formatCurrency } from "@/lib/calculations/mortgage";
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { PurchaseCosts } from '@/types/mortgage'
+import { formatCurrency } from '@/lib/calculations/mortgage'
 
 interface PurchaseCostsCardProps {
-  costs: PurchaseCosts | null;
-  deposit: number;
-  propertyPrice: number;
+  costs: PurchaseCosts | null
+  deposit: number
+  propertyPrice: number
 }
 
 function CostRow({
@@ -17,30 +17,28 @@ function CostRow({
   warning = false,
   indent = false,
 }: {
-  label: string;
-  amount: number;
-  highlight?: boolean;
-  warning?: boolean;
-  indent?: boolean;
+  label: string
+  amount: number
+  highlight?: boolean
+  warning?: boolean
+  indent?: boolean
 }) {
   return (
     <div
       className={`flex justify-between items-center py-2 ${
-        indent ? "pl-4" : ""
-      } ${highlight ? "font-semibold" : ""}`}
+        indent ? 'pl-4' : ''
+      } ${highlight ? 'font-semibold' : ''}`}
     >
-      <span className={`text-sm ${warning ? "text-amber-400" : "text-foreground"}`}>
-        {label}
-      </span>
+      <span className={`text-sm ${warning ? 'text-amber-400' : 'text-foreground'}`}>{label}</span>
       <span
         className={`text-sm font-medium ${
-          warning ? "text-amber-400" : highlight ? "text-accent" : "text-foreground"
+          warning ? 'text-amber-400' : highlight ? 'text-accent' : 'text-foreground'
         }`}
       >
         {formatCurrency(amount)}
       </span>
     </div>
-  );
+  )
 }
 
 export function PurchaseCostsCard({ costs, deposit, propertyPrice }: PurchaseCostsCardProps) {
@@ -56,10 +54,10 @@ export function PurchaseCostsCard({ costs, deposit, propertyPrice }: PurchaseCos
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
-  const depositPercentageOfPrice = (deposit / propertyPrice) * 100;
+  const depositPercentageOfPrice = (deposit / propertyPrice) * 100
 
   return (
     <Card>
@@ -98,7 +96,11 @@ export function PurchaseCostsCard({ costs, deposit, propertyPrice }: PurchaseCos
               )}
               <CostRow label="Title Registration" amount={costs.titleRegistration} indent />
               {costs.buildingInspection > 0 && (
-                <CostRow label="Building & Pest Inspection" amount={costs.buildingInspection} indent />
+                <CostRow
+                  label="Building & Pest Inspection"
+                  amount={costs.buildingInspection}
+                  indent
+                />
               )}
               <CostRow label="Mortgage Registration" amount={costs.mortgageRegistration} indent />
               <div className="pt-2 mt-2 border-t border-border">
@@ -190,6 +192,5 @@ export function PurchaseCostsCard({ costs, deposit, propertyPrice }: PurchaseCos
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
-

@@ -1,32 +1,32 @@
-"use client";
+'use client'
 
-import { Input, Select, Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
-import { MortgageInputs, RepaymentFrequency, BuyerType } from "@/types/mortgage";
+import { Input, Select, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { MortgageInputs, RepaymentFrequency, BuyerType } from '@/types/mortgage'
 
 interface MortgageFormProps {
-  inputs: MortgageInputs;
-  onChange: (inputs: MortgageInputs) => void;
+  inputs: MortgageInputs
+  onChange: (inputs: MortgageInputs) => void
 }
 
 const repaymentFrequencyOptions = [
-  { value: "monthly", label: "Monthly" },
-  { value: "fortnightly", label: "Fortnightly" },
-  { value: "weekly", label: "Weekly" },
-];
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'fortnightly', label: 'Fortnightly' },
+  { value: 'weekly', label: 'Weekly' },
+]
 
 const buyerTypeOptions = [
-  { value: "standard", label: "Standard Buyer" },
-  { value: "first_home_buyer", label: "First Home Buyer" },
-  { value: "foreign_buyer", label: "Foreign Buyer" },
-];
+  { value: 'standard', label: 'Standard Buyer' },
+  { value: 'first_home_buyer', label: 'First Home Buyer' },
+  { value: 'foreign_buyer', label: 'Foreign Buyer' },
+]
 
 export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
   const handleChange = (field: keyof MortgageInputs, value: string | number | boolean) => {
     onChange({
       ...inputs,
       [field]: value,
-    });
-  };
+    })
+  }
 
   return (
     <Card>
@@ -42,16 +42,16 @@ export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
               type="number"
               prefix="$"
               placeholder="500000"
-              value={inputs.loanAmount || ""}
-              onChange={(e) => handleChange("loanAmount", parseFloat(e.target.value) || 0)}
+              value={inputs.loanAmount || ''}
+              onChange={(e) => handleChange('loanAmount', parseFloat(e.target.value) || 0)}
             />
             <Input
               label="Your Deposit"
               type="number"
               prefix="$"
               placeholder="100000"
-              value={inputs.deposit || ""}
-              onChange={(e) => handleChange("deposit", parseFloat(e.target.value) || 0)}
+              value={inputs.deposit || ''}
+              onChange={(e) => handleChange('deposit', parseFloat(e.target.value) || 0)}
             />
             <Input
               label="Interest Rate (% p.a.)"
@@ -59,38 +59,38 @@ export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
               suffix="%"
               placeholder="6.5"
               step="0.01"
-              value={inputs.interestRate || ""}
-              onChange={(e) => handleChange("interestRate", parseFloat(e.target.value) || 0)}
+              value={inputs.interestRate || ''}
+              onChange={(e) => handleChange('interestRate', parseFloat(e.target.value) || 0)}
             />
             <Input
               label="Loan Term (years)"
               type="number"
               suffix="years"
               placeholder="30"
-              value={inputs.loanTermYears || ""}
-              onChange={(e) => handleChange("loanTermYears", parseInt(e.target.value) || 0)}
+              value={inputs.loanTermYears || ''}
+              onChange={(e) => handleChange('loanTermYears', parseInt(e.target.value) || 0)}
             />
             <Select
               label="Repayment Frequency"
               options={repaymentFrequencyOptions}
               value={inputs.repaymentFrequency}
               onChange={(e) =>
-                handleChange("repaymentFrequency", e.target.value as RepaymentFrequency)
+                handleChange('repaymentFrequency', e.target.value as RepaymentFrequency)
               }
             />
             <Select
               label="Buyer Type"
               options={buyerTypeOptions}
               value={inputs.buyerType}
-              onChange={(e) => handleChange("buyerType", e.target.value as BuyerType)}
+              onChange={(e) => handleChange('buyerType', e.target.value as BuyerType)}
             />
             <Input
               label="Offset Account Balance"
               type="number"
               prefix="$"
               placeholder="0"
-              value={inputs.offsetBalance || ""}
-              onChange={(e) => handleChange("offsetBalance", parseFloat(e.target.value) || 0)}
+              value={inputs.offsetBalance || ''}
+              onChange={(e) => handleChange('offsetBalance', parseFloat(e.target.value) || 0)}
             />
           </div>
 
@@ -102,8 +102,11 @@ export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
                 <input
                   type="checkbox"
                   checked={inputs.includeLegalFees}
-                  onChange={(e) => handleChange("includeLegalFees", e.target.checked)}
-                  className="w-4 h-4 rounded border-border bg-card text-accent focus:ring-accent focus:ring-offset-background"
+                  onChange={(e) => handleChange('includeLegalFees', e.target.checked)}
+                  className={`
+                    w-4 h-4 rounded border-border bg-card text-accent
+                    focus:ring-accent focus:ring-offset-background
+                  `}
                 />
                 <span className="text-sm text-foreground">Legal/Conveyancing (~$2,000)</span>
               </label>
@@ -111,8 +114,11 @@ export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
                 <input
                   type="checkbox"
                   checked={inputs.includeBuildingInspection}
-                  onChange={(e) => handleChange("includeBuildingInspection", e.target.checked)}
-                  className="w-4 h-4 rounded border-border bg-card text-accent focus:ring-accent focus:ring-offset-background"
+                  onChange={(e) => handleChange('includeBuildingInspection', e.target.checked)}
+                  className={`
+                    w-4 h-4 rounded border-border bg-card text-accent
+                    focus:ring-accent focus:ring-offset-background
+                  `}
                 />
                 <span className="text-sm text-foreground">Building & Pest Inspection (~$650)</span>
               </label>
@@ -121,5 +127,5 @@ export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

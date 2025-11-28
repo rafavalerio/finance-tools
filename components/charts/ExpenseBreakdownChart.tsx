@@ -1,31 +1,31 @@
-"use client";
+'use client'
 
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
-import { ExpenseBreakdownItem } from "@/types/mortgage";
-import { formatCurrencyPrecise } from "@/lib/calculations/mortgage";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { ExpenseBreakdownItem } from '@/types/mortgage'
+import { formatCurrencyPrecise } from '@/lib/calculations/mortgage'
 
 interface ChartDataItem {
-  name: string;
-  value: number;
-  color: string;
-  [key: string]: string | number;
+  name: string
+  value: number
+  color: string
+  [key: string]: string | number
 }
 
 interface ExpenseBreakdownChartProps {
-  data: ExpenseBreakdownItem[];
+  data: ExpenseBreakdownItem[]
 }
 
 const COLORS = [
-  "rgb(217, 119, 87)", // accent
-  "rgb(139, 195, 156)", // green
-  "rgb(147, 178, 212)", // blue
-  "rgb(219, 182, 136)", // gold
-  "rgb(198, 146, 184)", // purple
-  "rgb(168, 198, 184)", // teal
-  "rgb(212, 163, 156)", // coral
-  "rgb(176, 176, 168)", // gray
-];
+  'rgb(217, 119, 87)', // accent
+  'rgb(139, 195, 156)', // green
+  'rgb(147, 178, 212)', // blue
+  'rgb(219, 182, 136)', // gold
+  'rgb(198, 146, 184)', // purple
+  'rgb(168, 198, 184)', // teal
+  'rgb(212, 163, 156)', // coral
+  'rgb(176, 176, 168)', // gray
+]
 
 export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
   if (!data || data.length === 0) {
@@ -40,7 +40,7 @@ export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   // Convert to chart-compatible format with index signature
@@ -48,9 +48,9 @@ export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
     name: item.name,
     value: item.value,
     color: item.color,
-  }));
+  }))
 
-  const total = chartData.reduce((sum, item) => sum + item.value, 0);
+  const total = chartData.reduce((sum, item) => sum + item.value, 0)
 
   return (
     <Card>
@@ -72,35 +72,31 @@ export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
                 nameKey="name"
               >
                 {chartData.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={entry.color || COLORS[index % COLORS.length]}
-                  />
+                  <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgb(48, 48, 46)",
-                  border: "1px solid rgb(68, 68, 64)",
-                  borderRadius: "8px",
-                  color: "rgb(194, 192, 182)",
+                  backgroundColor: 'rgb(48, 48, 46)',
+                  border: '1px solid rgb(68, 68, 64)',
+                  borderRadius: '8px',
+                  color: 'rgb(194, 192, 182)',
                 }}
-                formatter={(value: number) => [
-                  formatCurrencyPrecise(value),
-                  "Monthly",
-                ]}
+                labelStyle={{ color: 'rgb(194, 192, 182)', fontWeight: 'bold' }}
+                itemStyle={{ color: 'rgb(194, 192, 182)' }}
+                formatter={(value: number) => [formatCurrencyPrecise(value), 'Monthly']}
               />
               <Legend
                 verticalAlign="bottom"
                 height={36}
                 formatter={(value) => {
-                  const item = chartData.find((d) => d.name === value);
-                  const percentage = item ? ((item.value / total) * 100).toFixed(1) : 0;
+                  const item = chartData.find((d) => d.name === value)
+                  const percentage = item ? ((item.value / total) * 100).toFixed(1) : 0
                   return (
-                    <span style={{ color: "rgb(194, 192, 182)" }}>
+                    <span style={{ color: 'rgb(194, 192, 182)' }}>
                       {value} ({percentage}%)
                     </span>
-                  );
+                  )
                 }}
               />
             </PieChart>
@@ -108,6 +104,5 @@ export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
-

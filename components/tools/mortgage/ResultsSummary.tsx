@@ -1,15 +1,15 @@
-"use client";
+'use client'
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
-import { MortgageResults } from "@/types/mortgage";
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { MortgageResults } from '@/types/mortgage'
 import {
   formatCurrency,
   formatCurrencyPrecise,
   formatFrequencyLabel,
-} from "@/lib/calculations/mortgage";
+} from '@/lib/calculations/mortgage'
 
 interface ResultsSummaryProps {
-  results: MortgageResults | null;
+  results: MortgageResults | null
 }
 
 function StatCard({
@@ -18,24 +18,24 @@ function StatCard({
   subtext,
   highlight = false,
 }: {
-  label: string;
-  value: string;
-  subtext?: string;
-  highlight?: boolean;
+  label: string
+  value: string
+  subtext?: string
+  highlight?: boolean
 }) {
   return (
     <div
       className={`p-3 rounded-lg min-w-0 overflow-hidden ${
-        highlight ? "bg-accent/10 border border-accent/30" : "bg-background"
+        highlight ? 'bg-accent/10 border border-accent/30' : 'bg-background'
       }`}
     >
       <p className="text-xs text-muted mb-1 whitespace-nowrap truncate">{label}</p>
-      <p className={`text-lg font-bold truncate ${highlight ? "text-accent" : "text-foreground"}`}>
+      <p className={`text-lg font-bold truncate ${highlight ? 'text-accent' : 'text-foreground'}`}>
         {value}
       </p>
       {subtext && <p className="text-xs text-muted mt-1 whitespace-nowrap">{subtext}</p>}
     </div>
-  );
+  )
 }
 
 export function ResultsSummary({ results }: ResultsSummaryProps) {
@@ -51,7 +51,7 @@ export function ResultsSummary({ results }: ResultsSummaryProps) {
           </div>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -67,10 +67,7 @@ export function ResultsSummary({ results }: ResultsSummaryProps) {
               Mortgage Repayments
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <StatCard
-                label="Loan Amount"
-                value={formatCurrency(results.principalAmount)}
-              />
+              <StatCard label="Loan Amount" value={formatCurrency(results.principalAmount)} />
               <StatCard
                 label={`Repayment ${formatFrequencyLabel(results.repaymentFrequency)}`}
                 value={formatCurrencyPrecise(results.repaymentAmount)}
@@ -116,19 +113,13 @@ export function ResultsSummary({ results }: ResultsSummaryProps) {
               Loan Overview
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <StatCard
-                label="Total Repayments"
-                value={formatCurrency(results.totalRepayments)}
-              />
-              <StatCard
-                label="Total Interest"
-                value={formatCurrency(results.totalInterest)}
-              />
+              <StatCard label="Total Repayments" value={formatCurrency(results.totalRepayments)} />
+              <StatCard label="Total Interest" value={formatCurrency(results.totalInterest)} />
               <StatCard
                 label="Payoff Date"
-                value={results.payoffDate.toLocaleDateString("en-AU", {
-                  month: "long",
-                  year: "numeric",
+                value={results.payoffDate.toLocaleDateString('en-AU', {
+                  month: 'long',
+                  year: 'numeric',
                 })}
               />
             </div>
@@ -136,6 +127,5 @@ export function ResultsSummary({ results }: ResultsSummaryProps) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }
-
