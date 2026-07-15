@@ -1,6 +1,15 @@
 'use client'
 
-import { Input, Select, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import {
+  Input,
+  Select,
+  Checkbox,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CalculatorIcon,
+} from '@/components/ui'
 import { MortgageInputs, RepaymentFrequency, BuyerType } from '@/types/mortgage'
 
 interface MortgageFormProps {
@@ -31,7 +40,10 @@ export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Loan Details</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <CalculatorIcon width="20" height="20" className="text-accent" />
+          Loan Details
+        </CardTitle>
         <p className="text-sm text-muted mt-1">Victorian stamp duty rates applied</p>
       </CardHeader>
       <CardContent>
@@ -98,30 +110,16 @@ export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
           <div className="pt-4 border-t border-border">
             <p className="text-sm font-medium text-foreground mb-3">Include in cost estimate:</p>
             <div className="flex flex-wrap gap-4">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={inputs.includeLegalFees}
-                  onChange={(e) => handleChange('includeLegalFees', e.target.checked)}
-                  className={`
-                    w-4 h-4 rounded border-border bg-card text-accent
-                    focus:ring-accent focus:ring-offset-background
-                  `}
-                />
-                <span className="text-sm text-foreground">Legal/Conveyancing (~$2,000)</span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={inputs.includeBuildingInspection}
-                  onChange={(e) => handleChange('includeBuildingInspection', e.target.checked)}
-                  className={`
-                    w-4 h-4 rounded border-border bg-card text-accent
-                    focus:ring-accent focus:ring-offset-background
-                  `}
-                />
-                <span className="text-sm text-foreground">Building & Pest Inspection (~$650)</span>
-              </label>
+              <Checkbox
+                label="Legal/Conveyancing (~$2,000)"
+                checked={inputs.includeLegalFees}
+                onChange={(e) => handleChange('includeLegalFees', e.target.checked)}
+              />
+              <Checkbox
+                label="Building & Pest Inspection (~$650)"
+                checked={inputs.includeBuildingInspection}
+                onChange={(e) => handleChange('includeBuildingInspection', e.target.checked)}
+              />
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { Card, CardHeader, CardTitle, CardContent, PieChartIcon } from '@/components/ui'
 import { ExpenseBreakdownItem } from '@/types/mortgage'
 import { formatCurrencyPrecise } from '@/lib/calculations/mortgage'
 
@@ -32,7 +32,10 @@ export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Monthly Expense Breakdown</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <PieChartIcon width="20" height="20" className="text-accent" />
+            Monthly Expense Breakdown
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted">
@@ -55,7 +58,10 @@ export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Monthly Expense Breakdown</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <PieChartIcon width="20" height="20" className="text-accent" />
+          Monthly Expense Breakdown
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-80 w-full">

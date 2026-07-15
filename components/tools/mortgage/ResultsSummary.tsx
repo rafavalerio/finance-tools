@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { Card, CardHeader, CardTitle, CardContent, ChartBarIcon } from '@/components/ui'
 import { MortgageResults } from '@/types/mortgage'
 import {
   formatCurrency,
@@ -43,7 +43,10 @@ export function ResultsSummary({ results }: ResultsSummaryProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Results</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <ChartBarIcon width="20" height="20" className="text-accent" />
+            Results
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted">
@@ -57,7 +60,10 @@ export function ResultsSummary({ results }: ResultsSummaryProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Results Summary</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <ChartBarIcon width="20" height="20" className="text-accent" />
+          Results Summary
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">

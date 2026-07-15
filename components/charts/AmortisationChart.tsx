@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import { Card, CardHeader, CardTitle, CardContent, TrendingDownIcon } from '@/components/ui'
 import { AmortisationDataPoint } from '@/types/mortgage'
 import { formatCurrency } from '@/lib/calculations/mortgage'
 
@@ -22,7 +22,10 @@ export function AmortisationChart({ data }: AmortisationChartProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Loan Balance Over Time</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingDownIcon width="20" height="20" className="text-accent" />
+            Loan Balance Over Time
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted">
@@ -36,7 +39,10 @@ export function AmortisationChart({ data }: AmortisationChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Loan Balance Over Time</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <TrendingDownIcon width="20" height="20" className="text-accent" />
+          Loan Balance Over Time
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-80 w-full">

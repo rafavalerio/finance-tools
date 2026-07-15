@@ -1,6 +1,14 @@
 'use client'
 
-import { Button, Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  PlusIcon,
+  ListChecksIcon,
+} from '@/components/ui'
 import { Expense } from '@/types/mortgage'
 import { ExpenseItem } from './ExpenseItem'
 
@@ -35,23 +43,12 @@ export function ExpenseList({ expenses, onChange }: ExpenseListProps) {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle>Additional Expenses</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <ListChecksIcon width="20" height="20" className="text-accent" />
+            Additional Expenses
+          </CardTitle>
           <Button variant="secondary" size="sm" onClick={addExpense}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mr-2"
-            >
-              <path d="M12 5v14" />
-              <path d="M5 12h14" />
-            </svg>
+            <PlusIcon width="16" height="16" className="mr-2" />
             Add Expense
           </Button>
         </div>

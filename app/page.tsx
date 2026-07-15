@@ -1,5 +1,13 @@
 import Link from 'next/link'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  WalletIcon,
+  HouseIcon,
+  PlusCircleIcon,
+} from '@/components/ui'
 
 interface ToolCardProps {
   title: string
@@ -44,10 +52,17 @@ export default function HomePage() {
       {/* Header */}
       <header className="border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-4xl font-bold text-foreground">Finance Tools</h1>
-          <p className="text-lg text-muted mt-2">
-            Personal finance calculators to help you plan and budget
-          </p>
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-lg bg-accent/10 text-accent">
+              <WalletIcon width="28" height="28" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-foreground">Finance Tools</h1>
+              <p className="text-lg text-muted mt-2">
+                Personal finance calculators to help you plan and budget
+              </p>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -60,22 +75,7 @@ export default function HomePage() {
               title="Mortgage Calculator"
               description="Plan your mortgage repayments, add additional expenses, and see how much you and your partner will each need to contribute monthly."
               href="/tools/mortgage"
-              icon={
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                  <polyline points="9 22 9 12 15 12 15 22" />
-                </svg>
-              }
+              icon={<HouseIcon width="24" height="24" />}
             />
 
             {/* Placeholder for future tools */}
@@ -83,21 +83,7 @@ export default function HomePage() {
               <CardHeader>
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-lg bg-card text-muted">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="12" x2="12" y1="8" y2="16" />
-                      <line x1="8" x2="16" y1="12" y2="12" />
-                    </svg>
+                    <PlusCircleIcon width="24" height="24" />
                   </div>
                   <CardTitle className="text-muted">More Coming Soon</CardTitle>
                 </div>
@@ -116,7 +102,17 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t border-border mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <p className="text-sm text-muted text-center">Finance Tools — Built with Next.js</p>
+          <p className="text-sm text-muted text-center">
+            Built by{' '}
+            <a
+              href="https://rafavalerio.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-foreground hover:text-accent transition-colors"
+            >
+              Rafael Valerio
+            </a>
+          </p>
         </div>
       </footer>
     </div>

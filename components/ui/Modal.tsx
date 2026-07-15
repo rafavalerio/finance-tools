@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { Button } from './Button'
+import { CloseIcon } from './icons'
 
 interface ModalProps {
   isOpen: boolean
@@ -49,20 +50,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-foreground">{title}</h2>
           <Button variant="ghost" size="sm" onClick={onClose} className="p-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M18 6L6 18" />
-              <path d="M6 6l12 12" />
-            </svg>
+            <CloseIcon width="20" height="20" />
           </Button>
         </div>
 

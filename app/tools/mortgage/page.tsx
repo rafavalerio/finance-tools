@@ -10,7 +10,15 @@ import {
   PurchaseCostsCard,
 } from '@/components/tools/mortgage'
 import { AmortisationChart, ExpenseBreakdownChart } from '@/components/charts'
-import { Button, Modal } from '@/components/ui'
+import {
+  Button,
+  Modal,
+  ArrowLeftIcon,
+  ShareIcon,
+  ResetIcon,
+  CheckIcon,
+  CopyIcon,
+} from '@/components/ui'
 import { MortgageInputs, Expense, ExpenseBreakdownItem } from '@/types/mortgage'
 import {
   calculateMortgageResults,
@@ -182,20 +190,7 @@ function MortgageCalculatorContent() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link href="/" className="text-muted hover:text-foreground transition-colors">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M19 12H5" />
-                  <path d="M12 19l-7-7 7-7" />
-                </svg>
+                <ArrowLeftIcon width="20" height="20" />
               </Link>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Mortgage Calculator</h1>
@@ -208,24 +203,7 @@ function MortgageCalculatorContent() {
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
               <Button variant="secondary" size="sm" onClick={handleShare} title="Share calculator">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mr-2"
-                >
-                  <circle cx="18" cy="5" r="3" />
-                  <circle cx="6" cy="12" r="3" />
-                  <circle cx="18" cy="19" r="3" />
-                  <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" />
-                  <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />
-                </svg>
+                <ShareIcon width="16" height="16" className="mr-2" />
                 Share
               </Button>
               <Button
@@ -235,21 +213,7 @@ function MortgageCalculatorContent() {
                 title="Reset form"
                 className="text-muted hover:text-red-400"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mr-2"
-                >
-                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
-                  <path d="M3 3v5h5" />
-                </svg>
+                <ResetIcon width="16" height="16" className="mr-2" />
                 Reset
               </Button>
             </div>
@@ -313,39 +277,12 @@ function MortgageCalculatorContent() {
             >
               {copied ? (
                 <>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="mr-1"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
+                  <CheckIcon width="14" height="14" className="mr-1" />
                   Copied
                 </>
               ) : (
                 <>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="mr-1"
-                  >
-                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                  </svg>
+                  <CopyIcon width="14" height="14" className="mr-1" />
                   Copy
                 </>
               )}
