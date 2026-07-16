@@ -2,6 +2,12 @@
   "name": "finance-tools",
   "version": "0.1.0",
   "private": true,
+  "description": "Personal finance toolkit built with Next.js, starting with a Victoria (Australia) mortgage calculator.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rafavalerio/finance-tools"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",

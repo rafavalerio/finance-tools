@@ -12,6 +12,7 @@ import {
 import { Card, CardHeader, CardTitle, CardContent, TrendingDownIcon } from '@/components/ui'
 import { AmortisationDataPoint } from '@/types/mortgage'
 import { formatCurrency } from '@/lib/calculations/mortgage'
+import { CHART_TOOLTIP_STYLE } from './theme'
 
 interface AmortisationChartProps {
   data: AmortisationDataPoint[]
@@ -73,13 +74,7 @@ export function AmortisationChart({ data }: AmortisationChartProps) {
                 width={80}
               />
               <Tooltip
-                contentStyle={{
-                  backgroundColor: 'rgb(48, 48, 46)',
-                  border: '1px solid rgb(68, 68, 64)',
-                  borderRadius: '8px',
-                  color: 'rgb(194, 192, 182)',
-                }}
-                labelStyle={{ color: 'rgb(194, 192, 182)', fontWeight: 'bold' }}
+                {...CHART_TOOLTIP_STYLE}
                 formatter={(value: number) => [formatCurrency(value), 'Balance']}
               />
               <Area

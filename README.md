@@ -35,6 +35,37 @@ More finance utilities will be added as needed:
 - Budget tracker
 - And more...
 
+## Tech Stack
+
+- [Next.js](https://nextjs.org) 16 (App Router), React 19, TypeScript (strict)
+- Tailwind CSS v4
+- [Recharts](https://recharts.org) for charts, [lucide-react](https://lucide.dev) for icons
+- No backend/database — everything runs client-side, with state persisted to `localStorage`
+  and optionally shareable via a base64-encoded URL param
+- [Vitest](https://vitest.dev) + React Testing Library for tests
+
+## Getting Started
+
+```bash
+npm install
+npm run dev       # start the dev server at http://localhost:3000
+```
+
+Other useful commands:
+
+```bash
+npm run build      # production build
+npm run start      # run the production build
+npm run lint        # ESLint
+npm run format      # Prettier write
+npm run test        # run the test suite once
+npm run test:watch  # Vitest in watch mode
+```
+
+## License
+
+[MIT](LICENSE)
+
 ---
 
 Built with Next.js

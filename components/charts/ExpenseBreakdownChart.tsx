@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import { Card, CardHeader, CardTitle, CardContent, PieChartIcon } from '@/components/ui'
 import { ExpenseBreakdownItem } from '@/types/mortgage'
 import { formatCurrencyPrecise } from '@/lib/calculations/mortgage'
+import { CHART_ACCENT_COLOR, CHART_PALETTE, CHART_TOOLTIP_STYLE } from './theme'
 
 interface ChartDataItem {
   name: string
@@ -16,16 +17,7 @@ interface ExpenseBreakdownChartProps {
   data: ExpenseBreakdownItem[]
 }
 
-const COLORS = [
-  'rgb(217, 119, 87)', // accent
-  'rgb(139, 195, 156)', // green
-  'rgb(147, 178, 212)', // blue
-  'rgb(219, 182, 136)', // gold
-  'rgb(198, 146, 184)', // purple
-  'rgb(168, 198, 184)', // teal
-  'rgb(212, 163, 156)', // coral
-  'rgb(176, 176, 168)', // gray
-]
+const COLORS = [CHART_ACCENT_COLOR, ...CHART_PALETTE]
 
 export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
   if (!data || data.length === 0) {
@@ -82,13 +74,7 @@ export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
                 ))}
               </Pie>
               <Tooltip
-                contentStyle={{
-                  backgroundColor: 'rgb(48, 48, 46)',
-                  border: '1px solid rgb(68, 68, 64)',
-                  borderRadius: '8px',
-                  color: 'rgb(194, 192, 182)',
-                }}
-                labelStyle={{ color: 'rgb(194, 192, 182)', fontWeight: 'bold' }}
+                {...CHART_TOOLTIP_STYLE}
                 itemStyle={{ color: 'rgb(194, 192, 182)' }}
                 formatter={(value: number) => [formatCurrencyPrecise(value), 'Monthly']}
               />

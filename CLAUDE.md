@@ -38,9 +38,13 @@ calculator for Victoria, Australia — with more tools planned as new routes und
 
 - `app/page.tsx` — home page listing available tools as cards
 - `app/tools/<tool-name>/page.tsx` — one route per tool
-- `components/tools/<tool-name>/` — tool-specific components
-- `components/charts/` — Recharts wrappers (e.g. `AmortisationChart`, `ExpenseBreakdownChart`)
-- `components/ui/` — shared primitives (`Button`, `Card`, `Input`, `Select`, `Checkbox`, `Label`,
+- `components/tools/<tool-name>/` — tool-specific components; also where tool-specific hooks
+  live (e.g. `useMortgageCalculator.ts`, which owns the mortgage page's state, persistence
+  effects, and derived-data `useMemo`s, keeping `page.tsx` itself just layout/composition)
+- `components/charts/` — Recharts wrappers (e.g. `AmortisationChart`, `ExpenseBreakdownChart`),
+  plus `theme.ts` (shared chart colors and Recharts tooltip styling — don't hardcode `rgb(...)`
+  chart colors in individual chart or page components, import from here instead)
+- `components/ui/` — shared primitives (`Button`, `Card`, `Input`, `Select`, `Checkbox`,
   `Modal`), plus `icons.tsx` (re-exports `lucide-react` icons under semantic names, e.g.
   `Home as HouseIcon` — add new icons here rather than importing `lucide-react` directly in a
   page/component, so there's one place that maps "what it's for" to "which lucide icon"), each
@@ -61,6 +65,10 @@ calculator for Victoria, Australia — with more tools planned as new routes und
   storage involved
 - Supports weekly/fortnightly/monthly repayment frequencies, offset account, per-person cost
   split, and a recurring expenses list (monthly/quarterly/annually)
+- `app/tools/mortgage/page.tsx` composes `useMortgageCalculator()` (state/persistence/derived
+  data) with the form, results, chart, and `components/tools/mortgage/ShareModal.tsx` /
+  `MortgageLoadingFallback.tsx` components — keep the page file itself limited to layout and
+  wiring, not state logic
 
 ## Conventions
 
@@ -72,6 +80,8 @@ calculator for Victoria, Australia — with more tools planned as new routes und
   broke `Input`/`Select`'s auto-generated `id` (derived from the label text) when the same label
   was reused across list rows (`ExpenseItem`); pass an explicit `id` whenever a component can
   render more than once on a page
-- Known pre-existing gap (not yet fixed): `app/tools/mortgage/page.tsx`'s data-loading effect
+- Known pre-existing gap (not yet fixed): `useMortgageCalculator.ts`'s data-loading effect
   calls `setState` synchronously inside `useEffect`, which `eslint-plugin-react-hooks` flags
   (`react-hooks/set-state-in-effect`)
+- Known pre-existing gap (not yet fixed): `app/favicon.ico` is still the unmodified Next.js
+  default — needs a project-specific icon before this reads as fully polished
