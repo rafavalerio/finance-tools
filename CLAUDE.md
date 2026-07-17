@@ -83,5 +83,8 @@ calculator for Victoria, Australia — with more tools planned as new routes und
 - Known pre-existing gap (not yet fixed): `useMortgageCalculator.ts`'s data-loading effect
   calls `setState` synchronously inside `useEffect`, which `eslint-plugin-react-hooks` flags
   (`react-hooks/set-state-in-effect`)
-- Known pre-existing gap (not yet fixed): `app/favicon.ico` is still the unmodified Next.js
-  default — needs a project-specific icon before this reads as fully polished
+- App icon: `app/icon.png` (favicon) and `app/apple-icon.png` (iOS home-screen icon) are
+  picked up automatically via Next.js's file-based metadata convention — no manual `<link>`
+  tags needed. `app/manifest.ts` + `public/icon-192.png` / `public/icon-512.png` cover the
+  web app manifest (Android/PWA "Add to Home Screen"). Regenerate all four from the same
+  source image if the icon ever changes.

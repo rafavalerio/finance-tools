@@ -37,21 +37,26 @@ function MortgageCalculatorContent() {
       {/* Header */}
       <header className="border-b border-border">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="text-muted hover:text-foreground transition-colors">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-4">
+              <Link
+                href="/"
+                className="mt-1 shrink-0 text-muted hover:text-foreground transition-colors"
+              >
                 <ArrowLeftIcon width="20" height="20" />
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Mortgage Calculator</h1>
-                <p className="text-sm text-muted">
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+                  Mortgage Calculator
+                </h1>
+                <p className="text-sm text-muted mt-0.5">
                   Plan your mortgage with Victorian stamp duty and purchase costs
                 </p>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-end">
               <Button variant="secondary" size="sm" onClick={handleShare} title="Share calculator">
                 <ShareIcon width="16" height="16" className="mr-2" />
                 Share
