@@ -41,17 +41,18 @@ export function ExpenseList({ expenses, onChange }: ExpenseListProps) {
 
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <ListChecksIcon width="20" height="20" className="text-accent" />
-            Additional Expenses
-          </CardTitle>
+      <CardHeader
+        actions={
           <Button variant="secondary" size="sm" onClick={addExpense}>
             <PlusIcon width="16" height="16" className="mr-2" />
             Add Expense
           </Button>
-        </div>
+        }
+      >
+        <CardTitle className="flex items-center gap-2">
+          <ListChecksIcon width="20" height="20" className="text-accent" />
+          Additional Expenses
+        </CardTitle>
         <p className="text-sm text-muted mt-1">
           Add recurring expenses like council rates, utilities, insurance, etc.
         </p>
