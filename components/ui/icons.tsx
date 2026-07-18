@@ -17,4 +17,5 @@ export {
   BarChart3 as ChartBarIcon,
   TrendingDown as TrendingDownIcon,
   PieChart as PieChartIcon,
+  MoreVertical as MoreIcon,
 } from 'lucide-react'
