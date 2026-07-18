@@ -43,9 +43,14 @@ export function ExpenseList({ expenses, onChange }: ExpenseListProps) {
     <Card>
       <CardHeader
         actions={
-          <Button variant="secondary" size="sm" onClick={addExpense}>
-            <PlusIcon width="16" height="16" className="mr-2" />
-            Add Expense
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={addExpense}
+            aria-label="Add expense"
+            title="Add expense"
+          >
+            <PlusIcon width="16" height="16" />
           </Button>
         }
       >

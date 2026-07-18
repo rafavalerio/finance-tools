@@ -35,7 +35,7 @@ describe('Card', () => {
     expect(screen.getByRole('button', { name: 'Add Item' })).toBeInTheDocument()
   })
 
-  it('lays out actions responsively (stacked on mobile, inline from sm:)', () => {
+  it('aligns actions to the top-right corner, next to the title', () => {
     render(
       <Card>
         <CardHeader data-testid="header" actions={<button>Add Item</button>}>
@@ -44,7 +44,7 @@ describe('Card', () => {
       </Card>,
     )
 
-    expect(screen.getByTestId('header').className).toMatch(/flex-col/)
-    expect(screen.getByTestId('header').className).toMatch(/sm:flex-row/)
+    expect(screen.getByTestId('header').className).toMatch(/items-start/)
+    expect(screen.getByTestId('header').className).toMatch(/justify-between/)
   })
 })

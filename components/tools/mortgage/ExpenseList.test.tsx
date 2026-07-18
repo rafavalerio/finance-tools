@@ -22,7 +22,7 @@ describe('ExpenseList', () => {
   it('appends a new blank expense when "Add Expense" is clicked', async () => {
     const onChange = vi.fn()
     render(<ExpenseList expenses={[]} onChange={onChange} />)
-    await userEvent.click(screen.getByRole('button', { name: /add expense/i }))
+    await userEvent.click(screen.getByRole('button', { name: 'Add expense' }))
 
     expect(onChange).toHaveBeenCalledTimes(1)
     const [newExpenses] = onChange.mock.calls[0]

@@ -22,8 +22,8 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 Card.displayName = 'Card'
 
 interface CardHeaderProps extends HTMLAttributes<HTMLDivElement> {
-  /** Buttons or controls for the header's right side (e.g. "Add Expense"). Stacks
-   * below the title on mobile and sits inline on the right from `sm:` up. */
+  /** A single icon-only control for the header's corner (e.g. an "add" button).
+   * Sits top-right, aligned with the title, at every screen size. */
   actions?: React.ReactNode
 }
 
@@ -40,11 +40,11 @@ const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
     return (
       <div
         ref={ref}
-        className={`mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${className}`}
+        className={`mb-4 flex items-start justify-between gap-3 ${className}`}
         {...props}
       >
         <div className="min-w-0">{children}</div>
-        <div className="flex items-center gap-2 justify-end sm:shrink-0">{actions}</div>
+        <div className="shrink-0">{actions}</div>
       </div>
     )
   },
