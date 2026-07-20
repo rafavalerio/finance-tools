@@ -20,6 +20,7 @@ function MortgageCalculatorContent() {
     setInputs,
     expenses,
     setExpenses,
+    members,
     showShareModal,
     setShowShareModal,
     shareUrl,
@@ -29,6 +30,7 @@ function MortgageCalculatorContent() {
     handleCopy,
     purchaseCosts,
     results,
+    displaySplitBreakdown,
     expenseBreakdownData,
   } = useMortgageCalculator()
 
@@ -81,7 +83,7 @@ function MortgageCalculatorContent() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Column - Inputs */}
           <div className="space-y-6">
-            <MortgageForm inputs={inputs} onChange={setInputs} />
+            <MortgageForm inputs={inputs} onChange={setInputs} members={members} />
             <PurchaseCostsCard
               costs={purchaseCosts}
               deposit={inputs.deposit}
@@ -92,7 +94,7 @@ function MortgageCalculatorContent() {
 
           {/* Right Column - Results */}
           <div className="space-y-6">
-            <ResultsSummary results={results} />
+            <ResultsSummary results={results} splitBreakdown={displaySplitBreakdown} />
             <div className="grid grid-cols-1 gap-6">
               <AmortisationChart data={results?.amortisationSchedule || []} />
               <ExpenseBreakdownChart data={expenseBreakdownData} />

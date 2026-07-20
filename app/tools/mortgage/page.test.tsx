@@ -52,4 +52,29 @@ describe('MortgageCalculatorPage', () => {
     expect(screen.getByText('Share Calculator')).toBeInTheDocument()
     expect(screen.getByDisplayValue(/\/tools\/mortgage\?data=/)).toBeInTheDocument()
   })
+
+  it('shows a named split once a household of two or more exists and is selected', async () => {
+    localStorage.setItem(
+      'finance-tools-household',
+      JSON.stringify([
+        { id: 'a', name: 'Alex', income: 100000 },
+        { id: 'b', name: 'Sam', income: 50000 },
+      ]),
+    )
+
+    render(<MortgageCalculatorPage />)
+
+    await userEvent.type(await screen.findByLabelText('Property Price'), '500000')
+    await userEvent.type(screen.getByLabelText('Your Deposit'), '100000')
+    await userEvent.type(screen.getByLabelText('Interest Rate (% p.a.)'), '6')
+
+    await userEvent.click(await screen.findByLabelText('Alex'))
+    await userEvent.click(screen.getByLabelText('Sam'))
+
+    // "Alex"/"Sam" now appear twice each: once as a checkbox label (MortgageForm) and once as
+    // a split stat label (ResultsSummary) — assert on the count rather than a single match.
+    expect(await screen.findByText('Split')).toBeInTheDocument()
+    expect(screen.getAllByText('Alex').length).toBeGreaterThanOrEqual(2)
+    expect(screen.getAllByText('Sam').length).toBeGreaterThanOrEqual(2)
+  })
 })
