@@ -7,7 +7,10 @@ import {
   AmortisationDataPoint,
   BuyerType,
   PurchaseCosts,
+  MemberSplitAmount,
 } from '@/types/mortgage'
+import { HouseholdMember } from '@/types/household'
+import { computeSplit } from './household'
 
 /**
  * Get the number of repayments per year based on frequency
@@ -136,6 +139,7 @@ export function generateAmortisationSchedule(
 export function calculateMortgageResults(
   inputs: MortgageInputs,
   expenses: Expense[],
+  members: HouseholdMember[],
 ): MortgageResults {
   // Calculate principal (loan amount minus deposit)
   const principalAmount = inputs.loanAmount - inputs.deposit
@@ -174,7 +178,18 @@ export function calculateMortgageResults(
 
   // Calculate totals
   const totalMonthlyOutgoing = monthlyMortgagePayment + monthlyExpensesTotal
-  const perPersonAmount = totalMonthlyOutgoing / 2
+
+  // Split the total across the selected household members (empty if fewer than 2)
+  const splitMembers = members.filter((member) => inputs.splitMemberIds.includes(member.id))
+  let splitBreakdown: MemberSplitAmount[] = []
+  if (splitMembers.length >= 2) {
+    const ratios = computeSplit(splitMembers, inputs.splitMode)
+    splitBreakdown = splitMembers.map((member) => ({
+      memberId: member.id,
+      name: member.name,
+      amount: totalMonthlyOutgoing * ratios[member.id],
+    }))
+  }
 
   // Generate amortisation schedule
   const amortisationSchedule = generateAmortisationSchedule(
@@ -195,7 +210,7 @@ export function calculateMortgageResults(
     monthlyMortgagePayment,
     monthlyExpensesTotal,
     totalMonthlyOutgoing,
-    perPersonAmount,
+    splitBreakdown,
     amortisationSchedule,
   }
 }

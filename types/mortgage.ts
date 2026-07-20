@@ -1,3 +1,5 @@
+import { SplitMode } from '@/types/household'
+
 export type RepaymentFrequency = 'weekly' | 'fortnightly' | 'monthly'
 
 export type ExpenseFrequency = 'monthly' | 'quarterly' | 'annually'
@@ -14,6 +16,8 @@ export interface MortgageInputs {
   buyerType: BuyerType
   includeLegalFees: boolean
   includeBuildingInspection: boolean
+  splitMemberIds: string[]
+  splitMode: SplitMode
 }
 
 export interface PurchaseCosts {
@@ -46,6 +50,17 @@ export interface AmortisationDataPoint {
   payment: number
 }
 
+export interface MemberSplitAmount {
+  memberId: string
+  name: string
+  amount: number
+}
+
+export interface SplitSnapshotEntry {
+  name: string
+  amount: number
+}
+
 export interface MortgageResults {
   // Loan details
   principalAmount: number
@@ -59,7 +74,7 @@ export interface MortgageResults {
   monthlyMortgagePayment: number
   monthlyExpensesTotal: number
   totalMonthlyOutgoing: number
-  perPersonAmount: number
+  splitBreakdown: MemberSplitAmount[]
 
   // Amortisation schedule
   amortisationSchedule: AmortisationDataPoint[]

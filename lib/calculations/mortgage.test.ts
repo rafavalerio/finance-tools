@@ -14,6 +14,7 @@ import {
   calculatePurchaseCosts,
 } from './mortgage'
 import { Expense, MortgageInputs } from '@/types/mortgage'
+import { HouseholdMember } from '@/types/household'
 
 describe('getRepaymentsPerYear', () => {
   it('returns the correct count per frequency', () => {
@@ -100,35 +101,73 @@ describe('calculateMortgageResults', () => {
     buyerType: 'standard',
     includeLegalFees: true,
     includeBuildingInspection: true,
+    splitMemberIds: [],
+    splitMode: 'even',
   }
 
   it('derives principal as loan amount minus deposit', () => {
-    const results = calculateMortgageResults(baseInputs, [])
+    const results = calculateMortgageResults(baseInputs, [], [])
     expect(results.principalAmount).toBe(500000)
   })
 
   it('reduces the effective principal by the offset balance', () => {
-    const withOffset = calculateMortgageResults({ ...baseInputs, offsetBalance: 50000 }, [])
-    const withoutOffset = calculateMortgageResults(baseInputs, [])
+    const withOffset = calculateMortgageResults({ ...baseInputs, offsetBalance: 50000 }, [], [])
+    const withoutOffset = calculateMortgageResults(baseInputs, [], [])
     expect(withOffset.repaymentAmount).toBeLessThan(withoutOffset.repaymentAmount)
   })
 
-  it('sums monthly expenses and splits the total evenly for two people', () => {
+  it('sums monthly expenses onto the mortgage payment', () => {
     const expenses: Expense[] = [
       { id: '1', name: 'Rates', amount: 300, frequency: 'quarterly' },
       { id: '2', name: 'Insurance', amount: 1200, frequency: 'annually' },
     ]
-    const results = calculateMortgageResults(baseInputs, expenses)
+    const results = calculateMortgageResults(baseInputs, expenses, [])
 
     expect(results.monthlyExpensesTotal).toBeCloseTo(100 + 100)
     expect(results.totalMonthlyOutgoing).toBeCloseTo(
       results.monthlyMortgagePayment + results.monthlyExpensesTotal,
     )
-    expect(results.perPersonAmount).toBeCloseTo(results.totalMonthlyOutgoing / 2)
+  })
+
+  it('produces no split breakdown when fewer than two members are selected', () => {
+    const members: HouseholdMember[] = [{ id: 'a', name: 'Alex', income: 100000 }]
+    const results = calculateMortgageResults({ ...baseInputs, splitMemberIds: ['a'] }, [], members)
+    expect(results.splitBreakdown).toEqual([])
+  })
+
+  it('splits the total monthly outgoing evenly across selected members', () => {
+    const members: HouseholdMember[] = [
+      { id: 'a', name: 'Alex', income: 100000 },
+      { id: 'b', name: 'Sam', income: 50000 },
+    ]
+    const results = calculateMortgageResults(
+      { ...baseInputs, splitMemberIds: ['a', 'b'], splitMode: 'even' },
+      [],
+      members,
+    )
+    expect(results.splitBreakdown).toHaveLength(2)
+    expect(results.splitBreakdown[0].amount).toBeCloseTo(results.totalMonthlyOutgoing / 2)
+    expect(results.splitBreakdown[1].amount).toBeCloseTo(results.totalMonthlyOutgoing / 2)
+  })
+
+  it('splits the total monthly outgoing by income when mode is income', () => {
+    const members: HouseholdMember[] = [
+      { id: 'a', name: 'Alex', income: 100000 },
+      { id: 'b', name: 'Sam', income: 50000 },
+    ]
+    const results = calculateMortgageResults(
+      { ...baseInputs, splitMemberIds: ['a', 'b'], splitMode: 'income' },
+      [],
+      members,
+    )
+    const alex = results.splitBreakdown.find((entry) => entry.memberId === 'a')!
+    const sam = results.splitBreakdown.find((entry) => entry.memberId === 'b')!
+    expect(alex.amount).toBeCloseTo(results.totalMonthlyOutgoing * (2 / 3))
+    expect(sam.amount).toBeCloseTo(results.totalMonthlyOutgoing * (1 / 3))
   })
 
   it('produces an amortisation schedule', () => {
-    const results = calculateMortgageResults(baseInputs, [])
+    const results = calculateMortgageResults(baseInputs, [], [])
     expect(results.amortisationSchedule.length).toBeGreaterThan(0)
   })
 })
