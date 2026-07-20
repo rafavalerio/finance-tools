@@ -13,6 +13,7 @@ import {
 } from '@/components/tools/mortgage'
 import { AmortisationChart, ExpenseBreakdownChart } from '@/components/charts'
 import { HeaderActions, ArrowLeftIcon, ShareIcon, ResetIcon } from '@/components/ui'
+import { PageContainer } from '@/components/layout'
 
 function MortgageCalculatorContent() {
   const {
@@ -38,7 +39,7 @@ function MortgageCalculatorContent() {
     <>
       {/* Header */}
       <header className="border-b border-border">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <PageContainer className="py-4">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-start gap-4 min-w-0">
               <Link
@@ -75,32 +76,34 @@ function MortgageCalculatorContent() {
               ]}
             />
           </div>
-        </div>
+        </PageContainer>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Inputs */}
-          <div className="space-y-6">
-            <MortgageForm inputs={inputs} onChange={setInputs} members={members} />
-            <PurchaseCostsCard
-              costs={purchaseCosts}
-              deposit={inputs.deposit}
-              propertyPrice={inputs.loanAmount}
-            />
-            <ExpenseList expenses={expenses} onChange={setExpenses} />
-          </div>
+      <main>
+        <PageContainer className="py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Column - Inputs */}
+            <div className="space-y-6">
+              <MortgageForm inputs={inputs} onChange={setInputs} members={members} />
+              <PurchaseCostsCard
+                costs={purchaseCosts}
+                deposit={inputs.deposit}
+                propertyPrice={inputs.loanAmount}
+              />
+              <ExpenseList expenses={expenses} onChange={setExpenses} />
+            </div>
 
-          {/* Right Column - Results */}
-          <div className="space-y-6">
-            <ResultsSummary results={results} splitBreakdown={displaySplitBreakdown} />
-            <div className="grid grid-cols-1 gap-6">
-              <AmortisationChart data={results?.amortisationSchedule || []} />
-              <ExpenseBreakdownChart data={expenseBreakdownData} />
+            {/* Right Column - Results */}
+            <div className="space-y-6">
+              <ResultsSummary results={results} splitBreakdown={displaySplitBreakdown} />
+              <div className="grid grid-cols-1 gap-6">
+                <AmortisationChart data={results?.amortisationSchedule || []} />
+                <ExpenseBreakdownChart data={expenseBreakdownData} />
+              </div>
             </div>
           </div>
-        </div>
+        </PageContainer>
       </main>
 
       <ShareModal
