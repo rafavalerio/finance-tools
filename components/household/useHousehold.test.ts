@@ -80,4 +80,18 @@ describe('useHousehold', () => {
       expect(stored).toHaveLength(1)
     })
   })
+
+  it('syncs across multiple mounted instances when one instance saves a change', async () => {
+    const first = renderHook(() => useHousehold())
+    const second = renderHook(() => useHousehold())
+
+    await waitFor(() => expect(first.result.current.isLoaded).toBe(true))
+    await waitFor(() => expect(second.result.current.isLoaded).toBe(true))
+
+    act(() => {
+      first.result.current.addMember()
+    })
+
+    await waitFor(() => expect(second.result.current.members).toHaveLength(1))
+  })
 })
