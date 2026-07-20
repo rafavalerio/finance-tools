@@ -34,5 +34,5 @@ export function useDashboardData() {
     }
   }, [members])
 
-  return { members, mortgageResults }
+  return { mortgageResults }
 }

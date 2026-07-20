@@ -22,19 +22,10 @@ beforeEach(() => {
 })
 
 describe('useDashboardData', () => {
-  it('returns no mortgage results when nothing has been saved', async () => {
+  it('returns no mortgage results when nothing has been saved, and no longer exposes members', async () => {
     const { result } = renderHook(() => useDashboardData())
-    await waitFor(() => expect(result.current.members).toEqual([]))
-    expect(result.current.mortgageResults).toBeNull()
-  })
-
-  it('returns household members loaded from the repository', async () => {
-    localStorage.setItem(
-      'finance-tools-household',
-      JSON.stringify([{ id: '1', name: 'Rafael', income: 95000 }]),
-    )
-    const { result } = renderHook(() => useDashboardData())
-    await waitFor(() => expect(result.current.members).toHaveLength(1))
+    await waitFor(() => expect(result.current.mortgageResults).toBeNull())
+    expect(result.current).not.toHaveProperty('members')
   })
 
   it('computes mortgage results from saved inputs, once loan details exist', async () => {
@@ -46,13 +37,31 @@ describe('useDashboardData', () => {
     expect(result.current.mortgageResults!.monthlyMortgagePayment).toBeGreaterThan(0)
   })
 
+  it('computes mortgage results using saved household members for the split', async () => {
+    localStorage.setItem(
+      'finance-tools-household',
+      JSON.stringify([
+        { id: 'a', name: 'Alex', income: 100000 },
+        { id: 'b', name: 'Sam', income: 50000 },
+      ]),
+    )
+    localStorage.setItem(
+      'finance-tools-mortgage-inputs',
+      JSON.stringify({ ...savedInputs, splitMemberIds: ['a', 'b'] }),
+    )
+    localStorage.setItem('finance-tools-mortgage-expenses', JSON.stringify([]))
+
+    const { result } = renderHook(() => useDashboardData())
+    await waitFor(() => expect(result.current.mortgageResults).not.toBeNull())
+    expect(result.current.mortgageResults!.splitBreakdown).toHaveLength(2)
+  })
+
   it('leaves mortgage results null when saved inputs have no loan amount', async () => {
     localStorage.setItem(
       'finance-tools-mortgage-inputs',
       JSON.stringify({ ...savedInputs, loanAmount: 0 }),
     )
     const { result } = renderHook(() => useDashboardData())
-    await waitFor(() => expect(result.current.members).toEqual([]))
-    expect(result.current.mortgageResults).toBeNull()
+    await waitFor(() => expect(result.current.mortgageResults).toBeNull())
   })
 })

@@ -22,19 +22,9 @@ beforeEach(() => {
 })
 
 describe('HomePage', () => {
-  it('shows empty-state CTAs for household and mortgage when nothing is configured', async () => {
+  it('shows an empty-state CTA for mortgage when nothing is configured', async () => {
     render(<HomePage />)
-    expect(await screen.findByText('Set up your household to get started.')).toBeInTheDocument()
-    expect(screen.getByText('Get started with the mortgage calculator.')).toBeInTheDocument()
-  })
-
-  it('shows the household summary once members are configured', async () => {
-    localStorage.setItem(
-      'finance-tools-household',
-      JSON.stringify([{ id: '1', name: 'Rafael', income: 95000 }]),
-    )
-    render(<HomePage />)
-    expect(await screen.findByText('1 member · $95k/yr')).toBeInTheDocument()
+    expect(await screen.findByText('Get started with the mortgage calculator.')).toBeInTheDocument()
   })
 
   it('shows the mortgage snapshot once loan details are saved', async () => {
@@ -48,5 +38,11 @@ describe('HomePage', () => {
     render(<HomePage />)
     expect(screen.getByText('Budget Planner')).toBeInTheDocument()
     expect(screen.getByText('Coming soon.')).toBeInTheDocument()
+  })
+
+  it('does not show any household-related content', async () => {
+    render(<HomePage />)
+    await screen.findByText('Get started with the mortgage calculator.')
+    expect(screen.queryByText(/household/i)).not.toBeInTheDocument()
   })
 })
