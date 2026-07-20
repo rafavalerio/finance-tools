@@ -6,6 +6,10 @@ vi.mock('next/font/google', () => ({
   Geist_Mono: () => ({ variable: '--font-geist-mono' }),
 }))
 
+vi.mock('next/navigation', () => ({
+  usePathname: () => '/',
+}))
+
 const { default: RootLayout, metadata } = await import('./layout')
 
 describe('RootLayout', () => {
@@ -17,6 +21,16 @@ describe('RootLayout', () => {
     )
     expect(html).toContain('Page content')
     expect(html).toContain('lang="en"')
+  })
+
+  it('renders the persistent top nav', () => {
+    const html = renderToStaticMarkup(
+      <RootLayout>
+        <p>Page content</p>
+      </RootLayout>,
+    )
+    expect(html).toContain('Finance Tools')
+    expect(html).toContain('/profile')
   })
 
   it('sets the page metadata', () => {
