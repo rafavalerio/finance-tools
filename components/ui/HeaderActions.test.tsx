@@ -15,13 +15,14 @@ const buildActions = (onShare = vi.fn(), onReset = vi.fn()) => [
 ]
 
 describe('HeaderActions', () => {
-  it('renders a labeled button for each action', () => {
+  it('renders a single round trigger and no inline action buttons', () => {
     render(<HeaderActions actions={buildActions()} />)
-    expect(screen.getByRole('button', { name: /share/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /reset/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'More actions' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^share$/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^reset$/i })).not.toBeInTheDocument()
   })
 
-  it('does not show the menu until the "More actions" trigger is clicked', () => {
+  it('does not show the menu until the trigger is clicked', () => {
     render(<HeaderActions actions={buildActions()} />)
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
@@ -61,5 +62,11 @@ describe('HeaderActions', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'outside' }))
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+  })
+
+  it('renders the trigger as a distinct circle button', () => {
+    render(<HeaderActions actions={buildActions()} />)
+    const trigger = screen.getByRole('button', { name: 'More actions' })
+    expect(trigger.className).toMatch(/rounded-full/)
   })
 })

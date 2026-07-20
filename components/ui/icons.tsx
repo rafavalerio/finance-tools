@@ -2,7 +2,6 @@ export {
   Wallet as WalletIcon,
   Home as HouseIcon,
   PlusCircle as PlusCircleIcon,
-  ArrowLeft as ArrowLeftIcon,
   Share2 as ShareIcon,
   RotateCcw as ResetIcon,
   Check as CheckIcon,
@@ -17,6 +16,7 @@ export {
   BarChart3 as ChartBarIcon,
   TrendingDown as TrendingDownIcon,
   PieChart as PieChartIcon,
-  MoreVertical as MoreIcon,
   User as UserIcon,
+  Settings as SettingsIcon,
+  Menu as MenuIcon,
 } from 'lucide-react'

@@ -48,4 +48,11 @@ describe('ProfileMenu', () => {
     await userEvent.keyboard('{Escape}')
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
+
+  it('renders the trigger as an accent-filled circle', () => {
+    render(<ProfileMenu />)
+    const trigger = screen.getByRole('button', { name: 'Open profile menu' })
+    expect(trigger.className).toMatch(/rounded-full/)
+    expect(trigger.className).toMatch(/bg-accent/)
+  })
 })

@@ -10,7 +10,6 @@ export {
   WalletIcon,
   HouseIcon,
   PlusCircleIcon,
-  ArrowLeftIcon,
   ShareIcon,
   ResetIcon,
   CheckIcon,
@@ -25,6 +24,7 @@ export {
   ChartBarIcon,
   TrendingDownIcon,
   PieChartIcon,
-  MoreIcon,
   UserIcon,
+  SettingsIcon,
+  MenuIcon,
 } from './icons'

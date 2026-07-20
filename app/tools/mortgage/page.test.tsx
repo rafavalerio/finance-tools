@@ -39,7 +39,8 @@ describe('MortgageCalculatorPage', () => {
     await userEvent.type(screen.getByLabelText('Property Price'), '500000')
     expect(screen.getByLabelText('Property Price')).toHaveValue(500000)
 
-    await userEvent.click(screen.getByRole('button', { name: /reset/i }))
+    await userEvent.click(screen.getByRole('button', { name: 'More actions' }))
+    await userEvent.click(screen.getByRole('menuitem', { name: /reset/i }))
 
     expect(screen.getByLabelText('Property Price')).toHaveValue(null)
   })
@@ -47,7 +48,8 @@ describe('MortgageCalculatorPage', () => {
   it('opens the share modal with a generated link', async () => {
     render(<MortgageCalculatorPage />)
 
-    await userEvent.click(screen.getByRole('button', { name: /share/i }))
+    await userEvent.click(screen.getByRole('button', { name: 'More actions' }))
+    await userEvent.click(screen.getByRole('menuitem', { name: /share/i }))
 
     expect(screen.getByText('Share Calculator')).toBeInTheDocument()
     expect(screen.getByDisplayValue(/\/tools\/mortgage\?data=/)).toBeInTheDocument()
