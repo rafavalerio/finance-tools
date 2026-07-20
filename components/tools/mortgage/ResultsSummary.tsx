@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardHeader, CardTitle, CardContent, ChartBarIcon } from '@/components/ui'
-import { MortgageResults } from '@/types/mortgage'
+import { MortgageResults, SplitSnapshotEntry } from '@/types/mortgage'
 import {
   formatCurrency,
   formatCurrencyPrecise,
@@ -10,6 +10,7 @@ import {
 
 interface ResultsSummaryProps {
   results: MortgageResults | null
+  splitBreakdown: SplitSnapshotEntry[]
 }
 
 function StatCard({
@@ -38,7 +39,7 @@ function StatCard({
   )
 }
 
-export function ResultsSummary({ results }: ResultsSummaryProps) {
+export function ResultsSummary({ results, splitBreakdown }: ResultsSummaryProps) {
   if (!results) {
     return (
       <Card>
@@ -90,7 +91,7 @@ export function ResultsSummary({ results }: ResultsSummaryProps) {
             <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-2">
               Monthly Outgoings
             </h4>
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <StatCard
                 label="Mortgage"
                 value={formatCurrencyPrecise(results.monthlyMortgagePayment)}
@@ -104,14 +105,26 @@ export function ResultsSummary({ results }: ResultsSummaryProps) {
                 value={formatCurrencyPrecise(results.totalMonthlyOutgoing)}
                 highlight
               />
-              <StatCard
-                label="Per Person"
-                value={formatCurrencyPrecise(results.perPersonAmount)}
-                subtext="Split between 2 people"
-                highlight
-              />
             </div>
           </div>
+
+          {/* Cost split, only shown once there's a breakdown to show */}
+          {splitBreakdown.length > 0 && (
+            <div>
+              <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-2">Split</h4>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                {splitBreakdown.map((entry) => (
+                  <StatCard
+                    key={entry.name}
+                    label={entry.name}
+                    value={formatCurrencyPrecise(entry.amount)}
+                    subtext="per month"
+                    highlight
+                  />
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Loan Summary */}
           <div>
