@@ -20,6 +20,8 @@ const defaultInputs: MortgageInputs = {
   buyerType: 'standard',
   includeLegalFees: true,
   includeBuildingInspection: true,
+  splitMemberIds: [],
+  splitMode: 'even',
 }
 
 const customData: MortgageStorageData = {
@@ -33,6 +35,8 @@ const customData: MortgageStorageData = {
     buyerType: 'first_home_buyer',
     includeLegalFees: false,
     includeBuildingInspection: false,
+    splitMemberIds: ['a', 'b'],
+    splitMode: 'income',
   },
   expenses: [
     { id: '1', name: 'Council Rates', amount: 400, frequency: 'quarterly' },
@@ -49,7 +53,7 @@ describe('saveMortgageData / loadMortgageData', () => {
     expect(loadMortgageData()).toBeNull()
   })
 
-  it('round-trips inputs and expenses through localStorage', () => {
+  it('round-trips inputs and expenses through localStorage, including split settings', () => {
     saveMortgageData(customData)
     expect(loadMortgageData()).toEqual(customData)
   })
@@ -69,18 +73,30 @@ describe('clearMortgageData', () => {
 })
 
 describe('encodeMortgageData / decodeMortgageData', () => {
-  it('round-trips custom inputs and expenses', () => {
+  it('round-trips custom inputs and expenses, but not splitMemberIds/splitMode (local-only)', () => {
     const encoded = encodeMortgageData(customData)
     const decoded = decodeMortgageData(encoded)
 
     expect(decoded).not.toBeNull()
-    expect(decoded!.inputs).toEqual(customData.inputs)
+    expect(decoded!.inputs).toEqual({ ...customData.inputs, splitMemberIds: [], splitMode: 'even' })
     expect(decoded!.expenses).toHaveLength(2)
     expect(decoded!.expenses[0]).toMatchObject({
       name: 'Council Rates',
       amount: 400,
       frequency: 'quarterly',
     })
+    expect(decoded!.splitSnapshot).toBeNull()
+  })
+
+  it('embeds and decodes a split snapshot by name and amount', () => {
+    const snapshot = [
+      { name: 'Rafael', amount: 1200 },
+      { name: 'Partner', amount: 1140 },
+    ]
+    const encoded = encodeMortgageData(customData, snapshot)
+    const decoded = decodeMortgageData(encoded)
+
+    expect(decoded!.splitSnapshot).toEqual(snapshot)
   })
 
   it('produces a URL-safe string with no base64 padding or unsafe characters', () => {
@@ -91,7 +107,7 @@ describe('encodeMortgageData / decodeMortgageData', () => {
   it('decodes to the defaults when every field is default (nothing encoded)', () => {
     const encoded = encodeMortgageData({ inputs: defaultInputs, expenses: [] })
     const decoded = decodeMortgageData(encoded)
-    expect(decoded).toEqual({ inputs: defaultInputs, expenses: [] })
+    expect(decoded).toEqual({ inputs: defaultInputs, expenses: [], splitSnapshot: null })
   })
 
   it('omits expenses with no name or non-positive amount', () => {
@@ -120,6 +136,14 @@ describe('generateShareUrl', () => {
 
     const encoded = url.split('?data=')[1]
     const decoded = decodeMortgageData(encoded)
-    expect(decoded!.inputs).toEqual(customData.inputs)
+    expect(decoded!.inputs).toEqual({ ...customData.inputs, splitMemberIds: [], splitMode: 'even' })
+  })
+
+  it('includes a split snapshot when one is provided', () => {
+    const snapshot = [{ name: 'Rafael', amount: 1200 }]
+    const url = generateShareUrl(customData, snapshot)
+    const encoded = url.split('?data=')[1]
+    const decoded = decodeMortgageData(encoded)
+    expect(decoded!.splitSnapshot).toEqual(snapshot)
   })
 })

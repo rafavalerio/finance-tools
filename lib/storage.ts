@@ -4,6 +4,7 @@ import {
   BuyerType,
   RepaymentFrequency,
   ExpenseFrequency,
+  SplitSnapshotEntry,
 } from '@/types/mortgage'
 
 const STORAGE_KEYS = {
@@ -14,6 +15,10 @@ const STORAGE_KEYS = {
 export interface MortgageStorageData {
   inputs: MortgageInputs
   expenses: Expense[]
+}
+
+export interface DecodedMortgageData extends MortgageStorageData {
+  splitSnapshot: SplitSnapshotEntry[] | null
 }
 
 // Default values - used to skip encoding defaults
@@ -27,9 +32,14 @@ const DEFAULTS: MortgageInputs = {
   buyerType: 'standard',
   includeLegalFees: true,
   includeBuildingInspection: true,
+  splitMemberIds: [],
+  splitMode: 'even',
 }
 
 // Compact key mapping for URL encoding
+// Note: splitMemberIds/splitMode are intentionally NOT encoded here — they reference the
+// sender's local household member IDs, which are meaningless to a recipient. The split is
+// instead shared as a frozen name+amount snapshot (see `sp` below).
 const KEY_MAP = {
   loanAmount: 'p', // property price
   deposit: 'd', // deposit
@@ -131,9 +141,9 @@ export function clearMortgageData(): void {
  * Compact encoding: Only non-default values with short keys
  */
 interface CompactData {
-  // Inputs (only non-defaults)
-  [key: string]: string | number | boolean | CompactExpense[] | undefined
+  [key: string]: string | number | boolean | CompactExpense[] | CompactSplitEntry[] | undefined
   e?: CompactExpense[] // expenses
+  sp?: CompactSplitEntry[] // split snapshot (name + amount, frozen at share time)
 }
 
 interface CompactExpense {
@@ -142,10 +152,19 @@ interface CompactExpense {
   f: string // frequency
 }
 
+interface CompactSplitEntry {
+  n: string // name
+  a: number // amount
+}
+
 /**
- * Encode mortgage data to a compact URL-safe string
+ * Encode mortgage data to a compact URL-safe string.
+ * `splitSnapshot`, if provided, is embedded as frozen name+amount pairs — never member IDs.
  */
-export function encodeMortgageData(data: MortgageStorageData): string {
+export function encodeMortgageData(
+  data: MortgageStorageData,
+  splitSnapshot?: SplitSnapshotEntry[],
+): string {
   try {
     const compact: CompactData = {}
 
@@ -182,6 +201,11 @@ export function encodeMortgageData(data: MortgageStorageData): string {
       }))
     }
 
+    // Include the frozen split snapshot, if any
+    if (splitSnapshot && splitSnapshot.length > 0) {
+      compact.sp = splitSnapshot.map((entry) => ({ n: entry.name, a: entry.amount }))
+    }
+
     const json = JSON.stringify(compact)
     // URL-safe base64: replace + with -, / with _, remove padding =
     return btoa(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
@@ -194,7 +218,7 @@ export function encodeMortgageData(data: MortgageStorageData): string {
 /**
  * Decode mortgage data from compact URL-safe string
  */
-export function decodeMortgageData(encoded: string): MortgageStorageData | null {
+export function decodeMortgageData(encoded: string): DecodedMortgageData | null {
   try {
     // Restore URL-safe base64 to standard base64
     let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/')
@@ -204,11 +228,12 @@ export function decodeMortgageData(encoded: string): MortgageStorageData | null 
     const json = atob(base64)
     const compact: CompactData = JSON.parse(json)
 
-    // Reconstruct inputs from compact format
+    // Reconstruct inputs from compact format (splitMemberIds/splitMode always come from
+    // DEFAULTS — they are never part of the shared link)
     const inputs: MortgageInputs = { ...DEFAULTS }
 
     for (const [shortKey, value] of Object.entries(compact)) {
-      if (shortKey === 'e') continue // Skip expenses
+      if (shortKey === 'e' || shortKey === 'sp') continue // handled separately
 
       const fullKey = REVERSE_KEY_MAP[shortKey]
       if (!fullKey) continue
@@ -247,7 +272,13 @@ export function decodeMortgageData(encoded: string): MortgageStorageData | null 
       }
     }
 
-    return { inputs, expenses }
+    // Reconstruct the split snapshot
+    const splitSnapshot: SplitSnapshotEntry[] | null =
+      compact.sp && Array.isArray(compact.sp) && compact.sp.length > 0
+        ? compact.sp.map((entry) => ({ name: entry.n, amount: entry.a }))
+        : null
+
+    return { inputs, expenses, splitSnapshot }
   } catch (error) {
     console.error('Failed to decode mortgage data:', error)
     return null
@@ -255,10 +286,13 @@ export function decodeMortgageData(encoded: string): MortgageStorageData | null 
 }
 
 /**
- * Generate shareable URL with encoded mortgage data
+ * Generate shareable URL with encoded mortgage data and an optional split snapshot
  */
-export function generateShareUrl(data: MortgageStorageData): string {
-  const encoded = encodeMortgageData(data)
+export function generateShareUrl(
+  data: MortgageStorageData,
+  splitSnapshot?: SplitSnapshotEntry[],
+): string {
+  const encoded = encodeMortgageData(data, splitSnapshot)
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
   return `${baseUrl}/tools/mortgage?data=${encoded}`
 }
