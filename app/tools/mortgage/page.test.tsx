@@ -53,7 +53,7 @@ describe('MortgageCalculatorPage', () => {
     expect(screen.getByDisplayValue(/\/tools\/mortgage\?data=/)).toBeInTheDocument()
   })
 
-  it('shows a named split once a household of two or more exists and is selected', async () => {
+  it('defaults to splitting between all household members once entered', async () => {
     localStorage.setItem(
       'finance-tools-household',
       JSON.stringify([
@@ -68,13 +68,13 @@ describe('MortgageCalculatorPage', () => {
     await userEvent.type(screen.getByLabelText('Your Deposit'), '100000')
     await userEvent.type(screen.getByLabelText('Interest Rate (% p.a.)'), '6')
 
-    await userEvent.click(await screen.findByLabelText('Alex'))
-    await userEvent.click(screen.getByLabelText('Sam'))
-
-    // "Alex"/"Sam" now appear twice each: once as a checkbox label (MortgageForm) and once as
-    // a split stat label (ResultsSummary) — assert on the count rather than a single match.
+    // Both members are selected by default (no clicks needed) once the household loads.
     expect(await screen.findByText('Split')).toBeInTheDocument()
     expect(screen.getAllByText('Alex').length).toBeGreaterThanOrEqual(2)
     expect(screen.getAllByText('Sam').length).toBeGreaterThanOrEqual(2)
+
+    // Deselecting a member drops the split below two, and the section disappears.
+    await userEvent.click(screen.getByLabelText('Sam'))
+    expect(screen.queryByText('Split')).not.toBeInTheDocument()
   })
 })

@@ -9,6 +9,7 @@ import {
   CardTitle,
   CardContent,
   CalculatorIcon,
+  Button,
 } from '@/components/ui'
 import { MortgageInputs, RepaymentFrequency, BuyerType } from '@/types/mortgage'
 import { HouseholdMember } from '@/types/household'
@@ -151,28 +152,24 @@ export function MortgageForm({ inputs, onChange, members }: MortgageFormProps) {
                 ))}
               </div>
               <div className="inline-flex rounded-lg border border-border overflow-hidden">
-                <button
+                <Button
                   type="button"
+                  variant={inputs.splitMode === 'even' ? 'primary' : 'secondary'}
+                  size="sm"
                   onClick={() => handleChange('splitMode', 'even')}
-                  className={`px-3 py-1.5 text-sm transition-colors ${
-                    inputs.splitMode === 'even'
-                      ? 'bg-accent text-background'
-                      : 'bg-card text-foreground hover:bg-border'
-                  }`}
+                  className="rounded-none"
                 >
                   Split evenly
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant={inputs.splitMode === 'income' ? 'primary' : 'secondary'}
+                  size="sm"
                   onClick={() => handleChange('splitMode', 'income')}
-                  className={`px-3 py-1.5 text-sm transition-colors ${
-                    inputs.splitMode === 'income'
-                      ? 'bg-accent text-background'
-                      : 'bg-card text-foreground hover:bg-border'
-                  }`}
+                  className="rounded-none"
                 >
                   Split by income
-                </button>
+                </Button>
               </div>
             </div>
           )}

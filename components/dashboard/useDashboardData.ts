@@ -18,7 +18,12 @@ export function useDashboardData() {
     Promise.resolve().then(() => {
       if (cancelled) return
       const saved = loadMortgageData()
-      if (saved && saved.inputs.loanAmount > 0) {
+      if (
+        saved &&
+        saved.inputs.loanAmount > 0 &&
+        saved.inputs.interestRate > 0 &&
+        saved.inputs.loanTermYears > 0
+      ) {
         setMortgageResults(calculateMortgageResults(saved.inputs, saved.expenses, members))
       } else {
         setMortgageResults(null)

@@ -113,9 +113,9 @@ export function ResultsSummary({ results, splitBreakdown }: ResultsSummaryProps)
             <div>
               <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-2">Split</h4>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                {splitBreakdown.map((entry) => (
+                {splitBreakdown.map((entry, index) => (
                   <StatCard
-                    key={entry.name}
+                    key={index}
                     label={entry.name}
                     value={formatCurrencyPrecise(entry.amount)}
                     subtext="per month"
