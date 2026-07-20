@@ -88,6 +88,13 @@ describe('encodeMortgageData / decodeMortgageData', () => {
     expect(decoded!.splitSnapshot).toBeNull()
   })
 
+  it('returns a fresh splitMemberIds array instance on every decode (not shared with defaults)', () => {
+    const decoded1 = decodeMortgageData(encodeMortgageData(customData))
+    const decoded2 = decodeMortgageData(encodeMortgageData(customData))
+
+    expect(decoded1!.inputs.splitMemberIds).not.toBe(decoded2!.inputs.splitMemberIds)
+  })
+
   it('embeds and decodes a split snapshot by name and amount', () => {
     const snapshot = [
       { name: 'Rafael', amount: 1200 },

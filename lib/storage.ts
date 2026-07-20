@@ -230,7 +230,7 @@ export function decodeMortgageData(encoded: string): DecodedMortgageData | null 
 
     // Reconstruct inputs from compact format (splitMemberIds/splitMode always come from
     // DEFAULTS — they are never part of the shared link)
-    const inputs: MortgageInputs = { ...DEFAULTS }
+    const inputs: MortgageInputs = { ...DEFAULTS, splitMemberIds: [...DEFAULTS.splitMemberIds] }
 
     for (const [shortKey, value] of Object.entries(compact)) {
       if (shortKey === 'e' || shortKey === 'sp') continue // handled separately
