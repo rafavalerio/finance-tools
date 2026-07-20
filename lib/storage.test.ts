@@ -62,6 +62,28 @@ describe('saveMortgageData / loadMortgageData', () => {
     localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(defaultInputs))
     expect(loadMortgageData()).toEqual({ inputs: defaultInputs, expenses: [] })
   })
+
+  it('backfills splitMemberIds/splitMode when loading inputs saved before those fields existed', () => {
+    // Simulates a real user's localStorage from before this feature shipped: no
+    // splitMemberIds/splitMode keys at all, not just empty/default values for them.
+    const legacyInputs = {
+      loanAmount: 600000,
+      deposit: 100000,
+      interestRate: 6,
+      loanTermYears: 30,
+      repaymentFrequency: 'monthly',
+      offsetBalance: 0,
+      buyerType: 'standard',
+      includeLegalFees: true,
+      includeBuildingInspection: true,
+    }
+    localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(legacyInputs))
+
+    const loaded = loadMortgageData()
+
+    expect(loaded!.inputs.splitMemberIds).toEqual([])
+    expect(loaded!.inputs.splitMode).toBe('even')
+  })
 })
 
 describe('clearMortgageData', () => {

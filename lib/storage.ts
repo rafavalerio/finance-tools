@@ -115,8 +115,16 @@ export function loadMortgageData(): MortgageStorageData | null {
 
     if (!inputsJson) return null
 
+    // Merge with DEFAULTS so inputs saved before a field (e.g. splitMemberIds/splitMode)
+    // existed still produce a complete MortgageInputs object, not one with missing keys.
+    const parsedInputs = JSON.parse(inputsJson)
+
     return {
-      inputs: JSON.parse(inputsJson),
+      inputs: {
+        ...DEFAULTS,
+        ...parsedInputs,
+        splitMemberIds: parsedInputs.splitMemberIds ?? [...DEFAULTS.splitMemberIds],
+      },
       expenses: expensesJson ? JSON.parse(expensesJson) : [],
     }
   } catch (error) {
