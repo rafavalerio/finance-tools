@@ -30,7 +30,7 @@ describe('RootLayout', () => {
       </RootLayout>,
     )
     expect(html).toContain('Finance Tools')
-    expect(html).toContain('/profile')
+    expect(html).toContain('/tools/mortgage')
   })
 
   it('sets the page metadata', () => {
