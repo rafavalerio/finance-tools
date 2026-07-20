@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { WalletIcon, MoreIcon } from '@/components/ui'
+import { Button, WalletIcon, MoreIcon } from '@/components/ui'
 
 interface NavLink {
   key: string
@@ -73,15 +73,16 @@ export function TopNav() {
 
         {/* Collapsed menu below sm: */}
         <div className="relative shrink-0 sm:hidden" ref={menuRef}>
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
             onClick={() => setOpen((isOpen) => !isOpen)}
             aria-label="Open navigation menu"
             aria-haspopup="menu"
             aria-expanded={open}
-            className="p-2 text-muted transition-colors hover:text-foreground"
           >
             <MoreIcon width="20" height="20" />
-          </button>
+          </Button>
 
           {open && (
             <div
