@@ -1,16 +1,52 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import HomePage from './page'
+import { MortgageInputs } from '@/types/mortgage'
+
+const savedInputs: MortgageInputs = {
+  loanAmount: 600000,
+  deposit: 100000,
+  interestRate: 6,
+  loanTermYears: 30,
+  repaymentFrequency: 'monthly',
+  offsetBalance: 0,
+  buyerType: 'standard',
+  includeLegalFees: true,
+  includeBuildingInspection: true,
+  splitMemberIds: [],
+  splitMode: 'even',
+}
+
+beforeEach(() => {
+  localStorage.clear()
+})
 
 describe('HomePage', () => {
-  it('renders the mortgage calculator tool card linking to its route', () => {
+  it('shows empty-state CTAs for household and mortgage when nothing is configured', async () => {
     render(<HomePage />)
-    const link = screen.getByRole('link', { name: /mortgage calculator/i })
-    expect(link).toHaveAttribute('href', '/tools/mortgage')
+    expect(await screen.findByText('Set up your household to get started.')).toBeInTheDocument()
+    expect(screen.getByText('Get started with the mortgage calculator.')).toBeInTheDocument()
   })
 
-  it('renders a placeholder card for upcoming tools', () => {
+  it('shows the household summary once members are configured', async () => {
+    localStorage.setItem(
+      'finance-tools-household',
+      JSON.stringify([{ id: '1', name: 'Rafael', income: 95000 }]),
+    )
     render(<HomePage />)
-    expect(screen.getByText('More Coming Soon')).toBeInTheDocument()
+    expect(await screen.findByText('1 member · $95k/yr')).toBeInTheDocument()
+  })
+
+  it('shows the mortgage snapshot once loan details are saved', async () => {
+    localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(savedInputs))
+    localStorage.setItem('finance-tools-mortgage-expenses', JSON.stringify([]))
+    render(<HomePage />)
+    expect(await screen.findByText(/\/mo$/)).toBeInTheDocument()
+  })
+
+  it('always shows the budget placeholder', () => {
+    render(<HomePage />)
+    expect(screen.getByText('Budget Planner')).toBeInTheDocument()
+    expect(screen.getByText('Coming soon.')).toBeInTheDocument()
   })
 })
