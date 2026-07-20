@@ -27,4 +27,5 @@ export {
   PieChartIcon,
   MoreIcon,
   UserIcon,
+  SettingsIcon,
 } from './icons'

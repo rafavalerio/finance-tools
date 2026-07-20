@@ -19,4 +19,5 @@ export {
   PieChart as PieChartIcon,
   MoreVertical as MoreIcon,
   User as UserIcon,
+  Settings as SettingsIcon,
 } from 'lucide-react'
