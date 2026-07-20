@@ -2,7 +2,6 @@ export {
   Wallet as WalletIcon,
   Home as HouseIcon,
   PlusCircle as PlusCircleIcon,
-  ArrowLeft as ArrowLeftIcon,
   Share2 as ShareIcon,
   RotateCcw as ResetIcon,
   Check as CheckIcon,

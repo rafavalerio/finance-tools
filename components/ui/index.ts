@@ -10,7 +10,6 @@ export {
   WalletIcon,
   HouseIcon,
   PlusCircleIcon,
-  ArrowLeftIcon,
   ShareIcon,
   ResetIcon,
   CheckIcon,

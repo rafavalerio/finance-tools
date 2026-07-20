@@ -1,7 +1,6 @@
 'use client'
 
 import { Suspense } from 'react'
-import Link from 'next/link'
 import {
   MortgageForm,
   ExpenseList,
@@ -12,8 +11,8 @@ import {
   useMortgageCalculator,
 } from '@/components/tools/mortgage'
 import { AmortisationChart, ExpenseBreakdownChart } from '@/components/charts'
-import { HeaderActions, ArrowLeftIcon, ShareIcon, ResetIcon } from '@/components/ui'
-import { PageContainer } from '@/components/layout'
+import { ShareIcon, ResetIcon } from '@/components/ui'
+import { PageContainer, ToolHeader } from '@/components/layout'
 
 function MortgageCalculatorContent() {
   const {
@@ -38,46 +37,24 @@ function MortgageCalculatorContent() {
   return (
     <>
       {/* Header */}
-      <header className="border-b border-border">
-        <PageContainer className="py-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-4 min-w-0">
-              <Link
-                href="/"
-                className="mt-1 shrink-0 text-muted hover:text-foreground transition-colors"
-              >
-                <ArrowLeftIcon width="20" height="20" />
-              </Link>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-foreground">
-                  Mortgage Calculator
-                </h1>
-                <p className="text-sm text-muted mt-0.5">
-                  Plan your mortgage with Victorian stamp duty and purchase costs
-                </p>
-              </div>
-            </div>
-
-            <HeaderActions
-              actions={[
-                {
-                  key: 'share',
-                  label: 'Share',
-                  icon: <ShareIcon width="16" height="16" />,
-                  onClick: handleShare,
-                },
-                {
-                  key: 'reset',
-                  label: 'Reset',
-                  icon: <ResetIcon width="16" height="16" />,
-                  onClick: handleReset,
-                  variant: 'danger',
-                },
-              ]}
-            />
-          </div>
-        </PageContainer>
-      </header>
+      <ToolHeader
+        title="Mortgage Calculator"
+        actions={[
+          {
+            key: 'share',
+            label: 'Share',
+            icon: <ShareIcon width="16" height="16" />,
+            onClick: handleShare,
+          },
+          {
+            key: 'reset',
+            label: 'Reset',
+            icon: <ResetIcon width="16" height="16" />,
+            onClick: handleReset,
+            variant: 'danger',
+          },
+        ]}
+      />
 
       {/* Main Content */}
       <main>
