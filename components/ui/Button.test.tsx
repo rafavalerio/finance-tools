@@ -42,4 +42,23 @@ describe('Button', () => {
     render(<Button className="custom-class">Click me</Button>)
     expect(screen.getByRole('button').className).toMatch(/custom-class/)
   })
+
+  it('renders as a circle when shape="circle" is set', () => {
+    render(
+      <Button shape="circle" size="sm">
+        X
+      </Button>,
+    )
+    const button = screen.getByRole('button')
+    expect(button.className).toMatch(/rounded-full/)
+    expect(button.className).not.toMatch(/rounded-lg/)
+    expect(button.className).toMatch(/\bp-2\b/)
+  })
+
+  it('defaults to shape="default" (rounded-lg, asymmetric padding)', () => {
+    render(<Button size="sm">X</Button>)
+    const button = screen.getByRole('button')
+    expect(button.className).toMatch(/rounded-lg/)
+    expect(button.className).toMatch(/px-3/)
+  })
 })

@@ -3,14 +3,19 @@ import { ButtonHTMLAttributes, forwardRef } from 'react'
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost'
   size?: 'sm' | 'md' | 'lg'
+  shape?: 'default' | 'circle'
 }
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className = '', variant = 'primary', size = 'md', children, ...props }, ref) => {
+  (
+    { className = '', variant = 'primary', size = 'md', shape = 'default', children, ...props },
+    ref,
+  ) => {
     const baseStyles = `
-      inline-flex items-center justify-center font-medium transition-colors rounded-lg
+      inline-flex items-center justify-center font-medium transition-colors
       focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-background
       disabled:opacity-50 disabled:cursor-not-allowed
+      ${shape === 'circle' ? 'rounded-full' : 'rounded-lg'}
     `
 
     const variants = {
@@ -27,10 +32,18 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       lg: 'px-6 py-3 text-lg',
     }
 
+    const circleSizes = {
+      sm: 'p-2 text-sm',
+      md: 'p-2.5 text-base',
+      lg: 'p-3 text-lg',
+    }
+
     return (
       <button
         ref={ref}
-        className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+        className={`${baseStyles} ${variants[variant]} ${
+          shape === 'circle' ? circleSizes[size] : sizes[size]
+        } ${className}`}
         {...props}
       >
         {children}
