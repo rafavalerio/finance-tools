@@ -18,4 +18,5 @@ export {
   TrendingDown as TrendingDownIcon,
   PieChart as PieChartIcon,
   MoreVertical as MoreIcon,
+  User as UserIcon,
 } from 'lucide-react'
