@@ -24,7 +24,7 @@ export {
   ChartBarIcon,
   TrendingDownIcon,
   PieChartIcon,
-  MoreIcon,
   UserIcon,
   SettingsIcon,
+  MenuIcon,
 } from './icons'

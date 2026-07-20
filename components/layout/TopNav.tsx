@@ -1,125 +1,40 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Button, WalletIcon, MoreIcon } from '@/components/ui'
+import { Button, WalletIcon, MenuIcon } from '@/components/ui'
 import { PageContainer } from './PageContainer'
 import { ProfileMenu } from './ProfileMenu'
-
-interface NavLink {
-  key: string
-  label: string
-  href: string
-  disabled?: boolean
-}
-
-const NAV_LINKS: NavLink[] = [
-  { key: 'mortgage', label: 'Mortgage', href: '/tools/mortgage' },
-  { key: 'budget', label: 'Budget', href: '#', disabled: true },
-]
+import { NavDrawer } from './NavDrawer'
 
 export function TopNav() {
-  const pathname = usePathname()
-  const [open, setOpen] = useState(false)
-  const menuRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false)
-    }
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    document.addEventListener('keydown', handleEscape)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('keydown', handleEscape)
-    }
-  }, [open])
-
-  const linkClassName = (link: NavLink) => {
-    if (link.disabled) return 'text-muted/50 cursor-not-allowed'
-    return pathname === link.href
-      ? 'text-accent'
-      : 'text-muted hover:text-foreground transition-colors'
-  }
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
     <nav className="border-b border-border">
       <PageContainer className="flex h-16 items-center justify-between">
-        <Link href="/" className="flex shrink-0 items-center gap-2 font-bold text-foreground">
-          <WalletIcon width="20" height="20" className="text-accent" />
-          Finance Tools
-        </Link>
-
         <div className="flex items-center gap-3">
-          {/* Inline links from sm: up */}
-          <div className="hidden items-center gap-6 text-sm font-medium sm:flex">
-            {NAV_LINKS.map((link) =>
-              link.disabled ? (
-                <span key={link.key} className={linkClassName(link)}>
-                  {link.label} (soon)
-                </span>
-              ) : (
-                <Link key={link.key} href={link.href} className={linkClassName(link)}>
-                  {link.label}
-                </Link>
-              ),
-            )}
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            shape="circle"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Open navigation menu"
+            aria-expanded={drawerOpen}
+          >
+            <MenuIcon width="20" height="20" />
+          </Button>
 
-          <ProfileMenu />
-
-          {/* Collapsed menu below sm: */}
-          <div className="relative shrink-0 sm:hidden" ref={menuRef}>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setOpen((isOpen) => !isOpen)}
-              aria-label="Open navigation menu"
-              aria-haspopup="menu"
-              aria-expanded={open}
-            >
-              <MoreIcon width="20" height="20" />
-            </Button>
-
-            {open && (
-              <div
-                role="menu"
-                className="absolute right-0 top-full z-10 mt-2 w-44 overflow-hidden rounded-lg border border-border bg-card shadow-lg"
-              >
-                {NAV_LINKS.map((link) =>
-                  link.disabled ? (
-                    <span
-                      key={link.key}
-                      className="block cursor-not-allowed px-4 py-2.5 text-sm text-muted/50"
-                    >
-                      {link.label} (soon)
-                    </span>
-                  ) : (
-                    <Link
-                      key={link.key}
-                      href={link.href}
-                      role="menuitem"
-                      onClick={() => setOpen(false)}
-                      className={`block px-4 py-2.5 text-sm transition-colors hover:bg-border ${
-                        pathname === link.href ? 'text-accent' : 'text-foreground'
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  ),
-                )}
-              </div>
-            )}
-          </div>
+          <Link href="/" className="flex shrink-0 items-center gap-2 font-bold text-foreground">
+            <WalletIcon width="20" height="20" className="text-accent" />
+            Finance Tools
+          </Link>
         </div>
+
+        <ProfileMenu />
       </PageContainer>
+
+      <NavDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </nav>
   )
 }

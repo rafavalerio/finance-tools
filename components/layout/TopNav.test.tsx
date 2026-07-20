@@ -15,34 +15,28 @@ beforeEach(() => {
 })
 
 describe('TopNav', () => {
-  it('renders a link to Mortgage but not a plain Profile link', () => {
+  it('renders the brand link to the dashboard', () => {
     render(<TopNav />)
-    expect(screen.getByRole('link', { name: 'Mortgage' })).toHaveAttribute(
-      'href',
-      '/tools/mortgage',
-    )
-    expect(screen.queryByRole('link', { name: 'Profile' })).not.toBeInTheDocument()
-  })
-
-  it('shows the budget link as disabled, not a link', () => {
-    render(<TopNav />)
-    expect(screen.queryByRole('link', { name: /budget/i })).not.toBeInTheDocument()
-    expect(screen.getAllByText(/budget/i).length).toBeGreaterThan(0)
-  })
-
-  it('opens and closes the mobile menu', async () => {
-    render(<TopNav />)
-
-    const toggle = screen.getByRole('button', { name: 'Open navigation menu' })
-    await userEvent.click(toggle)
-    expect(screen.getByRole('menu')).toBeInTheDocument()
-
-    await userEvent.keyboard('{Escape}')
-    expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /finance tools/i })).toHaveAttribute('href', '/')
   })
 
   it('renders the profile menu button, always visible', () => {
     render(<TopNav />)
     expect(screen.getByRole('button', { name: 'Open profile menu' })).toBeInTheDocument()
+  })
+
+  it('opens the nav drawer from the hamburger button and closes it on Escape', async () => {
+    render(<TopNav />)
+
+    expect(screen.queryByRole('link', { name: 'Mortgage' })).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Open navigation menu' }))
+    expect(screen.getByRole('link', { name: 'Mortgage' })).toHaveAttribute(
+      'href',
+      '/tools/mortgage',
+    )
+
+    await userEvent.keyboard('{Escape}')
+    expect(screen.queryByRole('link', { name: 'Mortgage' })).not.toBeInTheDocument()
   })
 })
