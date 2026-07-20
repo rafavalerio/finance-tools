@@ -57,7 +57,12 @@ export function NavDrawer({ isOpen, onClose }: NavDrawerProps) {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative h-full w-64 max-w-[80vw] bg-card border-r border-border shadow-2xl animate-in slide-in-from-left duration-200">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation"
+        className="relative h-full w-64 max-w-[80vw] bg-card border-r border-border shadow-2xl animate-in slide-in-from-left duration-200"
+      >
         <div className="flex items-center justify-between px-4 py-4 border-b border-border">
           <span className="font-bold text-foreground">Finance Tools</span>
           <button

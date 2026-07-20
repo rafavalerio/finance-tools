@@ -20,6 +20,7 @@ export function TopNav() {
             shape="circle"
             onClick={() => setDrawerOpen(true)}
             aria-label="Open navigation menu"
+            aria-haspopup="dialog"
             aria-expanded={drawerOpen}
           >
             <MenuIcon width="20" height="20" />

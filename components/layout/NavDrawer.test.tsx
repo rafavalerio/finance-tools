@@ -58,4 +58,12 @@ describe('NavDrawer', () => {
     await userEvent.keyboard('{Escape}')
     expect(onClose).toHaveBeenCalledTimes(1)
   })
+
+  it('locks body scroll while open and releases it on close', () => {
+    const { rerender } = render(<NavDrawer isOpen onClose={vi.fn()} />)
+    expect(document.body.style.overflow).toBe('hidden')
+
+    rerender(<NavDrawer isOpen={false} onClose={vi.fn()} />)
+    expect(document.body.style.overflow).toBe('')
+  })
 })
