@@ -34,8 +34,9 @@ export function ProfileMenu() {
   return (
     <div className="relative shrink-0" ref={menuRef}>
       <Button
-        variant="secondary"
+        variant="primary"
         size="sm"
+        shape="circle"
         onClick={() => setOpen((isOpen) => !isOpen)}
         aria-label="Open profile menu"
         aria-haspopup="menu"
