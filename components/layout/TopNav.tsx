@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button, WalletIcon, MoreIcon } from '@/components/ui'
+import { PageContainer } from './PageContainer'
+import { ProfileMenu } from './ProfileMenu'
 
 interface NavLink {
   key: string
@@ -13,7 +15,6 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { key: 'profile', label: 'Profile', href: '/profile' },
   { key: 'mortgage', label: 'Mortgage', href: '/tools/mortgage' },
   { key: 'budget', label: 'Budget', href: '#', disabled: true },
 ]
@@ -50,71 +51,75 @@ export function TopNav() {
 
   return (
     <nav className="border-b border-border">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <PageContainer className="flex h-16 items-center justify-between">
         <Link href="/" className="flex shrink-0 items-center gap-2 font-bold text-foreground">
           <WalletIcon width="20" height="20" className="text-accent" />
           Finance Tools
         </Link>
 
-        {/* Inline links from sm: up */}
-        <div className="hidden items-center gap-6 text-sm font-medium sm:flex">
-          {NAV_LINKS.map((link) =>
-            link.disabled ? (
-              <span key={link.key} className={linkClassName(link)}>
-                {link.label} (soon)
-              </span>
-            ) : (
-              <Link key={link.key} href={link.href} className={linkClassName(link)}>
-                {link.label}
-              </Link>
-            ),
-          )}
-        </div>
+        <div className="flex items-center gap-3">
+          {/* Inline links from sm: up */}
+          <div className="hidden items-center gap-6 text-sm font-medium sm:flex">
+            {NAV_LINKS.map((link) =>
+              link.disabled ? (
+                <span key={link.key} className={linkClassName(link)}>
+                  {link.label} (soon)
+                </span>
+              ) : (
+                <Link key={link.key} href={link.href} className={linkClassName(link)}>
+                  {link.label}
+                </Link>
+              ),
+            )}
+          </div>
 
-        {/* Collapsed menu below sm: */}
-        <div className="relative shrink-0 sm:hidden" ref={menuRef}>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setOpen((isOpen) => !isOpen)}
-            aria-label="Open navigation menu"
-            aria-haspopup="menu"
-            aria-expanded={open}
-          >
-            <MoreIcon width="20" height="20" />
-          </Button>
+          <ProfileMenu />
 
-          {open && (
-            <div
-              role="menu"
-              className="absolute right-0 top-full z-10 mt-2 w-44 overflow-hidden rounded-lg border border-border bg-card shadow-lg"
+          {/* Collapsed menu below sm: */}
+          <div className="relative shrink-0 sm:hidden" ref={menuRef}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setOpen((isOpen) => !isOpen)}
+              aria-label="Open navigation menu"
+              aria-haspopup="menu"
+              aria-expanded={open}
             >
-              {NAV_LINKS.map((link) =>
-                link.disabled ? (
-                  <span
-                    key={link.key}
-                    className="block cursor-not-allowed px-4 py-2.5 text-sm text-muted/50"
-                  >
-                    {link.label} (soon)
-                  </span>
-                ) : (
-                  <Link
-                    key={link.key}
-                    href={link.href}
-                    role="menuitem"
-                    onClick={() => setOpen(false)}
-                    className={`block px-4 py-2.5 text-sm transition-colors hover:bg-border ${
-                      pathname === link.href ? 'text-accent' : 'text-foreground'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                ),
-              )}
-            </div>
-          )}
+              <MoreIcon width="20" height="20" />
+            </Button>
+
+            {open && (
+              <div
+                role="menu"
+                className="absolute right-0 top-full z-10 mt-2 w-44 overflow-hidden rounded-lg border border-border bg-card shadow-lg"
+              >
+                {NAV_LINKS.map((link) =>
+                  link.disabled ? (
+                    <span
+                      key={link.key}
+                      className="block cursor-not-allowed px-4 py-2.5 text-sm text-muted/50"
+                    >
+                      {link.label} (soon)
+                    </span>
+                  ) : (
+                    <Link
+                      key={link.key}
+                      href={link.href}
+                      role="menuitem"
+                      onClick={() => setOpen(false)}
+                      className={`block px-4 py-2.5 text-sm transition-colors hover:bg-border ${
+                        pathname === link.href ? 'text-accent' : 'text-foreground'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ),
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      </PageContainer>
     </nav>
   )
 }
