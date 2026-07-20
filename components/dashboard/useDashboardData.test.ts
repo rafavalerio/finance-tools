@@ -52,8 +52,10 @@ describe('useDashboardData', () => {
     localStorage.setItem('finance-tools-mortgage-expenses', JSON.stringify([]))
 
     const { result } = renderHook(() => useDashboardData())
-    await waitFor(() => expect(result.current.mortgageResults).not.toBeNull())
-    expect(result.current.mortgageResults!.splitBreakdown).toHaveLength(2)
+    // Wait on the final split-aware result directly, not just "not null" — household members
+    // load asynchronously and independently of the mortgage data, so an intermediate render can
+    // already have non-null mortgageResults computed from a still-empty members list.
+    await waitFor(() => expect(result.current.mortgageResults?.splitBreakdown).toHaveLength(2))
   })
 
   it('leaves mortgage results null when saved inputs have no loan amount', async () => {
