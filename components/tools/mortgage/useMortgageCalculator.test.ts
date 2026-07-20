@@ -1,14 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useMortgageCalculator } from './useMortgageCalculator'
-import { encodeMortgageData } from '@/lib/storage'
-import { MortgageStorageData } from '@/lib/storage'
+import { encodeMortgageData, MortgageStorageData } from '@/lib/storage'
+import { MortgageInputs } from '@/types/mortgage'
 
 const mockUseSearchParams = vi.fn()
 
 vi.mock('next/navigation', () => ({
   useSearchParams: () => mockUseSearchParams(),
 }))
+
+const baseInputs: MortgageInputs = {
+  loanAmount: 0,
+  deposit: 0,
+  interestRate: 0,
+  loanTermYears: 30,
+  repaymentFrequency: 'monthly',
+  offsetBalance: 0,
+  buyerType: 'standard',
+  includeLegalFees: true,
+  includeBuildingInspection: true,
+  splitMemberIds: [],
+  splitMode: 'even',
+}
 
 beforeEach(() => {
   localStorage.clear()
@@ -23,17 +37,7 @@ beforeEach(() => {
 describe('useMortgageCalculator', () => {
   it('loads saved data from localStorage on mount', async () => {
     const saved: MortgageStorageData = {
-      inputs: {
-        loanAmount: 600000,
-        deposit: 120000,
-        interestRate: 6,
-        loanTermYears: 30,
-        repaymentFrequency: 'monthly',
-        offsetBalance: 0,
-        buyerType: 'standard',
-        includeLegalFees: true,
-        includeBuildingInspection: true,
-      },
+      inputs: { ...baseInputs, loanAmount: 600000, deposit: 120000, interestRate: 6 },
       expenses: [],
     }
     localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(saved.inputs))
@@ -46,15 +50,13 @@ describe('useMortgageCalculator', () => {
   it('loads data from the URL param when present, taking priority over localStorage', async () => {
     const shared: MortgageStorageData = {
       inputs: {
+        ...baseInputs,
         loanAmount: 700000,
         deposit: 140000,
         interestRate: 5.5,
         loanTermYears: 25,
         repaymentFrequency: 'fortnightly',
-        offsetBalance: 0,
         buyerType: 'first_home_buyer',
-        includeLegalFees: true,
-        includeBuildingInspection: true,
       },
       expenses: [],
     }
@@ -97,8 +99,6 @@ describe('useMortgageCalculator', () => {
     expect(result.current.inputs.loanAmount).toBe(0)
     expect(result.current.expenses).toEqual([])
 
-    // The save effect re-persists the (now-default) state right after reset,
-    // so localStorage ends up holding the defaults rather than being empty.
     await waitFor(() => {
       const stored = JSON.parse(localStorage.getItem('finance-tools-mortgage-inputs') || '{}')
       expect(stored.loanAmount).toBe(0)
@@ -152,5 +152,56 @@ describe('useMortgageCalculator', () => {
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(result.current.shareUrl)
     expect(result.current.copied).toBe(true)
+  })
+
+  it('exposes household members and computes a live split once two are selected', async () => {
+    localStorage.setItem(
+      'finance-tools-household',
+      JSON.stringify([
+        { id: 'a', name: 'Alex', income: 100000 },
+        { id: 'b', name: 'Sam', income: 50000 },
+      ]),
+    )
+
+    const { result } = renderHook(() => useMortgageCalculator())
+    await waitFor(() => expect(result.current.members).toHaveLength(2))
+
+    act(() => {
+      result.current.setInputs({
+        ...result.current.inputs,
+        loanAmount: 500000,
+        deposit: 100000,
+        interestRate: 6,
+        splitMemberIds: ['a', 'b'],
+        splitMode: 'even',
+      })
+    })
+
+    await waitFor(() => expect(result.current.displaySplitBreakdown).toHaveLength(2))
+    expect(result.current.displaySplitBreakdown[0].amount).toBeCloseTo(
+      result.current.displaySplitBreakdown[1].amount,
+    )
+  })
+
+  it('shows a frozen share snapshot until the user edits an input', async () => {
+    const shared: MortgageStorageData = {
+      inputs: { ...baseInputs, loanAmount: 500000, deposit: 100000, interestRate: 6 },
+      expenses: [],
+    }
+    const snapshot = [{ name: 'Alex', amount: 1200 }]
+    mockUseSearchParams.mockReturnValue(
+      new URLSearchParams({ data: encodeMortgageData(shared, snapshot) }),
+    )
+
+    const { result } = renderHook(() => useMortgageCalculator())
+    await waitFor(() => expect(result.current.inputs.loanAmount).toBe(500000))
+    expect(result.current.displaySplitBreakdown).toEqual(snapshot)
+
+    act(() => {
+      result.current.setInputs({ ...result.current.inputs, loanAmount: 600000 })
+    })
+
+    await waitFor(() => expect(result.current.inputs.loanAmount).toBe(600000))
+    expect(result.current.displaySplitBreakdown).not.toEqual(snapshot)
   })
 })

@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { MortgageInputs, Expense, ExpenseBreakdownItem } from '@/types/mortgage'
+import { MortgageInputs, Expense, ExpenseBreakdownItem, SplitSnapshotEntry } from '@/types/mortgage'
 import {
   calculateMortgageResults,
   calculatePurchaseCosts,
@@ -15,6 +15,7 @@ import {
   decodeMortgageData,
   generateShareUrl,
 } from '@/lib/storage'
+import { useHousehold } from '@/components/household'
 import { CHART_ACCENT_COLOR, CHART_PALETTE } from '@/components/charts/theme'
 
 const DEFAULT_INPUTS: MortgageInputs = {
@@ -27,37 +28,40 @@ const DEFAULT_INPUTS: MortgageInputs = {
   buyerType: 'standard',
   includeLegalFees: true,
   includeBuildingInspection: true,
+  splitMemberIds: [],
+  splitMode: 'even',
 }
 
 export function useMortgageCalculator() {
   const searchParams = useSearchParams()
-  const [inputs, setInputs] = useState<MortgageInputs>(DEFAULT_INPUTS)
-  const [expenses, setExpenses] = useState<Expense[]>([])
+  const { members } = useHousehold()
+  const [inputs, setInputsState] = useState<MortgageInputs>(DEFAULT_INPUTS)
+  const [expenses, setExpensesState] = useState<Expense[]>([])
   const [isLoaded, setIsLoaded] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareUrl, setShareUrl] = useState('')
   const [copied, setCopied] = useState(false)
+  const [sharedSplitSnapshot, setSharedSplitSnapshot] = useState<SplitSnapshotEntry[] | null>(null)
 
   // Load data from URL params or localStorage on mount
   useEffect(() => {
     const urlData = searchParams.get('data')
 
     if (urlData) {
-      // Try to decode URL data first
       const decoded = decodeMortgageData(urlData)
       if (decoded) {
-        setInputs(decoded.inputs)
-        setExpenses(decoded.expenses)
+        setInputsState(decoded.inputs)
+        setExpensesState(decoded.expenses)
+        setSharedSplitSnapshot(decoded.splitSnapshot)
         setIsLoaded(true)
         return
       }
     }
 
-    // Fall back to localStorage
     const savedData = loadMortgageData()
     if (savedData) {
-      setInputs(savedData.inputs)
-      setExpenses(savedData.expenses)
+      setInputsState(savedData.inputs)
+      setExpensesState(savedData.expenses)
     }
     setIsLoaded(true)
   }, [searchParams])
@@ -69,35 +73,28 @@ export function useMortgageCalculator() {
     }
   }, [inputs, expenses, isLoaded])
 
+  // Wrapped setters: any user-driven edit invalidates a shared split snapshot, so the
+  // display falls back to the live calculation from the user's own household
+  const setInputs = useCallback((next: MortgageInputs) => {
+    setInputsState(next)
+    setSharedSplitSnapshot(null)
+  }, [])
+
+  const setExpenses = useCallback((next: Expense[]) => {
+    setExpensesState(next)
+    setSharedSplitSnapshot(null)
+  }, [])
+
   // Reset form handler
   const handleReset = useCallback(() => {
     if (confirm('Are you sure you want to reset the form? This will clear all your data.')) {
-      setInputs(DEFAULT_INPUTS)
-      setExpenses([])
+      setInputsState(DEFAULT_INPUTS)
+      setExpensesState([])
+      setSharedSplitSnapshot(null)
       clearMortgageData()
-      // Clear URL params
       window.history.replaceState({}, '', '/tools/mortgage')
     }
   }, [])
-
-  // Share handler
-  const handleShare = useCallback(() => {
-    const url = generateShareUrl({ inputs, expenses })
-    setShareUrl(url)
-    setShowShareModal(true)
-    setCopied(false)
-  }, [inputs, expenses])
-
-  // Copy to clipboard handler
-  const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (error) {
-      console.error('Failed to copy:', error)
-    }
-  }, [shareUrl])
 
   // Calculate purchase costs
   const purchaseCosts = useMemo(() => {
@@ -122,15 +119,36 @@ export function useMortgageCalculator() {
   // Calculate mortgage results using effective loan amount (after costs)
   const results = useMemo(() => {
     if (inputs.loanAmount > 0 && inputs.interestRate > 0 && inputs.loanTermYears > 0) {
-      // Create adjusted inputs using effective deposit (after purchase costs)
       const adjustedInputs = {
         ...inputs,
         deposit: purchaseCosts?.effectiveDeposit ?? inputs.deposit,
       }
-      return calculateMortgageResults(adjustedInputs, expenses)
+      return calculateMortgageResults(adjustedInputs, expenses, members)
     }
     return null
-  }, [inputs, expenses, purchaseCosts])
+  }, [inputs, expenses, purchaseCosts, members])
+
+  // Share handler - snapshots the current split breakdown by name, not member ID
+  const handleShare = useCallback(() => {
+    const snapshot: SplitSnapshotEntry[] | undefined = results
+      ? results.splitBreakdown.map(({ name, amount }) => ({ name, amount }))
+      : undefined
+    const url = generateShareUrl({ inputs, expenses }, snapshot)
+    setShareUrl(url)
+    setShowShareModal(true)
+    setCopied(false)
+  }, [inputs, expenses, results])
+
+  // Copy to clipboard handler
+  const handleCopy = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      console.error('Failed to copy:', error)
+    }
+  }, [shareUrl])
 
   const expenseBreakdownData = useMemo<ExpenseBreakdownItem[]>(() => {
     if (!results) return []
@@ -156,11 +174,18 @@ export function useMortgageCalculator() {
     return items
   }, [results, expenses])
 
+  // A frozen share snapshot (if present and unedited) takes priority over the live split
+  const displaySplitBreakdown: SplitSnapshotEntry[] =
+    sharedSplitSnapshot ??
+    results?.splitBreakdown.map(({ name, amount }) => ({ name, amount })) ??
+    []
+
   return {
     inputs,
     setInputs,
     expenses,
     setExpenses,
+    members,
     showShareModal,
     setShowShareModal,
     shareUrl,
@@ -170,6 +195,7 @@ export function useMortgageCalculator() {
     handleCopy,
     purchaseCosts,
     results,
+    displaySplitBreakdown,
     expenseBreakdownData,
   }
 }
