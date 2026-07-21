@@ -13,8 +13,6 @@ const savedInputs: MortgageInputs = {
   buyerType: 'standard',
   includeLegalFees: true,
   includeBuildingInspection: true,
-  splitMemberIds: [],
-  splitMode: 'even',
 }
 
 beforeEach(() => {
