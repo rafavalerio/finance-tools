@@ -20,7 +20,6 @@ function MortgageCalculatorContent() {
     setInputs,
     expenses,
     setExpenses,
-    members,
     showShareModal,
     setShowShareModal,
     shareUrl,
@@ -62,7 +61,7 @@ function MortgageCalculatorContent() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column - Inputs */}
             <div className="space-y-6">
-              <MortgageForm inputs={inputs} onChange={setInputs} members={members} />
+              <MortgageForm inputs={inputs} onChange={setInputs} />
               <PurchaseCostsCard
                 costs={purchaseCosts}
                 deposit={inputs.deposit}

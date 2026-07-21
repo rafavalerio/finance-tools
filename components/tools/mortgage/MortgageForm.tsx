@@ -9,15 +9,12 @@ import {
   CardTitle,
   CardContent,
   CalculatorIcon,
-  Button,
 } from '@/components/ui'
 import { MortgageInputs, RepaymentFrequency, BuyerType } from '@/types/mortgage'
-import { HouseholdMember } from '@/types/household'
 
 interface MortgageFormProps {
   inputs: MortgageInputs
   onChange: (inputs: MortgageInputs) => void
-  members: HouseholdMember[]
 }
 
 const repaymentFrequencyOptions = [
@@ -32,22 +29,15 @@ const buyerTypeOptions = [
   { value: 'foreign_buyer', label: 'Foreign Buyer' },
 ]
 
-export function MortgageForm({ inputs, onChange, members }: MortgageFormProps) {
+export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
   const handleChange = (
     field: keyof MortgageInputs,
-    value: string | number | boolean | string[],
+    value: string | number | boolean,
   ) => {
     onChange({
       ...inputs,
       [field]: value,
     })
-  }
-
-  const toggleSplitMember = (memberId: string, included: boolean) => {
-    const next = included
-      ? [...inputs.splitMemberIds, memberId]
-      : inputs.splitMemberIds.filter((id) => id !== memberId)
-    handleChange('splitMemberIds', next)
   }
 
   return (
@@ -135,44 +125,6 @@ export function MortgageForm({ inputs, onChange, members }: MortgageFormProps) {
               />
             </div>
           </div>
-
-          {/* Cost split, only relevant with 2+ household members */}
-          {members.length >= 2 && (
-            <div className="pt-4 border-t border-border">
-              <p className="text-sm font-medium text-foreground mb-3">Split between:</p>
-              <div className="flex flex-wrap gap-4 mb-4">
-                {members.map((member) => (
-                  <Checkbox
-                    key={member.id}
-                    id={`split-member-${member.id}`}
-                    label={member.name || 'Unnamed'}
-                    checked={inputs.splitMemberIds.includes(member.id)}
-                    onChange={(e) => toggleSplitMember(member.id, e.target.checked)}
-                  />
-                ))}
-              </div>
-              <div className="inline-flex rounded-lg border border-border overflow-hidden">
-                <Button
-                  type="button"
-                  variant={inputs.splitMode === 'even' ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={() => handleChange('splitMode', 'even')}
-                  className="rounded-none"
-                >
-                  Split evenly
-                </Button>
-                <Button
-                  type="button"
-                  variant={inputs.splitMode === 'income' ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={() => handleChange('splitMode', 'income')}
-                  className="rounded-none"
-                >
-                  Split by income
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
