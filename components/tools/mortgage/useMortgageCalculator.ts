@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { MortgageInputs, Expense, ExpenseBreakdownItem, SplitSnapshotEntry } from '@/types/mortgage'
 import {
@@ -28,13 +28,11 @@ const DEFAULT_INPUTS: MortgageInputs = {
   buyerType: 'standard',
   includeLegalFees: true,
   includeBuildingInspection: true,
-  splitMemberIds: [],
-  splitMode: 'even',
 }
 
 export function useMortgageCalculator() {
   const searchParams = useSearchParams()
-  const { members, isLoaded: isHouseholdLoaded } = useHousehold()
+  const { members, splitConfig } = useHousehold()
   const [inputs, setInputsState] = useState<MortgageInputs>(DEFAULT_INPUTS)
   const [expenses, setExpensesState] = useState<Expense[]>([])
   const [isLoaded, setIsLoaded] = useState(false)
@@ -42,8 +40,6 @@ export function useMortgageCalculator() {
   const [shareUrl, setShareUrl] = useState('')
   const [copied, setCopied] = useState(false)
   const [sharedSplitSnapshot, setSharedSplitSnapshot] = useState<SplitSnapshotEntry[] | null>(null)
-  const [hadSavedMortgageData, setHadSavedMortgageData] = useState(false)
-  const hasSeededSplitRef = useRef(false)
 
   // Load data from URL params or localStorage on mount
   useEffect(() => {
@@ -55,7 +51,6 @@ export function useMortgageCalculator() {
         setInputsState(decoded.inputs)
         setExpensesState(decoded.expenses)
         setSharedSplitSnapshot(decoded.splitSnapshot)
-        setHadSavedMortgageData(true)
         setIsLoaded(true)
         return
       }
@@ -65,31 +60,9 @@ export function useMortgageCalculator() {
     if (savedData) {
       setInputsState(savedData.inputs)
       setExpensesState(savedData.expenses)
-      setHadSavedMortgageData(true)
     }
     setIsLoaded(true)
   }, [searchParams])
-
-  // Default to splitting between every household member the first time the mortgage tool is
-  // used with no prior saved data — matches the household-profile design spec. Guarded by a
-  // ref so it fires at most once and never re-applies after a later manual deselection (e.g.
-  // after Reset, splitMemberIds intentionally stays empty rather than re-seeding).
-  useEffect(() => {
-    if (
-      !hasSeededSplitRef.current &&
-      isLoaded &&
-      isHouseholdLoaded &&
-      !hadSavedMortgageData &&
-      members.length >= 2 &&
-      inputs.splitMemberIds.length === 0
-    ) {
-      hasSeededSplitRef.current = true
-      setInputsState((current) => ({
-        ...current,
-        splitMemberIds: members.map((member) => member.id),
-      }))
-    }
-  }, [isLoaded, isHouseholdLoaded, hadSavedMortgageData, members, inputs.splitMemberIds])
 
   // Save to localStorage whenever inputs or expenses change
   useEffect(() => {
@@ -148,10 +121,10 @@ export function useMortgageCalculator() {
         ...inputs,
         deposit: purchaseCosts?.effectiveDeposit ?? inputs.deposit,
       }
-      return calculateMortgageResults(adjustedInputs, expenses, members)
+      return calculateMortgageResults(adjustedInputs, expenses, members, splitConfig)
     }
     return null
-  }, [inputs, expenses, purchaseCosts, members])
+  }, [inputs, expenses, purchaseCosts, members, splitConfig])
 
   // Share handler - snapshots the current split breakdown by name, not member ID
   const handleShare = useCallback(() => {
@@ -210,7 +183,6 @@ export function useMortgageCalculator() {
     setInputs,
     expenses,
     setExpenses,
-    members,
     showShareModal,
     setShowShareModal,
     shareUrl,

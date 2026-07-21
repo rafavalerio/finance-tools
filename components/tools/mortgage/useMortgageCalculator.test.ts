@@ -20,8 +20,6 @@ const baseInputs: MortgageInputs = {
   buyerType: 'standard',
   includeLegalFees: true,
   includeBuildingInspection: true,
-  splitMemberIds: [],
-  splitMode: 'even',
 }
 
 beforeEach(() => {
@@ -154,7 +152,7 @@ describe('useMortgageCalculator', () => {
     expect(result.current.copied).toBe(true)
   })
 
-  it('exposes household members and computes a live split once two are selected', async () => {
+  it('computes a live split from the household split config', async () => {
     localStorage.setItem(
       'finance-tools-household',
       JSON.stringify([
@@ -162,9 +160,12 @@ describe('useMortgageCalculator', () => {
         { id: 'b', name: 'Sam', income: 50000 },
       ]),
     )
+    localStorage.setItem(
+      'finance-tools-household-split',
+      JSON.stringify({ memberIds: ['a', 'b'], mode: 'even' }),
+    )
 
     const { result } = renderHook(() => useMortgageCalculator())
-    await waitFor(() => expect(result.current.members).toHaveLength(2))
 
     act(() => {
       result.current.setInputs({
@@ -172,8 +173,6 @@ describe('useMortgageCalculator', () => {
         loanAmount: 500000,
         deposit: 100000,
         interestRate: 6,
-        splitMemberIds: ['a', 'b'],
-        splitMode: 'even',
       })
     })
 
@@ -181,39 +180,6 @@ describe('useMortgageCalculator', () => {
     expect(result.current.displaySplitBreakdown[0].amount).toBeCloseTo(
       result.current.displaySplitBreakdown[1].amount,
     )
-  })
-
-  it('defaults to selecting every household member for the split when there is no saved mortgage data', async () => {
-    localStorage.setItem(
-      'finance-tools-household',
-      JSON.stringify([
-        { id: 'a', name: 'Alex', income: 100000 },
-        { id: 'b', name: 'Sam', income: 50000 },
-      ]),
-    )
-
-    const { result } = renderHook(() => useMortgageCalculator())
-
-    await waitFor(() => expect(result.current.inputs.splitMemberIds).toEqual(['a', 'b']))
-  })
-
-  it('does not override a previously saved split selection', async () => {
-    localStorage.setItem(
-      'finance-tools-household',
-      JSON.stringify([
-        { id: 'a', name: 'Alex', income: 100000 },
-        { id: 'b', name: 'Sam', income: 50000 },
-      ]),
-    )
-    localStorage.setItem(
-      'finance-tools-mortgage-inputs',
-      JSON.stringify({ ...baseInputs, loanAmount: 500000, splitMemberIds: [] }),
-    )
-
-    const { result } = renderHook(() => useMortgageCalculator())
-    await waitFor(() => expect(result.current.members).toHaveLength(2))
-
-    expect(result.current.inputs.splitMemberIds).toEqual([])
   })
 
   it('shows a frozen share snapshot until the user edits an input', async () => {

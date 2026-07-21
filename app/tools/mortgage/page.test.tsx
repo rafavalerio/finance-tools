@@ -55,7 +55,7 @@ describe('MortgageCalculatorPage', () => {
     expect(screen.getByDisplayValue(/\/tools\/mortgage\?data=/)).toBeInTheDocument()
   })
 
-  it('defaults to splitting between all household members once entered', async () => {
+  it('shows the household split once the household has 2+ members', async () => {
     localStorage.setItem(
       'finance-tools-household',
       JSON.stringify([
@@ -70,13 +70,10 @@ describe('MortgageCalculatorPage', () => {
     await userEvent.type(screen.getByLabelText('Your Deposit'), '100000')
     await userEvent.type(screen.getByLabelText('Interest Rate (% p.a.)'), '6')
 
-    // Both members are selected by default (no clicks needed) once the household loads.
+    // Household split config seeds to "everyone" the first time there are 2+ members and
+    // nothing's been configured — the mortgage page just displays the resulting breakdown.
     expect(await screen.findByText('Split')).toBeInTheDocument()
-    expect(screen.getAllByText('Alex').length).toBeGreaterThanOrEqual(2)
-    expect(screen.getAllByText('Sam').length).toBeGreaterThanOrEqual(2)
-
-    // Deselecting a member drops the split below two, and the section disappears.
-    await userEvent.click(screen.getByLabelText('Sam'))
-    expect(screen.queryByText('Split')).not.toBeInTheDocument()
+    expect(screen.getAllByText('Alex').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('Sam').length).toBeGreaterThanOrEqual(1)
   })
 })
