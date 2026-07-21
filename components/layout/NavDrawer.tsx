@@ -4,19 +4,7 @@ import { useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { CloseIcon } from '@/components/ui'
-
-interface NavLink {
-  key: string
-  label: string
-  href: string
-  disabled?: boolean
-}
-
-const NAV_LINKS: NavLink[] = [
-  { key: 'dashboard', label: 'Dashboard', href: '/' },
-  { key: 'mortgage', label: 'Mortgage', href: '/tools/mortgage' },
-  { key: 'budget', label: 'Budget', href: '#', disabled: true },
-]
+import { NAV_LINKS, type NavLink } from './navLinks'
 
 interface NavDrawerProps {
   isOpen: boolean
@@ -54,7 +42,10 @@ export function NavDrawer({ isOpen, onClose }: NavDrawerProps) {
   return (
     <div className="fixed inset-0 z-50">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+        onClick={onClose}
+      />
 
       {/* Panel */}
       <div
@@ -68,7 +59,7 @@ export function NavDrawer({ isOpen, onClose }: NavDrawerProps) {
           <button
             onClick={onClose}
             aria-label="Close navigation menu"
-            className="text-muted hover:text-foreground transition-colors"
+            className="cursor-pointer text-muted hover:text-foreground transition-colors"
           >
             <CloseIcon width="20" height="20" />
           </button>

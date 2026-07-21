@@ -7,7 +7,10 @@ Victoria, Australia — with more tools planned as new routes under `app/tools/`
 ## Stack
 
 - Next.js 16 (App Router), React 19, TypeScript (strict)
-- Tailwind CSS v4
+- Tailwind CSS v4, `tw-animate-css` (imported in `app/globals.css`) for the `animate-in`/
+  `fade-in`/`zoom-in-95`/`slide-in-from-*`/`duration-*` utilities used on every modal and
+  dropdown (`Modal`, `HeaderActions`, `ProfileMenu`, `NavDrawer`, `NavDropdown`) — without this
+  import those class names don't exist and silently do nothing (no error, just no animation)
 - Recharts for charts
 - lucide-react for icons
 - No backend/database — everything is client-side (`'use client'`), state persisted to
@@ -94,10 +97,18 @@ Victoria, Australia — with more tools planned as new routes under `app/tools/`
   of a cost — income-weighted mode (`'income'`) falls back to an even split if any included
   member's income isn't positive; `formatCompactIncome(amount)` formats for summary tiles (e.g.
   `$175k`)
-- `TopNav` (global, rendered from `app/layout.tsx`) holds a hamburger button that opens
-  `NavDrawer` (the tool picker: Dashboard / Mortgage / Budget-soon) and an always-visible
-  `ProfileMenu` (circular avatar button) that shows a household summary and links to `/profile`
-  — there is no separate "Profile" nav link, `ProfileMenu` is the entry point
+- `TopNav` (global, rendered from `app/layout.tsx`) holds `NavMenu` (the tool picker: Dashboard /
+  Mortgage / Budget-soon) and an always-visible `ProfileMenu` (circular avatar button) that shows
+  a household summary and links to `/profile` — there is no separate "Profile" nav link,
+  `ProfileMenu` is the entry point
+- `NavMenu` owns the hamburger trigger, `open` state, and outside-click/Escape closing, then
+  renders one of two controlled, presentation-only panels sharing `NAV_LINKS`/`NavLink` from
+  `navLinks.ts`: `NavDropdown` (small anchored menu, `md:` breakpoint and up) or `NavDrawer`
+  (full-height slide-in panel, below `md:`) — chosen via a `matchMedia('(min-width: 768px)')`
+  hook (`useIsDesktop`), not CSS visibility classes, so only one panel is ever mounted (simpler
+  to test, no duplicate DOM). `NavDrawer` still self-manages its own Escape/backdrop-click/body-
+  scroll-lock (it predates `NavMenu` and has its own tests asserting that); `NavDropdown` has no
+  listeners of its own and relies entirely on `NavMenu`
 - `/profile` (`app/profile/page.tsx`) is the household member editor — add/edit/remove members,
   each with a name and income used for income-weighted splits
 

@@ -48,7 +48,7 @@ export function ProfileMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full z-10 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-card shadow-lg"
+          className="absolute right-0 top-full z-10 mt-2 w-56 overflow-hidden rounded-lg border border-border bg-card shadow-lg animate-in fade-in zoom-in-95 duration-150"
         >
           {members.length === 0 ? (
             <div className="px-4 py-3">
