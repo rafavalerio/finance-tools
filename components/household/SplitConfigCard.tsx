@@ -1,6 +1,14 @@
 'use client'
 
-import { Card, CardHeader, CardTitle, CardContent, Button, Checkbox, PieChartIcon } from '@/components/ui'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Button,
+  Checkbox,
+  PieChartIcon,
+} from '@/components/ui'
 import { HouseholdMember, SplitMode } from '@/types/household'
 
 interface SplitConfigCardProps {
