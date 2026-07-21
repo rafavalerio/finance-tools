@@ -24,4 +24,23 @@ describe('ProfilePage', () => {
     expect(screen.getByLabelText('Name')).toHaveValue('Rafael')
     expect(screen.getByLabelText('Annual Income')).toHaveValue(95000)
   })
+
+  it('shows the split config card once two members exist', async () => {
+    render(<ProfilePage />)
+    await screen.findByText('No household members added yet.')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Add member' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Add member' }))
+
+    expect(await screen.findByText('Cost Splitting')).toBeInTheDocument()
+  })
+
+  it('does not show the split config card with fewer than two members', async () => {
+    render(<ProfilePage />)
+    await screen.findByText('No household members added yet.')
+
+    await userEvent.click(screen.getByRole('button', { name: 'Add member' }))
+
+    expect(screen.queryByText('Cost Splitting')).not.toBeInTheDocument()
+  })
 })

@@ -1,10 +1,18 @@
 'use client'
 
-import { MemberList, useHousehold } from '@/components/household'
+import { MemberList, SplitConfigCard, useHousehold } from '@/components/household'
 import { PageContainer } from '@/components/layout'
 
 export default function ProfilePage() {
-  const { members, addMember, updateMember, removeMember } = useHousehold()
+  const {
+    members,
+    splitConfig,
+    addMember,
+    updateMember,
+    removeMember,
+    toggleSplitMember,
+    setSplitMode,
+  } = useHousehold()
 
   return (
     <div className="min-h-screen bg-background">
@@ -18,12 +26,19 @@ export default function ProfilePage() {
         </PageContainer>
       </header>
       <main>
-        <PageContainer className="py-8">
+        <PageContainer className="py-8 space-y-6">
           <MemberList
             members={members}
             onAdd={addMember}
             onChange={updateMember}
             onRemove={removeMember}
+          />
+          <SplitConfigCard
+            members={members}
+            splitMemberIds={splitConfig.memberIds}
+            splitMode={splitConfig.mode}
+            onToggleMember={toggleSplitMember}
+            onModeChange={setSplitMode}
           />
         </PageContainer>
       </main>
