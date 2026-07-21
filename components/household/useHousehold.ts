@@ -37,10 +37,17 @@ export function useHousehold() {
         ([loadedMembers, loadedSplitConfig]) => {
           if (!unmountedRef.current) {
             skipMembersNotifyRef.current = true
-            skipSplitNotifyRef.current = true
-            neverConfiguredRef.current = loadedSplitConfig === null
             setMembers(loadedMembers)
-            setSplitConfigState(loadedSplitConfig ?? DEFAULT_SPLIT_CONFIG)
+            // If this instance has already locally decided a seeded split (the one-shot guard
+            // in the seed effect below), an in-flight reload racing against that decision must
+            // not clobber it — the seed's own persist effect is the source of truth going
+            // forward, and hasSeededSplitRef never resets, so skipping here doesn't lose future
+            // reloads (e.g. real cross-instance updates after the seed has landed).
+            if (!hasSeededSplitRef.current) {
+              skipSplitNotifyRef.current = true
+              neverConfiguredRef.current = loadedSplitConfig === null
+              setSplitConfigState(loadedSplitConfig ?? DEFAULT_SPLIT_CONFIG)
+            }
             setIsLoaded(true)
           }
         },

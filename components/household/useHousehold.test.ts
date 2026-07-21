@@ -179,4 +179,25 @@ describe('useHousehold', () => {
     await waitFor(() => expect(result.current.isLoaded).toBe(true))
     expect(result.current.splitConfig.memberIds).toEqual([])
   })
+
+  it('seeds the split config correctly even when adding members triggers a concurrent reload', async () => {
+    const { result } = renderHook(() => useHousehold())
+    await waitFor(() => expect(result.current.isLoaded).toBe(true))
+
+    act(() => {
+      result.current.addMember()
+    })
+    act(() => {
+      result.current.addMember()
+    })
+
+    await waitFor(() => expect(result.current.members).toHaveLength(2))
+    await waitFor(() => expect(result.current.splitConfig.memberIds).toHaveLength(2))
+    expect(result.current.splitConfig.memberIds).toEqual(result.current.members.map((m) => m.id))
+
+    await waitFor(() => {
+      const stored = JSON.parse(localStorage.getItem('finance-tools-household-split') || '{}')
+      expect(stored.memberIds).toHaveLength(2)
+    })
+  })
 })
