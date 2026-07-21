@@ -29,3 +29,23 @@ describe('LocalStorageHouseholdRepository', () => {
     expect(await repo.getMembers()).toEqual([])
   })
 })
+
+describe('LocalStorageHouseholdRepository split config', () => {
+  it('returns null when no split config has been saved', async () => {
+    const repo = new LocalStorageHouseholdRepository()
+    expect(await repo.getSplitConfig()).toBeNull()
+  })
+
+  it('round-trips a split config through localStorage', async () => {
+    const repo = new LocalStorageHouseholdRepository()
+    const config = { memberIds: ['1', '2'], mode: 'income' as const }
+    await repo.saveSplitConfig(config)
+    expect(await repo.getSplitConfig()).toEqual(config)
+  })
+
+  it('returns null if the stored split config is corrupt', async () => {
+    localStorage.setItem('finance-tools-household-split', 'not-json')
+    const repo = new LocalStorageHouseholdRepository()
+    expect(await repo.getSplitConfig()).toBeNull()
+  })
+})

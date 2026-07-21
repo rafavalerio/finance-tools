@@ -5,3 +5,8 @@ export interface HouseholdMember {
 }
 
 export type SplitMode = 'even' | 'income'
+
+export interface HouseholdSplitConfig {
+  memberIds: string[]
+  mode: SplitMode
+}
