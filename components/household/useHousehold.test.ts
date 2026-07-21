@@ -94,4 +94,89 @@ describe('useHousehold', () => {
 
     await waitFor(() => expect(second.result.current.members).toHaveLength(1))
   })
+
+  it('starts with an empty split config until loaded', async () => {
+    const { result } = renderHook(() => useHousehold())
+    await waitFor(() => expect(result.current.isLoaded).toBe(true))
+    expect(result.current.splitConfig).toEqual({ memberIds: [], mode: 'even' })
+  })
+
+  it('loads a saved split config from localStorage on mount', async () => {
+    localStorage.setItem(
+      'finance-tools-household-split',
+      JSON.stringify({ memberIds: ['1'], mode: 'income' }),
+    )
+    const { result } = renderHook(() => useHousehold())
+    await waitFor(() =>
+      expect(result.current.splitConfig).toEqual({ memberIds: ['1'], mode: 'income' }),
+    )
+  })
+
+  it('toggles a member in and out of the split', async () => {
+    const { result } = renderHook(() => useHousehold())
+    await waitFor(() => expect(result.current.isLoaded).toBe(true))
+
+    act(() => {
+      result.current.toggleSplitMember('1', true)
+    })
+    expect(result.current.splitConfig.memberIds).toEqual(['1'])
+
+    act(() => {
+      result.current.toggleSplitMember('1', false)
+    })
+    expect(result.current.splitConfig.memberIds).toEqual([])
+  })
+
+  it('sets the split mode', async () => {
+    const { result } = renderHook(() => useHousehold())
+    await waitFor(() => expect(result.current.isLoaded).toBe(true))
+
+    act(() => {
+      result.current.setSplitMode('income')
+    })
+    expect(result.current.splitConfig.mode).toBe('income')
+  })
+
+  it('persists split config changes to localStorage', async () => {
+    const { result } = renderHook(() => useHousehold())
+    await waitFor(() => expect(result.current.isLoaded).toBe(true))
+
+    act(() => {
+      result.current.toggleSplitMember('1', true)
+    })
+
+    await waitFor(() => {
+      const stored = JSON.parse(localStorage.getItem('finance-tools-household-split') || '{}')
+      expect(stored.memberIds).toEqual(['1'])
+    })
+  })
+
+  it('auto-selects every member once there are 2+ and split config has never been saved', async () => {
+    localStorage.setItem(
+      'finance-tools-household',
+      JSON.stringify([
+        { id: 'a', name: 'Alex', income: 100000 },
+        { id: 'b', name: 'Sam', income: 50000 },
+      ]),
+    )
+    const { result } = renderHook(() => useHousehold())
+    await waitFor(() => expect(result.current.splitConfig.memberIds).toEqual(['a', 'b']))
+  })
+
+  it('does not re-seed the split after a previously saved config, even an empty one', async () => {
+    localStorage.setItem(
+      'finance-tools-household',
+      JSON.stringify([
+        { id: 'a', name: 'Alex', income: 100000 },
+        { id: 'b', name: 'Sam', income: 50000 },
+      ]),
+    )
+    localStorage.setItem(
+      'finance-tools-household-split',
+      JSON.stringify({ memberIds: [], mode: 'even' }),
+    )
+    const { result } = renderHook(() => useHousehold())
+    await waitFor(() => expect(result.current.isLoaded).toBe(true))
+    expect(result.current.splitConfig.memberIds).toEqual([])
+  })
 })
