@@ -101,18 +101,22 @@ describe('calculateMortgageResults', () => {
     buyerType: 'standard',
     includeLegalFees: true,
     includeBuildingInspection: true,
-    splitMemberIds: [],
-    splitMode: 'even',
   }
+  const noSplit = { memberIds: [], mode: 'even' as const }
 
   it('derives principal as loan amount minus deposit', () => {
-    const results = calculateMortgageResults(baseInputs, [], [])
+    const results = calculateMortgageResults(baseInputs, [], [], noSplit)
     expect(results.principalAmount).toBe(500000)
   })
 
   it('reduces the effective principal by the offset balance', () => {
-    const withOffset = calculateMortgageResults({ ...baseInputs, offsetBalance: 50000 }, [], [])
-    const withoutOffset = calculateMortgageResults(baseInputs, [], [])
+    const withOffset = calculateMortgageResults(
+      { ...baseInputs, offsetBalance: 50000 },
+      [],
+      [],
+      noSplit,
+    )
+    const withoutOffset = calculateMortgageResults(baseInputs, [], [], noSplit)
     expect(withOffset.repaymentAmount).toBeLessThan(withoutOffset.repaymentAmount)
   })
 
@@ -121,7 +125,7 @@ describe('calculateMortgageResults', () => {
       { id: '1', name: 'Rates', amount: 300, frequency: 'quarterly' },
       { id: '2', name: 'Insurance', amount: 1200, frequency: 'annually' },
     ]
-    const results = calculateMortgageResults(baseInputs, expenses, [])
+    const results = calculateMortgageResults(baseInputs, expenses, [], noSplit)
 
     expect(results.monthlyExpensesTotal).toBeCloseTo(100 + 100)
     expect(results.totalMonthlyOutgoing).toBeCloseTo(
@@ -131,7 +135,10 @@ describe('calculateMortgageResults', () => {
 
   it('produces no split breakdown when fewer than two members are selected', () => {
     const members: HouseholdMember[] = [{ id: 'a', name: 'Alex', income: 100000 }]
-    const results = calculateMortgageResults({ ...baseInputs, splitMemberIds: ['a'] }, [], members)
+    const results = calculateMortgageResults(baseInputs, [], members, {
+      memberIds: ['a'],
+      mode: 'even',
+    })
     expect(results.splitBreakdown).toEqual([])
   })
 
@@ -140,11 +147,10 @@ describe('calculateMortgageResults', () => {
       { id: 'a', name: 'Alex', income: 100000 },
       { id: 'b', name: 'Sam', income: 50000 },
     ]
-    const results = calculateMortgageResults(
-      { ...baseInputs, splitMemberIds: ['a', 'b'], splitMode: 'even' },
-      [],
-      members,
-    )
+    const results = calculateMortgageResults(baseInputs, [], members, {
+      memberIds: ['a', 'b'],
+      mode: 'even',
+    })
     expect(results.splitBreakdown).toHaveLength(2)
     expect(results.splitBreakdown[0].amount).toBeCloseTo(results.totalMonthlyOutgoing / 2)
     expect(results.splitBreakdown[1].amount).toBeCloseTo(results.totalMonthlyOutgoing / 2)
@@ -155,11 +161,10 @@ describe('calculateMortgageResults', () => {
       { id: 'a', name: 'Alex', income: 100000 },
       { id: 'b', name: 'Sam', income: 50000 },
     ]
-    const results = calculateMortgageResults(
-      { ...baseInputs, splitMemberIds: ['a', 'b'], splitMode: 'income' },
-      [],
-      members,
-    )
+    const results = calculateMortgageResults(baseInputs, [], members, {
+      memberIds: ['a', 'b'],
+      mode: 'income',
+    })
     const alex = results.splitBreakdown.find((entry) => entry.memberId === 'a')!
     const sam = results.splitBreakdown.find((entry) => entry.memberId === 'b')!
     expect(alex.amount).toBeCloseTo(results.totalMonthlyOutgoing * (2 / 3))
@@ -167,7 +172,7 @@ describe('calculateMortgageResults', () => {
   })
 
   it('produces an amortisation schedule', () => {
-    const results = calculateMortgageResults(baseInputs, [], [])
+    const results = calculateMortgageResults(baseInputs, [], [], noSplit)
     expect(results.amortisationSchedule.length).toBeGreaterThan(0)
   })
 })

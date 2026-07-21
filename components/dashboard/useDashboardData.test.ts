@@ -13,8 +13,6 @@ const savedInputs: MortgageInputs = {
   buyerType: 'standard',
   includeLegalFees: true,
   includeBuildingInspection: true,
-  splitMemberIds: [],
-  splitMode: 'even',
 }
 
 beforeEach(() => {
@@ -46,9 +44,10 @@ describe('useDashboardData', () => {
       ]),
     )
     localStorage.setItem(
-      'finance-tools-mortgage-inputs',
-      JSON.stringify({ ...savedInputs, splitMemberIds: ['a', 'b'] }),
+      'finance-tools-household-split',
+      JSON.stringify({ memberIds: ['a', 'b'], mode: 'even' }),
     )
+    localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(savedInputs))
     localStorage.setItem('finance-tools-mortgage-expenses', JSON.stringify([]))
 
     const { result } = renderHook(() => useDashboardData())

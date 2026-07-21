@@ -1,5 +1,3 @@
-import { SplitMode } from '@/types/household'
-
 export type RepaymentFrequency = 'weekly' | 'fortnightly' | 'monthly'
 
 export type ExpenseFrequency = 'monthly' | 'quarterly' | 'annually'
@@ -16,8 +14,6 @@ export interface MortgageInputs {
   buyerType: BuyerType
   includeLegalFees: boolean
   includeBuildingInspection: boolean
-  splitMemberIds: string[]
-  splitMode: SplitMode
 }
 
 export interface PurchaseCosts {

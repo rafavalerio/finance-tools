@@ -32,14 +32,9 @@ const DEFAULTS: MortgageInputs = {
   buyerType: 'standard',
   includeLegalFees: true,
   includeBuildingInspection: true,
-  splitMemberIds: [],
-  splitMode: 'even',
 }
 
 // Compact key mapping for URL encoding
-// Note: splitMemberIds/splitMode are intentionally NOT encoded here — they reference the
-// sender's local household member IDs, which are meaningless to a recipient. The split is
-// instead shared as a frozen name+amount snapshot (see `sp` below).
 const KEY_MAP = {
   loanAmount: 'p', // property price
   deposit: 'd', // deposit
@@ -115,15 +110,12 @@ export function loadMortgageData(): MortgageStorageData | null {
 
     if (!inputsJson) return null
 
-    // Merge with DEFAULTS so inputs saved before a field (e.g. splitMemberIds/splitMode)
-    // existed still produce a complete MortgageInputs object, not one with missing keys.
     const parsedInputs = JSON.parse(inputsJson)
 
     return {
       inputs: {
         ...DEFAULTS,
         ...parsedInputs,
-        splitMemberIds: parsedInputs.splitMemberIds ?? [...DEFAULTS.splitMemberIds],
       },
       expenses: expensesJson ? JSON.parse(expensesJson) : [],
     }
@@ -236,9 +228,8 @@ export function decodeMortgageData(encoded: string): DecodedMortgageData | null 
     const json = atob(base64)
     const compact: CompactData = JSON.parse(json)
 
-    // Reconstruct inputs from compact format (splitMemberIds/splitMode always come from
-    // DEFAULTS — they are never part of the shared link)
-    const inputs: MortgageInputs = { ...DEFAULTS, splitMemberIds: [...DEFAULTS.splitMemberIds] }
+    // Reconstruct inputs from compact format
+    const inputs: MortgageInputs = { ...DEFAULTS }
 
     for (const [shortKey, value] of Object.entries(compact)) {
       if (shortKey === 'e' || shortKey === 'sp') continue // handled separately

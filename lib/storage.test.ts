@@ -20,8 +20,6 @@ const defaultInputs: MortgageInputs = {
   buyerType: 'standard',
   includeLegalFees: true,
   includeBuildingInspection: true,
-  splitMemberIds: [],
-  splitMode: 'even',
 }
 
 const customData: MortgageStorageData = {
@@ -35,8 +33,6 @@ const customData: MortgageStorageData = {
     buyerType: 'first_home_buyer',
     includeLegalFees: false,
     includeBuildingInspection: false,
-    splitMemberIds: ['a', 'b'],
-    splitMode: 'income',
   },
   expenses: [
     { id: '1', name: 'Council Rates', amount: 400, frequency: 'quarterly' },
@@ -53,7 +49,7 @@ describe('saveMortgageData / loadMortgageData', () => {
     expect(loadMortgageData()).toBeNull()
   })
 
-  it('round-trips inputs and expenses through localStorage, including split settings', () => {
+  it('round-trips inputs and expenses through localStorage', () => {
     saveMortgageData(customData)
     expect(loadMortgageData()).toEqual(customData)
   })
@@ -61,28 +57,6 @@ describe('saveMortgageData / loadMortgageData', () => {
   it('defaults expenses to an empty array if none were saved', () => {
     localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(defaultInputs))
     expect(loadMortgageData()).toEqual({ inputs: defaultInputs, expenses: [] })
-  })
-
-  it('backfills splitMemberIds/splitMode when loading inputs saved before those fields existed', () => {
-    // Simulates a real user's localStorage from before this feature shipped: no
-    // splitMemberIds/splitMode keys at all, not just empty/default values for them.
-    const legacyInputs = {
-      loanAmount: 600000,
-      deposit: 100000,
-      interestRate: 6,
-      loanTermYears: 30,
-      repaymentFrequency: 'monthly',
-      offsetBalance: 0,
-      buyerType: 'standard',
-      includeLegalFees: true,
-      includeBuildingInspection: true,
-    }
-    localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(legacyInputs))
-
-    const loaded = loadMortgageData()
-
-    expect(loaded!.inputs.splitMemberIds).toEqual([])
-    expect(loaded!.inputs.splitMode).toBe('even')
   })
 })
 
@@ -95,12 +69,12 @@ describe('clearMortgageData', () => {
 })
 
 describe('encodeMortgageData / decodeMortgageData', () => {
-  it('round-trips custom inputs and expenses, but not splitMemberIds/splitMode (local-only)', () => {
+  it('round-trips custom inputs and expenses (splitMemberIds/splitMode no longer exist on MortgageInputs)', () => {
     const encoded = encodeMortgageData(customData)
     const decoded = decodeMortgageData(encoded)
 
     expect(decoded).not.toBeNull()
-    expect(decoded!.inputs).toEqual({ ...customData.inputs, splitMemberIds: [], splitMode: 'even' })
+    expect(decoded!.inputs).toEqual(customData.inputs)
     expect(decoded!.expenses).toHaveLength(2)
     expect(decoded!.expenses[0]).toMatchObject({
       name: 'Council Rates',
@@ -108,13 +82,6 @@ describe('encodeMortgageData / decodeMortgageData', () => {
       frequency: 'quarterly',
     })
     expect(decoded!.splitSnapshot).toBeNull()
-  })
-
-  it('returns a fresh splitMemberIds array instance on every decode (not shared with defaults)', () => {
-    const decoded1 = decodeMortgageData(encodeMortgageData(customData))
-    const decoded2 = decodeMortgageData(encodeMortgageData(customData))
-
-    expect(decoded1!.inputs.splitMemberIds).not.toBe(decoded2!.inputs.splitMemberIds)
   })
 
   it('embeds and decodes a split snapshot by name and amount', () => {
@@ -165,7 +132,7 @@ describe('generateShareUrl', () => {
 
     const encoded = url.split('?data=')[1]
     const decoded = decodeMortgageData(encoded)
-    expect(decoded!.inputs).toEqual({ ...customData.inputs, splitMemberIds: [], splitMode: 'even' })
+    expect(decoded!.inputs).toEqual(customData.inputs)
   })
 
   it('includes a split snapshot when one is provided', () => {

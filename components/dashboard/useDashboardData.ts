@@ -7,7 +7,7 @@ import { calculateMortgageResults } from '@/lib/calculations/mortgage'
 import { MortgageResults } from '@/types/mortgage'
 
 export function useDashboardData() {
-  const { members } = useHousehold()
+  const { members, splitConfig } = useHousehold()
   const [mortgageResults, setMortgageResults] = useState<MortgageResults | null>(null)
 
   useEffect(() => {
@@ -24,7 +24,9 @@ export function useDashboardData() {
         saved.inputs.interestRate > 0 &&
         saved.inputs.loanTermYears > 0
       ) {
-        setMortgageResults(calculateMortgageResults(saved.inputs, saved.expenses, members))
+        setMortgageResults(
+          calculateMortgageResults(saved.inputs, saved.expenses, members, splitConfig),
+        )
       } else {
         setMortgageResults(null)
       }
@@ -32,7 +34,7 @@ export function useDashboardData() {
     return () => {
       cancelled = true
     }
-  }, [members])
+  }, [members, splitConfig])
 
   return { mortgageResults }
 }

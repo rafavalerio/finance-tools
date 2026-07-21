@@ -9,7 +9,7 @@ import {
   PurchaseCosts,
   MemberSplitAmount,
 } from '@/types/mortgage'
-import { HouseholdMember } from '@/types/household'
+import { HouseholdMember, HouseholdSplitConfig } from '@/types/household'
 import { computeSplit } from './household'
 
 /**
@@ -140,6 +140,7 @@ export function calculateMortgageResults(
   inputs: MortgageInputs,
   expenses: Expense[],
   members: HouseholdMember[],
+  splitConfig: HouseholdSplitConfig,
 ): MortgageResults {
   // Calculate principal (loan amount minus deposit)
   const principalAmount = inputs.loanAmount - inputs.deposit
@@ -180,10 +181,10 @@ export function calculateMortgageResults(
   const totalMonthlyOutgoing = monthlyMortgagePayment + monthlyExpensesTotal
 
   // Split the total across the selected household members (empty if fewer than 2)
-  const splitMembers = members.filter((member) => inputs.splitMemberIds.includes(member.id))
+  const splitMembers = members.filter((member) => splitConfig.memberIds.includes(member.id))
   let splitBreakdown: MemberSplitAmount[] = []
   if (splitMembers.length >= 2) {
-    const ratios = computeSplit(splitMembers, inputs.splitMode)
+    const ratios = computeSplit(splitMembers, splitConfig.mode)
     splitBreakdown = splitMembers.map((member) => ({
       memberId: member.id,
       name: member.name,
