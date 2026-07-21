@@ -30,10 +30,7 @@ const buyerTypeOptions = [
 ]
 
 export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
-  const handleChange = (
-    field: keyof MortgageInputs,
-    value: string | number | boolean,
-  ) => {
+  const handleChange = (field: keyof MortgageInputs, value: string | number | boolean) => {
     onChange({
       ...inputs,
       [field]: value,
