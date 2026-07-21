@@ -200,4 +200,24 @@ describe('useHousehold', () => {
       expect(stored.memberIds).toHaveLength(2)
     })
   })
+
+  it('persists the auto-seeded split config even when nothing was ever saved before mount', async () => {
+    const { result } = renderHook(() => useHousehold())
+    await waitFor(() => expect(result.current.isLoaded).toBe(true))
+
+    act(() => {
+      result.current.addMember()
+    })
+    act(() => {
+      result.current.addMember()
+    })
+
+    await waitFor(() => expect(result.current.splitConfig.memberIds).toHaveLength(2))
+
+    await waitFor(() => {
+      const stored = JSON.parse(localStorage.getItem('finance-tools-household-split') || 'null')
+      expect(stored).not.toBeNull()
+      expect(stored.memberIds).toHaveLength(2)
+    })
+  })
 })

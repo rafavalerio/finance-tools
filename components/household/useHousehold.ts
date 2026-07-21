@@ -46,7 +46,13 @@ export function useHousehold() {
             if (!hasSeededSplitRef.current) {
               skipSplitNotifyRef.current = true
               neverConfiguredRef.current = loadedSplitConfig === null
-              setSplitConfigState(loadedSplitConfig ?? DEFAULT_SPLIT_CONFIG)
+              // Fresh object literal, not the shared DEFAULT_SPLIT_CONFIG constant: passing the
+              // same reference back into setState is a silent no-op bail-out in React (no
+              // re-render, persist effect never runs), which would leave skipSplitNotifyRef
+              // (set just above) permanently armed until it gets wrongly consumed by a later,
+              // unrelated real change — swallowing that change's persist/notify instead of this
+              // load's.
+              setSplitConfigState(loadedSplitConfig ?? { memberIds: [], mode: 'even' })
             }
             setIsLoaded(true)
           }
