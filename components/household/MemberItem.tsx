@@ -17,36 +17,32 @@ export function MemberItem({ member, onChange, onRemove }: MemberItemProps) {
   return (
     <div
       className={`
-        flex flex-col sm:flex-row gap-3 items-start sm:items-end
-        p-4 bg-background rounded-lg border border-border
+        grid grid-cols-1 sm:grid-cols-[1fr_180px_auto] gap-3 items-end
+        p-3 bg-background rounded-lg border border-border
       `}
     >
-      <div className="flex-1 w-full sm:w-auto">
-        <Input
-          id={`member-name-${member.id}`}
-          label="Name"
-          type="text"
-          placeholder="e.g., Rafael"
-          value={member.name}
-          onChange={(e) => handleChange('name', e.target.value)}
-        />
-      </div>
-      <div className="w-full sm:w-48">
-        <Input
-          id={`member-income-${member.id}`}
-          label="Annual Income"
-          type="number"
-          prefix="$"
-          placeholder="95000"
-          value={member.income || ''}
-          onChange={(e) => handleChange('income', parseFloat(e.target.value) || 0)}
-        />
-      </div>
+      <Input
+        id={`member-name-${member.id}`}
+        label="Name"
+        type="text"
+        placeholder="e.g., Rafael"
+        value={member.name}
+        onChange={(e) => handleChange('name', e.target.value)}
+      />
+      <Input
+        id={`member-income-${member.id}`}
+        label="Annual Income"
+        type="number"
+        prefix="$"
+        placeholder="95000"
+        value={member.income || ''}
+        onChange={(e) => handleChange('income', parseFloat(e.target.value) || 0)}
+      />
       <Button
         variant="ghost"
         size="md"
         onClick={onRemove}
-        className="text-red-400 hover:text-red-300 hover:bg-red-400/10 mt-2 sm:mt-0"
+        className="text-red-400 hover:text-red-300 hover:bg-red-400/10 justify-self-start sm:justify-self-auto"
         aria-label="Remove member"
       >
         <TrashIcon width="20" height="20" />
