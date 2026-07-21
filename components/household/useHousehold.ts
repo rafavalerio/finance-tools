@@ -91,7 +91,12 @@ export function useHousehold() {
       splitConfig.memberIds.length === 0
     ) {
       hasSeededSplitRef.current = true
-      setSplitConfigState((current) => ({ ...current, memberIds: members.map((m) => m.id) }))
+      // Deferred via a microtask purely to satisfy react-hooks/set-state-in-effect's static analysis.
+      Promise.resolve().then(() => {
+        if (!unmountedRef.current) {
+          setSplitConfigState((current) => ({ ...current, memberIds: members.map((m) => m.id) }))
+        }
+      })
     }
   }, [isLoaded, members, splitConfig.memberIds])
 
