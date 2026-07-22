@@ -19,19 +19,19 @@ const costs: PurchaseCosts = {
 
 describe('PurchaseCostsCard', () => {
   it('shows an empty state when there are no costs', () => {
-    render(<PurchaseCostsCard costs={null} deposit={0} propertyPrice={0} />)
+    render(<PurchaseCostsCard costs={null} deposit={0} propertyPrice={0} state="VIC" />)
     expect(screen.getByText('Enter property details to see purchase costs.')).toBeInTheDocument()
   })
 
   it('renders the cost breakdown when costs are provided', () => {
-    render(<PurchaseCostsCard costs={costs} deposit={100000} propertyPrice={500000} />)
+    render(<PurchaseCostsCard costs={costs} deposit={100000} propertyPrice={500000} state="VIC" />)
     expect(screen.getByText('Stamp Duty')).toBeInTheDocument()
     expect(screen.getByText('Total Upfront Costs')).toBeInTheDocument()
     expect(screen.getByText('Effective Deposit')).toBeInTheDocument()
   })
 
   it('shows the LMI warning when required', () => {
-    render(<PurchaseCostsCard costs={costs} deposit={100000} propertyPrice={500000} />)
+    render(<PurchaseCostsCard costs={costs} deposit={100000} propertyPrice={500000} state="VIC" />)
     expect(screen.getByText('Lenders Mortgage Insurance (LMI) Required')).toBeInTheDocument()
   })
 
@@ -41,8 +41,14 @@ describe('PurchaseCostsCard', () => {
         costs={{ ...costs, requiresLMI: false }}
         deposit={100000}
         propertyPrice={500000}
+        state="VIC"
       />,
     )
     expect(screen.queryByText('Lenders Mortgage Insurance (LMI) Required')).not.toBeInTheDocument()
+  })
+
+  it('shows the selected state in the header', () => {
+    render(<PurchaseCostsCard costs={costs} deposit={100000} propertyPrice={500000} state="NSW" />)
+    expect(screen.getByText(/Purchase Costs/).textContent).toContain('NSW')
   })
 })

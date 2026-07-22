@@ -66,6 +66,7 @@ function MortgageCalculatorContent() {
                 costs={purchaseCosts}
                 deposit={inputs.deposit}
                 propertyPrice={inputs.loanAmount}
+                state={inputs.state}
               />
               <ExpenseList expenses={expenses} onChange={setExpenses} />
             </div>
