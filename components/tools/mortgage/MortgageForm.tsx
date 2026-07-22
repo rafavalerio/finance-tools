@@ -10,7 +10,7 @@ import {
   CardContent,
   CalculatorIcon,
 } from '@/components/ui'
-import { MortgageInputs, RepaymentFrequency, BuyerType } from '@/types/mortgage'
+import { MortgageInputs, RepaymentFrequency, BuyerType, AustralianState } from '@/types/mortgage'
 
 interface MortgageFormProps {
   inputs: MortgageInputs
@@ -29,6 +29,17 @@ const buyerTypeOptions = [
   { value: 'foreign_buyer', label: 'Foreign Buyer' },
 ]
 
+const stateOptions = [
+  { value: 'NSW', label: 'New South Wales' },
+  { value: 'VIC', label: 'Victoria' },
+  { value: 'QLD', label: 'Queensland' },
+  { value: 'WA', label: 'Western Australia' },
+  { value: 'SA', label: 'South Australia' },
+  { value: 'TAS', label: 'Tasmania' },
+  { value: 'ACT', label: 'Australian Capital Territory' },
+  { value: 'NT', label: 'Northern Territory' },
+]
+
 export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
   const handleChange = (field: keyof MortgageInputs, value: string | number | boolean) => {
     onChange({
@@ -44,7 +55,7 @@ export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
           <CalculatorIcon width="20" height="20" className="text-accent" />
           Loan Details
         </CardTitle>
-        <p className="text-sm text-muted mt-1">Victorian stamp duty rates applied</p>
+        <p className="text-sm text-muted mt-1">{inputs.state} stamp duty rates applied</p>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -95,6 +106,12 @@ export function MortgageForm({ inputs, onChange }: MortgageFormProps) {
               options={buyerTypeOptions}
               value={inputs.buyerType}
               onChange={(e) => handleChange('buyerType', e.target.value as BuyerType)}
+            />
+            <Select
+              label="State"
+              options={stateOptions}
+              value={inputs.state}
+              onChange={(e) => handleChange('state', e.target.value as AustralianState)}
             />
             <Input
               label="Offset Account Balance"

@@ -12,6 +12,7 @@ const inputs: MortgageInputs = {
   repaymentFrequency: 'monthly',
   offsetBalance: 0,
   buyerType: 'standard',
+  state: 'VIC',
   includeLegalFees: true,
   includeBuildingInspection: true,
 }
@@ -24,6 +25,7 @@ describe('MortgageForm', () => {
     expect(screen.getByLabelText('Interest Rate (% p.a.)')).toHaveValue(6)
     expect(screen.getByLabelText('Repayment Frequency')).toHaveValue('monthly')
     expect(screen.getByLabelText('Buyer Type')).toHaveValue('standard')
+    expect(screen.getByLabelText('State')).toHaveValue('VIC')
   })
 
   it('calls onChange with a numeric field updated on input', async () => {
@@ -38,6 +40,13 @@ describe('MortgageForm', () => {
     render(<MortgageForm inputs={inputs} onChange={onChange} />)
     await userEvent.selectOptions(screen.getByLabelText('Buyer Type'), 'first_home_buyer')
     expect(onChange).toHaveBeenCalledWith({ ...inputs, buyerType: 'first_home_buyer' })
+  })
+
+  it('calls onChange when the state select changes', async () => {
+    const onChange = vi.fn()
+    render(<MortgageForm inputs={inputs} onChange={onChange} />)
+    await userEvent.selectOptions(screen.getByLabelText('State'), 'NSW')
+    expect(onChange).toHaveBeenCalledWith({ ...inputs, state: 'NSW' })
   })
 
   it('calls onChange when a cost checkbox is toggled', async () => {

@@ -11,6 +11,7 @@ const savedInputs: MortgageInputs = {
   repaymentFrequency: 'monthly',
   offsetBalance: 0,
   buyerType: 'standard',
+  state: 'VIC',
   includeLegalFees: true,
   includeBuildingInspection: true,
 }

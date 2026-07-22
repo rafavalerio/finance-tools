@@ -4,6 +4,8 @@ export type ExpenseFrequency = 'monthly' | 'quarterly' | 'annually'
 
 export type BuyerType = 'standard' | 'first_home_buyer' | 'foreign_buyer'
 
+export type AustralianState = 'NSW' | 'VIC' | 'QLD' | 'WA' | 'SA' | 'TAS' | 'ACT' | 'NT'
+
 export interface MortgageInputs {
   loanAmount: number
   deposit: number
@@ -12,6 +14,7 @@ export interface MortgageInputs {
   repaymentFrequency: RepaymentFrequency
   offsetBalance: number
   buyerType: BuyerType
+  state: AustralianState
   includeLegalFees: boolean
   includeBuildingInspection: boolean
 }

@@ -1,13 +1,14 @@
 'use client'
 
 import { Card, CardHeader, CardTitle, CardContent, WarningIcon, ReceiptIcon } from '@/components/ui'
-import { PurchaseCosts } from '@/types/mortgage'
+import { AustralianState, PurchaseCosts } from '@/types/mortgage'
 import { formatCurrency } from '@/lib/calculations/mortgage'
 
 interface PurchaseCostsCardProps {
   costs: PurchaseCosts | null
   deposit: number
   propertyPrice: number
+  state: AustralianState
 }
 
 function CostRow({
@@ -41,7 +42,12 @@ function CostRow({
   )
 }
 
-export function PurchaseCostsCard({ costs, deposit, propertyPrice }: PurchaseCostsCardProps) {
+export function PurchaseCostsCard({
+  costs,
+  deposit,
+  propertyPrice,
+  state,
+}: PurchaseCostsCardProps) {
   if (!costs || propertyPrice <= 0) {
     return (
       <Card>
@@ -67,7 +73,7 @@ export function PurchaseCostsCard({ costs, deposit, propertyPrice }: PurchaseCos
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <ReceiptIcon width="20" height="20" className="text-accent" />
-          Purchase Costs (Victoria)
+          Purchase Costs ({state})
         </CardTitle>
         <p className="text-xs text-muted mt-1">{costs.stampDutyDescription}</p>
       </CardHeader>

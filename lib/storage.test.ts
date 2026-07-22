@@ -18,6 +18,7 @@ const defaultInputs: MortgageInputs = {
   repaymentFrequency: 'monthly',
   offsetBalance: 0,
   buyerType: 'standard',
+  state: 'VIC',
   includeLegalFees: true,
   includeBuildingInspection: true,
 }
@@ -31,6 +32,7 @@ const customData: MortgageStorageData = {
     repaymentFrequency: 'fortnightly',
     offsetBalance: 15000,
     buyerType: 'first_home_buyer',
+    state: 'NSW',
     includeLegalFees: false,
     includeBuildingInspection: false,
   },
@@ -122,6 +124,21 @@ describe('encodeMortgageData / decodeMortgageData', () => {
 
   it('returns null for invalid encoded input', () => {
     expect(decodeMortgageData('not-valid-base64!!')).toBeNull()
+  })
+
+  it('round-trips a non-default state', () => {
+    const encoded = encodeMortgageData(customData)
+    const decoded = decodeMortgageData(encoded)
+    expect(decoded!.inputs.state).toBe('NSW')
+  })
+
+  it('falls back to VIC when decoding a payload with no state key (pre-existing share links)', () => {
+    const encoded = encodeMortgageData({
+      inputs: { ...defaultInputs, loanAmount: 500000 },
+      expenses: [],
+    })
+    const decoded = decodeMortgageData(encoded)
+    expect(decoded!.inputs.state).toBe('VIC')
   })
 })
 

@@ -6,11 +6,14 @@ import {
   RepaymentFrequency,
   AmortisationDataPoint,
   BuyerType,
+  AustralianState,
   PurchaseCosts,
   MemberSplitAmount,
 } from '@/types/mortgage'
 import { HouseholdMember, HouseholdSplitConfig } from '@/types/household'
 import { computeSplit } from './household'
+import { calculateStampDuty } from './stampDuty/engine'
+import { STAMP_DUTY_TABLE } from './stampDuty/data'
 
 /**
  * Get the number of repayments per year based on frequency
@@ -255,70 +258,6 @@ export function formatFrequencyLabel(frequency: RepaymentFrequency): string {
 }
 
 /**
- * Calculate Victorian Stamp Duty (Land Transfer Duty)
- * Rates as of 2024/2025 for principal place of residence
- * Source: State Revenue Office Victoria
- */
-export function calculateVictorianStampDuty(
-  propertyPrice: number,
-  buyerType: BuyerType,
-): { amount: number; description: string } {
-  // First Home Buyer exemptions and concessions (Victoria)
-  if (buyerType === 'first_home_buyer') {
-    if (propertyPrice <= 600000) {
-      return {
-        amount: 0,
-        description: 'First Home Buyer - Full exemption (property ≤ $600,000)',
-      }
-    } else if (propertyPrice <= 750000) {
-      // Sliding scale concession between $600,001 and $750,000
-      const standardDuty = calculateStandardDuty(propertyPrice)
-      const concessionRate = (750000 - propertyPrice) / 150000
-      const concession = standardDuty * concessionRate
-      return {
-        amount: Math.round(standardDuty - concession),
-        description: 'First Home Buyer - Partial concession',
-      }
-    }
-  }
-
-  // Foreign buyer surcharge (8% additional)
-  if (buyerType === 'foreign_buyer') {
-    const standardDuty = calculateStandardDuty(propertyPrice)
-    const foreignSurcharge = propertyPrice * 0.08
-    return {
-      amount: Math.round(standardDuty + foreignSurcharge),
-      description: 'Includes 8% foreign buyer surcharge',
-    }
-  }
-
-  // Standard duty calculation
-  return {
-    amount: calculateStandardDuty(propertyPrice),
-    description: 'Standard Victorian stamp duty',
-  }
-}
-
-/**
- * Calculate standard Victorian stamp duty rates
- * Rates effective from 1 July 2021
- */
-function calculateStandardDuty(propertyPrice: number): number {
-  if (propertyPrice <= 25000) {
-    return Math.round(propertyPrice * 0.014)
-  } else if (propertyPrice <= 130000) {
-    return Math.round(350 + (propertyPrice - 25000) * 0.024)
-  } else if (propertyPrice <= 960000) {
-    return Math.round(2870 + (propertyPrice - 130000) * 0.06)
-  } else if (propertyPrice <= 2000000) {
-    return Math.round(52670 + (propertyPrice - 960000) * 0.055)
-  } else {
-    // Premium duty rate for properties over $2M
-    return Math.round(109870 + (propertyPrice - 2000000) * 0.065)
-  }
-}
-
-/**
  * Estimate Lenders Mortgage Insurance (LMI)
  * LMI is typically required when deposit is less than 20%
  * This is an approximation - actual LMI varies by lender
@@ -347,11 +286,12 @@ export function estimateLMI(propertyPrice: number, deposit: number, loanAmount: 
 }
 
 /**
- * Calculate all purchase costs for Victorian property purchase
+ * Calculate all purchase costs for a property purchase in the given state
  */
 export function calculatePurchaseCosts(
   propertyPrice: number,
   deposit: number,
+  state: AustralianState,
   buyerType: BuyerType,
   includeLegalFees: boolean,
   includeBuildingInspection: boolean,
@@ -359,19 +299,20 @@ export function calculatePurchaseCosts(
   const loanAmount = propertyPrice - deposit
 
   // Stamp duty
-  const stampDutyResult = calculateVictorianStampDuty(propertyPrice, buyerType)
+  const stampDutyResult = calculateStampDuty(state, propertyPrice, buyerType)
+  const stateConfig = STAMP_DUTY_TABLE[state]
 
   // Legal/Conveyancing fees (typical range $1,500 - $3,000)
   const legalFees = includeLegalFees ? 2000 : 0
 
-  // Title search and registration (~$150)
-  const titleRegistration = 150
+  // Title search and registration
+  const titleRegistration = stateConfig.titleRegistrationFee
 
   // Building and pest inspection (~$500 - $800)
   const buildingInspection = includeBuildingInspection ? 650 : 0
 
-  // Mortgage registration fee (Victoria: ~$119.70)
-  const mortgageRegistration = 120
+  // Mortgage registration fee
+  const mortgageRegistration = stateConfig.mortgageRegistrationFee
 
   // Calculate LMI if applicable
   const estimatedLMI = estimateLMI(propertyPrice, deposit, loanAmount)
