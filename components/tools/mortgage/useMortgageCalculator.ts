@@ -26,6 +26,7 @@ const DEFAULT_INPUTS: MortgageInputs = {
   repaymentFrequency: 'monthly',
   offsetBalance: 0,
   buyerType: 'standard',
+  state: 'VIC',
   includeLegalFees: true,
   includeBuildingInspection: true,
 }
@@ -100,6 +101,7 @@ export function useMortgageCalculator() {
       return calculatePurchaseCosts(
         inputs.loanAmount,
         inputs.deposit,
+        inputs.state,
         inputs.buyerType,
         inputs.includeLegalFees,
         inputs.includeBuildingInspection,
@@ -109,6 +111,7 @@ export function useMortgageCalculator() {
   }, [
     inputs.loanAmount,
     inputs.deposit,
+    inputs.state,
     inputs.buyerType,
     inputs.includeLegalFees,
     inputs.includeBuildingInspection,
