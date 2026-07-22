@@ -9,7 +9,6 @@ import {
   formatCurrency,
   formatCurrencyPrecise,
   formatFrequencyLabel,
-  calculateVictorianStampDuty,
   estimateLMI,
   calculatePurchaseCosts,
 } from './mortgage'
@@ -197,48 +196,6 @@ describe('formatFrequencyLabel', () => {
   })
 })
 
-describe('calculateVictorianStampDuty', () => {
-  it('fully exempts first home buyers at or under $600,000', () => {
-    const { amount, description } = calculateVictorianStampDuty(600000, 'first_home_buyer')
-    expect(amount).toBe(0)
-    expect(description).toMatch(/exemption/i)
-  })
-
-  it('applies a sliding concession for first home buyers between $600k and $750k', () => {
-    const { amount, description } = calculateVictorianStampDuty(675000, 'first_home_buyer')
-    expect(amount).toBeGreaterThan(0)
-    expect(description).toMatch(/concession/i)
-  })
-
-  it('applies standard duty for first home buyers above $750,000', () => {
-    const firstHome = calculateVictorianStampDuty(800000, 'first_home_buyer')
-    const standard = calculateVictorianStampDuty(800000, 'standard')
-    expect(firstHome.amount).toBe(standard.amount)
-  })
-
-  it('adds an 8% surcharge for foreign buyers', () => {
-    const standard = calculateVictorianStampDuty(800000, 'standard')
-    const foreign = calculateVictorianStampDuty(800000, 'foreign_buyer')
-    expect(foreign.amount).toBe(Math.round(standard.amount + 800000 * 0.08))
-  })
-
-  it('calculates standard duty across each price tier', () => {
-    expect(calculateVictorianStampDuty(20000, 'standard').amount).toBe(Math.round(20000 * 0.014))
-    expect(calculateVictorianStampDuty(100000, 'standard').amount).toBe(
-      Math.round(350 + (100000 - 25000) * 0.024),
-    )
-    expect(calculateVictorianStampDuty(500000, 'standard').amount).toBe(
-      Math.round(2870 + (500000 - 130000) * 0.06),
-    )
-    expect(calculateVictorianStampDuty(1500000, 'standard').amount).toBe(
-      Math.round(52670 + (1500000 - 960000) * 0.055),
-    )
-    expect(calculateVictorianStampDuty(2500000, 'standard').amount).toBe(
-      Math.round(109870 + (2500000 - 2000000) * 0.065),
-    )
-  })
-})
-
 describe('estimateLMI', () => {
   it('requires no LMI at 80% LVR or below', () => {
     expect(estimateLMI(500000, 100000, 400000)).toBe(0)
@@ -258,30 +215,46 @@ describe('estimateLMI', () => {
 
 describe('calculatePurchaseCosts', () => {
   it('excludes optional costs when their flags are false', () => {
-    const costs = calculatePurchaseCosts(600000, 150000, 'standard', false, false)
+    const costs = calculatePurchaseCosts(600000, 150000, 'VIC', 'standard', false, false)
     expect(costs.legalFees).toBe(0)
     expect(costs.buildingInspection).toBe(0)
   })
 
   it('includes optional costs when their flags are true', () => {
-    const costs = calculatePurchaseCosts(600000, 150000, 'standard', true, true)
+    const costs = calculatePurchaseCosts(600000, 150000, 'VIC', 'standard', true, true)
     expect(costs.legalFees).toBe(2000)
     expect(costs.buildingInspection).toBe(650)
   })
 
   it('deducts total costs from the deposit to get the effective deposit', () => {
-    const costs = calculatePurchaseCosts(600000, 150000, 'standard', true, true)
+    const costs = calculatePurchaseCosts(600000, 150000, 'VIC', 'standard', true, true)
     expect(costs.effectiveDeposit).toBeCloseTo(150000 - costs.totalCosts)
   })
 
   it('flags LMI as required once the effective deposit drops the LVR below 80%', () => {
-    const costs = calculatePurchaseCosts(600000, 60000, 'standard', true, true)
+    const costs = calculatePurchaseCosts(600000, 60000, 'VIC', 'standard', true, true)
     expect(costs.requiresLMI).toBe(true)
     expect(costs.estimatedLMI).toBeGreaterThan(0)
   })
 
   it('never lets the effective deposit go negative', () => {
-    const costs = calculatePurchaseCosts(50000, 5000, 'standard', true, true)
+    const costs = calculatePurchaseCosts(50000, 5000, 'VIC', 'standard', true, true)
     expect(costs.effectiveDeposit).toBeGreaterThanOrEqual(0)
+  })
+
+  it("uses the selected state's registration fees instead of a hardcoded Victorian value", () => {
+    const vic = calculatePurchaseCosts(600000, 150000, 'VIC', 'standard', false, false)
+    const nsw = calculatePurchaseCosts(600000, 150000, 'NSW', 'standard', false, false)
+    expect(vic.titleRegistration).toBe(150)
+    expect(vic.mortgageRegistration).toBe(120)
+    expect(nsw.titleRegistration).toBe(154)
+    expect(nsw.mortgageRegistration).toBe(154)
+  })
+
+  it("uses the selected state's stamp duty schedule", () => {
+    const vic = calculatePurchaseCosts(600000, 150000, 'VIC', 'first_home_buyer', false, false)
+    const nsw = calculatePurchaseCosts(600000, 150000, 'NSW', 'first_home_buyer', false, false)
+    expect(vic.stampDuty).toBe(0) // VIC FHB exemption cap is $600,000
+    expect(nsw.stampDuty).toBe(0) // NSW FHB exemption cap is $800,000
   })
 })
