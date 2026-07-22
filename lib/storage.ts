@@ -2,6 +2,7 @@ import {
   MortgageInputs,
   Expense,
   BuyerType,
+  AustralianState,
   RepaymentFrequency,
   ExpenseFrequency,
   SplitSnapshotEntry,
@@ -30,6 +31,7 @@ const DEFAULTS: MortgageInputs = {
   repaymentFrequency: 'monthly',
   offsetBalance: 0,
   buyerType: 'standard',
+  state: 'VIC',
   includeLegalFees: true,
   includeBuildingInspection: true,
 }
@@ -43,6 +45,7 @@ const KEY_MAP = {
   repaymentFrequency: 'f', // frequency
   offsetBalance: 'o', // offset
   buyerType: 'b', // buyer
+  state: 'st', // state
   includeLegalFees: 'l', // legal
   includeBuildingInspection: 'i', // inspection
 } as const
@@ -74,6 +77,28 @@ const REVERSE_BUYER_MAP: Record<string, BuyerType> = {
   s: 'standard',
   h: 'first_home_buyer',
   x: 'foreign_buyer',
+}
+
+// State abbreviations
+const STATE_MAP: Record<AustralianState, string> = {
+  NSW: 'NS',
+  VIC: 'VI',
+  QLD: 'QL',
+  WA: 'WA',
+  SA: 'SA',
+  TAS: 'TA',
+  ACT: 'AC',
+  NT: 'NT',
+}
+const REVERSE_STATE_MAP: Record<string, AustralianState> = {
+  NS: 'NSW',
+  VI: 'VIC',
+  QL: 'QLD',
+  WA: 'WA',
+  SA: 'SA',
+  TA: 'TAS',
+  AC: 'ACT',
+  NT: 'NT',
 }
 
 // Expense frequency abbreviations
@@ -184,6 +209,9 @@ export function encodeMortgageData(
     if (inputs.buyerType !== DEFAULTS.buyerType) {
       compact[KEY_MAP.buyerType] = BUYER_MAP[inputs.buyerType]
     }
+    if (inputs.state !== DEFAULTS.state) {
+      compact[KEY_MAP.state] = STATE_MAP[inputs.state]
+    }
     if (inputs.includeLegalFees !== DEFAULTS.includeLegalFees) {
       compact[KEY_MAP.includeLegalFees] = inputs.includeLegalFees ? 1 : 0
     }
@@ -241,6 +269,8 @@ export function decodeMortgageData(encoded: string): DecodedMortgageData | null 
         inputs.repaymentFrequency = REVERSE_FREQ_MAP[value] || DEFAULTS.repaymentFrequency
       } else if (fullKey === 'buyerType' && typeof value === 'string') {
         inputs.buyerType = REVERSE_BUYER_MAP[value] || DEFAULTS.buyerType
+      } else if (fullKey === 'state' && typeof value === 'string') {
+        inputs.state = REVERSE_STATE_MAP[value] || DEFAULTS.state
       } else if (fullKey === 'includeLegalFees') {
         inputs.includeLegalFees = value === 1
       } else if (fullKey === 'includeBuildingInspection') {
