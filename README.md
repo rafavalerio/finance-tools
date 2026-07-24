@@ -6,12 +6,13 @@ A personal finance toolkit to help with budgeting, mortgage planning, and other 
 
 ### Mortgage Calculator
 
-Plan your mortgage repayments with Australian (Victoria) specific calculations.
+Plan your mortgage repayments with stamp duty calculations for any Australian state or
+territory (NSW, VIC, QLD, WA, SA, TAS, ACT, NT).
 
 **Features:**
 
 - Calculate repayments for weekly, fortnightly, or monthly frequencies
-- Victorian stamp duty calculations with support for:
+- State-specific stamp duty calculations, selectable per state/territory, with support for:
   - Standard buyers
   - First home buyers (exemptions and concessions)
   - Foreign buyers (includes surcharge)
@@ -19,12 +20,18 @@ Plan your mortgage repayments with Australian (Victoria) specific calculations.
 - Lenders Mortgage Insurance (LMI) estimates when deposit is below 20%
 - Offset account support
 - Add recurring expenses (rates, bills, insurance, etc.)
-- Per-person cost split for budgeting with a partner
+- Household-level cost split for budgeting with a partner (configured on the Household page,
+  shared across tools)
 - Visualisations:
   - Loan balance amortisation chart
   - Monthly expense breakdown pie chart
 - Auto-save to browser (your data persists between sessions)
 - Share calculations via URL
+
+### Household
+
+Add household members (name + income) and configure how costs are split between them — even
+split or income-weighted — once, for all tools to share.
 
 ## Upcoming Tools
 

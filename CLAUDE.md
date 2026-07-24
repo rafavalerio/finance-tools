@@ -1,8 +1,9 @@
 # Finance Tools
 
 Personal finance toolkit built with Next.js (App Router). Ships a dashboard home page, a
-household/profile system shared across tools, and one tool so far — a mortgage calculator for
-Victoria, Australia — with more tools planned as new routes under `app/tools/`.
+household/profile system shared across tools, and one tool so far — a mortgage calculator
+covering all eight Australian states/territories — with more tools planned as new routes under
+`app/tools/`.
 
 ## Stack
 
@@ -75,6 +76,11 @@ Victoria, Australia — with more tools planned as new routes under `app/tools/`
 - `lib/calculations/<tool-name>.ts` — pure calculation functions, no React (also
   `lib/calculations/household.ts` — not tool-specific, shared by the mortgage tool's cost split
   and the dashboard/profile summaries)
+- `lib/calculations/stampDuty/` — the generic multi-state stamp duty engine used by the mortgage
+  tool: `types.ts` (`DutyBracket`, `StateDutyConfig`), `data.ts` (`STAMP_DUTY_TABLE`, one
+  `StateDutyConfig` per `AustralianState` — approximate 2025-26 schedules, verify against each
+  state revenue office before relying on them for a real purchase), `engine.ts` (bracket
+  calculation + FHB exemption/concession + foreign-buyer surcharge, state-agnostic)
 - `lib/household/` — `HouseholdRepository` interface plus `LocalStorageHouseholdRepository`, the
   swappable persistence layer behind `useHousehold()` (see Household & navigation below)
 - `lib/storage.ts` — localStorage persistence + compact URL encode/decode for shareable links
@@ -83,16 +89,25 @@ Victoria, Australia — with more tools planned as new routes under `app/tools/`
 
 ## Household & navigation
 
-- `types/household.ts`: `HouseholdMember { id, name, income }`, `SplitMode = 'even' | 'income'`
-- `lib/household/repository.ts` defines `HouseholdRepository` (`getMembers`/`saveMembers`);
-  `localStorageRepository.ts` is the only implementation today, exported as a `householdRepository`
-  singleton from `lib/household/index.ts`. Swap the singleton for a different implementation of
-  the same interface if household data ever moves off `localStorage` — nothing above this layer
-  should need to change
-- `components/household/useHousehold()` loads members on mount via `householdRepository` and
-  exposes `members`, `isLoaded`, `addMember`, `updateMember`, `removeMember`; every page/tool
-  that needs household data (`/profile`, the mortgage tool, `ProfileMenu`, the dashboard) goes
-  through this one hook rather than touching the repository directly
+- `types/household.ts`: `HouseholdMember { id, name, income }`, `SplitMode = 'even' | 'income'`,
+  `HouseholdSplitConfig { memberIds, mode }` — the split config is household-level, not
+  per-tool, so every tool that needs a cost split reads the same config
+- `lib/household/repository.ts` defines `HouseholdRepository` (`getMembers`/`saveMembers`/
+  `getSplitConfig`/`saveSplitConfig`); `localStorageRepository.ts` is the only implementation
+  today (members under one `localStorage` key, split config under a separate one), exported as a
+  `householdRepository` singleton from `lib/household/index.ts`. Swap the singleton for a
+  different implementation of the same interface if household data ever moves off `localStorage`
+  — nothing above this layer should need to change
+- `components/household/useHousehold()` loads members and split config on mount via
+  `householdRepository` and exposes `members`, `splitConfig`, `isLoaded`, `addMember`,
+  `updateMember`, `removeMember`, `toggleSplitMember`, `setSplitMode`; every page/tool that needs
+  household data (`/profile`, the mortgage tool, `ProfileMenu`, the dashboard) goes through this
+  one hook rather than touching the repository directly. Auto-seeds `splitConfig.memberIds` to
+  every member the first time there are 2+ members and a split config has never been saved
+  before (a one-shot guard distinguishes "never configured" from a deliberate "select nobody")
+- `components/household/SplitConfigCard` renders the cost-split UI (which members split costs,
+  even-vs-income-weighted mode) on `/profile` — this is where the split is configured for every
+  tool, not inside the mortgage form itself
 - `lib/calculations/household.ts`: `computeSplit(members, mode)` returns each member's 0-1 share
   of a cost — income-weighted mode (`'income'`) falls back to an even split if any included
   member's income isn't positive; `formatCompactIncome(amount)` formats for summary tiles (e.g.
@@ -114,22 +129,27 @@ Victoria, Australia — with more tools planned as new routes under `app/tools/`
 
 ## Mortgage calculator (`app/tools/mortgage`)
 
+- `types/mortgage.ts`: `AustralianState = 'NSW' | 'VIC' | 'QLD' | 'WA' | 'SA' | 'TAS' | 'ACT' |
+'NT'`; `MortgageInputs.state` selects which state's stamp duty schedule applies
 - `lib/calculations/mortgage.ts`: repayment formula (standard amortisation), amortisation
-  schedule generation, Victorian stamp duty (incl. first-home-buyer exemption/concession and
-  foreign-buyer 8% surcharge), LMI estimate, purchase costs (legal fees, title registration,
-  building inspection, mortgage registration), and `calculateMortgageResults(inputs, expenses,
-members)` which uses `computeSplit` (see Household & navigation) to produce
-  `results.splitBreakdown: { memberId, name, amount }[]` — empty unless 2+ household members are
-  selected in `inputs.splitMemberIds`
+  schedule generation, purchase costs (legal fees, title registration, building inspection,
+  mortgage registration) and LMI estimate — stamp duty itself is delegated to
+  `lib/calculations/stampDuty/engine.ts` for the selected `state` (incl. first-home-buyer
+  exemption/concession and foreign-buyer surcharge, both state-specific — see
+  `stampDuty/data.ts`). `calculateMortgageResults(inputs, expenses, members, splitConfig)` uses
+  `computeSplit` (see Household & navigation) against the household-level `splitConfig` to
+  produce `results.splitBreakdown: { memberId, name, amount }[]` — empty unless 2+ members are
+  selected in `splitConfig.memberIds`
 - `lib/storage.ts`: saves inputs/expenses to `localStorage`; `encodeMortgageData` /
   `decodeMortgageData` pack non-default fields into a compact base64 URL string (short key names
-  like `p`, `d`, `r`, `t`, `f`, `o`, `b`, `l`, `i`, `e`, `sp` for the split snapshot) for the
-  "Share" feature — no server storage involved. The share link snapshots the split by **member
-  name + computed amount**, not member ID, so a recipient sees the sender's frozen breakdown
-  regardless of their own household; it's replaced by a live recalculation the moment the
-  recipient edits any input
-- Supports weekly/fortnightly/monthly repayment frequencies, offset account, a household-aware
-  cost split (choose which members split it and even-vs-income-weighted mode — see Household &
+  like `p`, `d`, `r`, `t`, `f`, `o`, `b`, `st` for state, `l`, `i`, `e`, `sp` for the split
+  snapshot) for the "Share" feature — no server storage involved. The share link snapshots the
+  split by **member name + computed amount**, not member ID, so a recipient sees the sender's
+  frozen breakdown regardless of their own household; it's replaced by a live recalculation the
+  moment the recipient edits any input
+- Supports weekly/fortnightly/monthly repayment frequencies, offset account, a state selector
+  driving stamp duty/FHB/surcharge rules, a household-aware cost split sourced from the
+  household-level `splitConfig` (configured on `/profile`, not in this form — see Household &
   navigation), and a recurring expenses list (monthly/quarterly/annually)
 - `app/tools/mortgage/page.tsx` composes `useMortgageCalculator()` (state/persistence/derived
   data, plus `members`/`displaySplitBreakdown` sourced from `useHousehold()`) with the form,
