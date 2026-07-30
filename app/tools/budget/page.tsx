@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  BudgetLoadingFallback,
   ExpenseList,
   IncomeCard,
   BudgetSummaryCard,
@@ -22,7 +23,12 @@ export default function BudgetPlannerPage() {
     breakdownData,
     memberShares,
     hasMembers,
+    isLoaded,
   } = useBudgetPlanner()
+
+  // Expenses, the take-home override and household members all load asynchronously. Without
+  // this gate the empty states ("No expenses added yet." etc.) flash on every page load.
+  if (!isLoaded) return <BudgetLoadingFallback />
 
   return (
     <div className="min-h-screen bg-background">

@@ -93,4 +93,23 @@ describe('useDashboardData budget', () => {
     expect(result.current.topCategories).toHaveLength(3)
     expect(result.current.topCategories[0].name).toBe('Transport')
   })
+
+  it('migrates legacy mortgage expenses on the dashboard, the likeliest first surface after deploy', async () => {
+    localStorage.setItem(
+      'finance-tools-mortgage-expenses',
+      JSON.stringify([
+        { id: 'x', name: 'Rates', amount: 300, frequency: 'quarterly' },
+        { id: 'y', name: 'Power', amount: 180, frequency: 'monthly' },
+      ]),
+    )
+
+    const { result } = renderHook(() => useDashboardData())
+
+    await waitFor(() => expect(result.current.budgetSummary).not.toBeNull())
+    expect(result.current.budgetSummary!.monthlyExpenses).toBeCloseTo(100 + 180)
+    // Everything imported lands in "Other", and the legacy key is gone afterwards.
+    expect(result.current.topCategories.map((category) => category.name)).toEqual(['Other'])
+    expect(localStorage.getItem('finance-tools-mortgage-expenses')).toBeNull()
+    expect(JSON.parse(localStorage.getItem('finance-tools-budget-expenses')!)).toHaveLength(2)
+  })
 })

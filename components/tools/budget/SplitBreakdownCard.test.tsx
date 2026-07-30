@@ -3,9 +3,11 @@ import { render, screen } from '@testing-library/react'
 import { SplitBreakdownCard } from './SplitBreakdownCard'
 import { MemberBudgetShare } from '@/types/budget'
 
+// Deliberately distinct shares and leftovers per member — equal fixtures would let a card that
+// renders the wrong member's numbers still pass.
 const shares: MemberBudgetShare[] = [
-  { memberId: 'a', name: 'Alex', share: 3000, monthlyIncome: 6000, leftover: 3000 },
-  { memberId: 'b', name: 'Sam', share: 3000, monthlyIncome: 2500, leftover: -500 },
+  { memberId: 'a', name: 'Alex', share: 4000, monthlyIncome: 6000, leftover: 2000 },
+  { memberId: 'b', name: 'Sam', share: 2000, monthlyIncome: 1500, leftover: -500 },
 ]
 
 describe('SplitBreakdownCard', () => {
@@ -14,12 +16,16 @@ describe('SplitBreakdownCard', () => {
     expect(container).toBeEmptyDOMElement()
   })
 
-  it('shows each member share and leftover', () => {
+  it('shows each member share and leftover against the right member', () => {
     render(<SplitBreakdownCard shares={shares} />)
-    expect(screen.getByText('Alex')).toBeInTheDocument()
-    expect(screen.getByText('Sam')).toBeInTheDocument()
-    expect(screen.getAllByText('$3,000.00')).toHaveLength(2)
-    expect(screen.getByText(/\$3,000\.00 left/)).toBeInTheDocument()
+
+    const alexTile = screen.getByText('Alex').closest('div')!
+    expect(alexTile).toHaveTextContent('$4,000.00')
+    expect(screen.getByTestId('member-leftover-a')).toHaveTextContent('$2,000.00 left')
+
+    const samTile = screen.getByText('Sam').closest('div')!
+    expect(samTile).toHaveTextContent('$2,000.00')
+    expect(screen.getByTestId('member-leftover-b')).toHaveTextContent('$500.00 short')
   })
 
   it('marks a negative leftover as short', () => {
