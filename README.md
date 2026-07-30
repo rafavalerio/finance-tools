@@ -19,14 +19,25 @@ territory (NSW, VIC, QLD, WA, SA, TAS, ACT, NT).
 - Purchase costs breakdown (legal fees, inspections, registrations)
 - Lenders Mortgage Insurance (LMI) estimates when deposit is below 20%
 - Offset account support
-- Add recurring expenses (rates, bills, insurance, etc.)
-- Household-level cost split for budgeting with a partner (configured on the Household page,
-  shared across tools)
-- Visualisations:
-  - Loan balance amortisation chart
-  - Monthly expense breakdown pie chart
+- Household-level cost split of the repayment for budgeting with a partner (configured on the
+  Household page, shared across tools)
+- Loan balance amortisation chart
 - Auto-save to browser (your data persists between sessions)
 - Share calculations via URL
+
+### Budget Planner
+
+Track recurring expenses by category alongside your mortgage repayment, and see what's left of
+household income each month.
+
+**Features:**
+
+- Add recurring expenses (rates, bills, insurance, groceries, etc.) tagged with a category
+- Pinned, read-only mortgage repayment row pulled straight from the mortgage calculator
+- Monthly income derived from household gross income, with an optional take-home override
+- Monthly summary (income, expenses, surplus) and a per-category expense breakdown chart
+- Household-level cost split showing each member's share and leftover income
+- Auto-save to browser (your data persists between sessions)
 
 ### Household
 
@@ -39,7 +50,6 @@ More finance utilities will be added as needed:
 
 - Savings calculator
 - Investment returns
-- Budget tracker
 - And more...
 
 ## Tech Stack
