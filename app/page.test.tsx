@@ -32,10 +32,10 @@ describe('HomePage', () => {
     expect(await screen.findByText(/\/mo$/)).toBeInTheDocument()
   })
 
-  it('always shows the budget placeholder', () => {
+  it('shows an empty-state CTA for budget when nothing is configured', () => {
     render(<HomePage />)
     expect(screen.getByText('Budget Planner')).toBeInTheDocument()
-    expect(screen.getByText('Coming soon.')).toBeInTheDocument()
+    expect(screen.getByText('Get started with the budget planner.')).toBeInTheDocument()
   })
 
   it('does not show any household-related content', async () => {

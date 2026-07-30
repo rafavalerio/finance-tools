@@ -1,3 +1,3 @@
 export { MortgageSnapshotCard } from './MortgageSnapshotCard'
-export { BudgetPlaceholderCard } from './BudgetPlaceholderCard'
+export { BudgetSnapshotCard } from './BudgetSnapshotCard'
 export { useDashboardData } from './useDashboardData'
