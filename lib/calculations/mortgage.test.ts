@@ -6,8 +6,6 @@ import {
   calculateRepayment,
   generateAmortisationSchedule,
   calculateMortgageResults,
-  formatCurrency,
-  formatCurrencyPrecise,
   formatFrequencyLabel,
   estimateLMI,
   calculatePurchaseCosts,
@@ -174,18 +172,6 @@ describe('calculateMortgageResults', () => {
   it('produces an amortisation schedule', () => {
     const results = calculateMortgageResults(baseInputs, [], [], noSplit)
     expect(results.amortisationSchedule.length).toBeGreaterThan(0)
-  })
-})
-
-describe('formatCurrency', () => {
-  it('formats whole AUD amounts without cents', () => {
-    expect(formatCurrency(1234)).toBe('$1,234')
-  })
-})
-
-describe('formatCurrencyPrecise', () => {
-  it('formats AUD amounts with cents', () => {
-    expect(formatCurrencyPrecise(1234.5)).toBe('$1,234.50')
   })
 })
 

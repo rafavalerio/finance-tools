@@ -11,7 +11,7 @@ import {
 } from 'recharts'
 import { Card, CardHeader, CardTitle, CardContent, TrendingDownIcon } from '@/components/ui'
 import { AmortisationDataPoint } from '@/types/mortgage'
-import { formatCurrency } from '@/lib/calculations/mortgage'
+import { formatCurrency } from '@/lib/calculations/format'
 import { CHART_TOOLTIP_STYLE } from './theme'
 
 interface AmortisationChartProps {

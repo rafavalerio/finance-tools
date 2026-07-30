@@ -3,7 +3,7 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 import { Card, CardHeader, CardTitle, CardContent, PieChartIcon } from '@/components/ui'
 import { ExpenseBreakdownItem } from '@/types/mortgage'
-import { formatCurrencyPrecise } from '@/lib/calculations/mortgage'
+import { formatCurrencyPrecise } from '@/lib/calculations/format'
 import { CHART_ACCENT_COLOR, CHART_PALETTE, CHART_TOOLTIP_STYLE } from './theme'
 
 interface ChartDataItem {

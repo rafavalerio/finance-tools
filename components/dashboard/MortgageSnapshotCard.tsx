@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Card, CardHeader, CardTitle, CardContent, HouseIcon } from '@/components/ui'
 import { MortgageResults } from '@/types/mortgage'
-import { formatCurrencyPrecise } from '@/lib/calculations/mortgage'
+import { formatCurrencyPrecise } from '@/lib/calculations/format'
 
 interface MortgageSnapshotCardProps {
   results: MortgageResults | null

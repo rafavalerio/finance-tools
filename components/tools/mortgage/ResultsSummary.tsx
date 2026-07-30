@@ -2,11 +2,8 @@
 
 import { Card, CardHeader, CardTitle, CardContent, ChartBarIcon } from '@/components/ui'
 import { MortgageResults, SplitSnapshotEntry } from '@/types/mortgage'
-import {
-  formatCurrency,
-  formatCurrencyPrecise,
-  formatFrequencyLabel,
-} from '@/lib/calculations/mortgage'
+import { formatFrequencyLabel } from '@/lib/calculations/mortgage'
+import { formatCurrency, formatCurrencyPrecise } from '@/lib/calculations/format'
 
 interface ResultsSummaryProps {
   results: MortgageResults | null
