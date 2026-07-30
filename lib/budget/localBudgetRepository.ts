@@ -53,8 +53,9 @@ export class LocalBudgetRepository implements BudgetRepository {
   /**
    * One-time import of expenses saved by the old mortgage tool. Only runs when no budget
    * expenses exist, so it can never overwrite data the user has since edited. The legacy
-   * key is always removed — including when its contents are unusable — so a bad value
-   * cannot make this run again on every load.
+   * key is removed once the migrated data has been written — including when its contents
+   * are unusable and there is nothing to write — so a bad value cannot make this run again
+   * on every load.
    */
   private migrateLegacyExpenses(): Expense[] {
     const legacyJson = localStorage.getItem(LEGACY_MORTGAGE_EXPENSES_KEY)
@@ -76,10 +77,14 @@ export class LocalBudgetRepository implements BudgetRepository {
       console.error('Failed to migrate legacy mortgage expenses:', error)
     }
 
-    localStorage.removeItem(LEGACY_MORTGAGE_EXPENSES_KEY)
+    // Write the migrated data BEFORE dropping the legacy key: if setItem throws (quota
+    // exceeded, Safari private mode) the legacy key survives and the migration can retry on a
+    // later load rather than the expenses being lost. When there is nothing to write (empty or
+    // corrupt legacy value) removal is unconditionally safe.
     if (migrated.length > 0) {
       localStorage.setItem(EXPENSES_KEY, JSON.stringify(migrated))
     }
+    localStorage.removeItem(LEGACY_MORTGAGE_EXPENSES_KEY)
     return migrated
   }
 }

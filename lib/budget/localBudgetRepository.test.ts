@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { LocalBudgetRepository } from './localBudgetRepository'
 import { Expense } from '@/types/budget'
 
@@ -109,6 +109,28 @@ describe('LocalBudgetRepository legacy mortgage-expense migration', () => {
     const repo = new LocalBudgetRepository()
 
     expect(await repo.getExpenses()).toEqual([])
+    expect(localStorage.getItem(LEGACY_KEY)).toBeNull()
+  })
+
+  it('leaves the legacy key intact when writing the migrated expenses fails', async () => {
+    localStorage.setItem(LEGACY_KEY, JSON.stringify(legacy))
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError')
+    })
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+
+    try {
+      const repo = new LocalBudgetRepository()
+      expect(await repo.getExpenses()).toEqual([])
+      expect(localStorage.getItem(LEGACY_KEY)).not.toBeNull()
+    } finally {
+      setItem.mockRestore()
+      vi.restoreAllMocks()
+    }
+
+    // The retry on a later load succeeds now that writes work again.
+    const repo = new LocalBudgetRepository()
+    expect(await repo.getExpenses()).toHaveLength(2)
     expect(localStorage.getItem(LEGACY_KEY)).toBeNull()
   })
 

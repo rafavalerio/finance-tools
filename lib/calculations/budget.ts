@@ -119,9 +119,12 @@ export function computeBudgetSummary(
  * What each household member pays of the total monthly outgoing, and what is left of
  * their own income afterwards. Empty unless 2+ members are selected in the split config.
  *
- * The take-home override is a single household figure, so it is apportioned across the
- * included members in proportion to their gross incomes (a 60/40 earning pair splits it
- * 60/40), falling back to an even split when the gross incomes sum to zero.
+ * The take-home override is a single household figure, so it is apportioned in proportion to
+ * gross incomes (a 60/40 earning pair splits it 60/40), falling back to an even split when the
+ * gross incomes sum to zero. The denominator is EVERY member's gross income, not just the
+ * included ones — an excluded member still earns their share of the household take-home, so
+ * leaving them out of the split must not inflate the included members' incomes. This matches
+ * the no-override path, which uses each member's own `income / 12` regardless of inclusion.
  */
 export function computeMemberBudgetShares(
   members: HouseholdMember[],
@@ -133,7 +136,7 @@ export function computeMemberBudgetShares(
   if (included.length < 2) return []
 
   const ratios = computeSplit(included, splitConfig.mode)
-  const totalGross = included.reduce((total, member) => total + member.income, 0)
+  const totalGross = members.reduce((total, member) => total + member.income, 0)
 
   return included.map((member) => {
     const share = totalMonthlyOutgoing * ratios[member.id]
@@ -142,7 +145,7 @@ export function computeMemberBudgetShares(
         ? member.income / 12
         : totalGross > 0
           ? takeHomeOverride * (member.income / totalGross)
-          : takeHomeOverride / included.length
+          : takeHomeOverride / members.length
 
     return {
       memberId: member.id,

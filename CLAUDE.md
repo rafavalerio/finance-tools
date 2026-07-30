@@ -106,7 +106,7 @@ under `app/tools/`.
 - `types/<tool-name>.ts` — shared TS types for a tool (`types/household.ts` is the exception —
   shared across tools/pages rather than scoped to one, since household data isn't itself a tool).
   `types/budget.ts` holds `ExpenseFrequency`, `ExpenseCategory` (8 categories), `Expense`,
-  `BudgetData`, `ExpenseBreakdownItem`, `BudgetSummary`, `MemberBudgetShare`
+  `ExpenseBreakdownItem`, `BudgetSummary`, `MemberBudgetShare`
 
 ## Household & navigation
 
@@ -189,16 +189,17 @@ members, splitConfig)` wraps `calculateMortgageResults` with the effective-depos
 
 - `types/budget.ts`: `Expense { id, name, amount, frequency, category }` — `category` is one of
   the 8 `ExpenseCategory` values listed in `lib/calculations/budget.ts`'s `EXPENSE_CATEGORIES`
-  (with display labels, in picker order); `BudgetData` is the persisted shape
-  (`expenses`/`takeHomeOverride`)
+  (with display labels, in picker order). Expenses and the optional take-home override are
+  persisted under separate `localStorage` keys by `lib/budget/`, not as one combined object
 - `lib/budget/` (see Structure) persists expenses and an optional monthly take-home override,
   and one-time-migrates any expenses left behind in the mortgage tool's old localStorage key
 - Income: `computeMonthlyIncome` derives monthly income from household members' gross annual
   income ÷ 12, unless the user has set a monthly take-home override, which takes priority
   outright. `IncomeCard` is where the override is set. For per-member leftovers
-  (`computeMemberBudgetShares`), the override is apportioned across included members in
-  proportion to their gross incomes (a 60/40 earning pair splits it 60/40), falling back to an
-  even split if gross incomes sum to zero
+  (`computeMemberBudgetShares`), the override is apportioned in proportion to gross incomes (a
+  60/40 earning pair splits it 60/40), falling back to an even split if gross incomes sum to
+  zero. The denominator is every household member's income, not just those included in the
+  split — excluding someone from the split must not reallocate their earnings onto the others
 - `ExpenseList` renders a pinned, read-only "Mortgage repayment" row above the editable expense
   rows — sourced one-way via `calculateSavedMortgageResults` reading the mortgage tool's own
   saved inputs (`loadMortgageData()`), so the budget tool never writes to mortgage storage and
@@ -214,7 +215,10 @@ members, splitConfig)` wraps `calculateMortgageResults` with the effective-depos
 - `useBudgetPlanner()` owns all of the above: loading/persisting expenses and the take-home
   override via `budgetRepository`, reading the mortgage figure, and the derived-data
   `useMemo`s — `app/tools/budget/page.tsx` is layout/composition only, same pattern as the
-  mortgage page
+  mortgage page. It also returns `isLoaded` (budget data AND household loaded); the page
+  renders `BudgetLoadingFallback` until then so the empty states don't flash on every load.
+  Unlike the mortgage page there is no `<Suspense>` boundary — that one exists only because of
+  `useSearchParams`, which the budget page doesn't use
 - No share link — unlike the mortgage tool, the budget planner has no "Share" feature
 
 ## Conventions

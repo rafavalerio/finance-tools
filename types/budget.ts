@@ -18,11 +18,6 @@ export interface Expense {
   category: ExpenseCategory
 }
 
-export interface BudgetData {
-  expenses: Expense[]
-  takeHomeOverride: number | null
-}
-
 export interface ExpenseBreakdownItem {
   name: string
   value: number

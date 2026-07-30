@@ -195,4 +195,31 @@ describe('computeMemberBudgetShares', () => {
     const shares = computeMemberBudgetShares(three, evenSplit, null, 3000)
     expect(shares.map((s) => s.memberId)).toEqual(['a', 'b'])
   })
+
+  it('apportions a take-home override across ALL members, not just the included ones', () => {
+    const three: HouseholdMember[] = [...members, { id: 'c', name: 'Jo', income: 150000 }]
+    // Total gross is 300k, so Alex earns a third of the household take-home and Sam a sixth —
+    // Jo being excluded from the split must not reallocate Jo's earnings onto them.
+    const shares = computeMemberBudgetShares(three, evenSplit, 9000, 3000)
+    expect(shares.find((s) => s.memberId === 'a')!.monthlyIncome).toBeCloseTo(3000)
+    expect(shares.find((s) => s.memberId === 'b')!.monthlyIncome).toBeCloseTo(1500)
+  })
+
+  it('keeps override apportionment unchanged when every member is included', () => {
+    const shares = computeMemberBudgetShares(members, incomeSplit, 9000, 3000)
+    expect(shares.find((s) => s.memberId === 'a')!.monthlyIncome).toBeCloseTo(6000)
+    expect(shares.find((s) => s.memberId === 'b')!.monthlyIncome).toBeCloseTo(3000)
+  })
+
+  it('splits a take-home override evenly across all members when all gross incomes are zero', () => {
+    const zeroIncome: HouseholdMember[] = [
+      { id: 'a', name: 'Alex', income: 0 },
+      { id: 'b', name: 'Sam', income: 0 },
+      { id: 'c', name: 'Jo', income: 0 },
+    ]
+    const shares = computeMemberBudgetShares(zeroIncome, evenSplit, 4500, 3000)
+    expect(shares).toHaveLength(2)
+    expect(shares[0].monthlyIncome).toBeCloseTo(1500)
+    expect(shares[1].monthlyIncome).toBeCloseTo(1500)
+  })
 })
