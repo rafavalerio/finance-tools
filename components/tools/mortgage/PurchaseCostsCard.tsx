@@ -2,7 +2,7 @@
 
 import { Card, CardHeader, CardTitle, CardContent, WarningIcon, ReceiptIcon } from '@/components/ui'
 import { AustralianState, PurchaseCosts } from '@/types/mortgage'
-import { formatCurrency } from '@/lib/calculations/mortgage'
+import { formatCurrency } from '@/lib/calculations/format'
 
 interface PurchaseCostsCardProps {
   costs: PurchaseCosts | null

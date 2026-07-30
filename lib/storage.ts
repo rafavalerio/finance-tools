@@ -1,21 +1,19 @@
 import {
   MortgageInputs,
-  Expense,
   BuyerType,
   AustralianState,
   RepaymentFrequency,
-  ExpenseFrequency,
   SplitSnapshotEntry,
 } from '@/types/mortgage'
 
 const STORAGE_KEYS = {
   MORTGAGE_INPUTS: 'finance-tools-mortgage-inputs',
-  MORTGAGE_EXPENSES: 'finance-tools-mortgage-expenses',
+  // Expenses moved to the budget planner. `finance-tools-mortgage-expenses` is now read
+  // (and cleared) once by lib/budget's migration — never written here again.
 } as const
 
 export interface MortgageStorageData {
   inputs: MortgageInputs
-  expenses: Expense[]
 }
 
 export interface DecodedMortgageData extends MortgageStorageData {
@@ -101,25 +99,12 @@ const REVERSE_STATE_MAP: Record<string, AustralianState> = {
   NT: 'NT',
 }
 
-// Expense frequency abbreviations
-const EXP_FREQ_MAP: Record<ExpenseFrequency, string> = {
-  monthly: 'm',
-  quarterly: 'q',
-  annually: 'a',
-}
-const REVERSE_EXP_FREQ_MAP: Record<string, ExpenseFrequency> = {
-  m: 'monthly',
-  q: 'quarterly',
-  a: 'annually',
-}
-
 /**
  * Save mortgage data to localStorage
  */
 export function saveMortgageData(data: MortgageStorageData): void {
   try {
     localStorage.setItem(STORAGE_KEYS.MORTGAGE_INPUTS, JSON.stringify(data.inputs))
-    localStorage.setItem(STORAGE_KEYS.MORTGAGE_EXPENSES, JSON.stringify(data.expenses))
   } catch (error) {
     console.error('Failed to save to localStorage:', error)
   }
@@ -131,7 +116,6 @@ export function saveMortgageData(data: MortgageStorageData): void {
 export function loadMortgageData(): MortgageStorageData | null {
   try {
     const inputsJson = localStorage.getItem(STORAGE_KEYS.MORTGAGE_INPUTS)
-    const expensesJson = localStorage.getItem(STORAGE_KEYS.MORTGAGE_EXPENSES)
 
     if (!inputsJson) return null
 
@@ -142,7 +126,6 @@ export function loadMortgageData(): MortgageStorageData | null {
         ...DEFAULTS,
         ...parsedInputs,
       },
-      expenses: expensesJson ? JSON.parse(expensesJson) : [],
     }
   } catch (error) {
     console.error('Failed to load from localStorage:', error)
@@ -156,7 +139,6 @@ export function loadMortgageData(): MortgageStorageData | null {
 export function clearMortgageData(): void {
   try {
     localStorage.removeItem(STORAGE_KEYS.MORTGAGE_INPUTS)
-    localStorage.removeItem(STORAGE_KEYS.MORTGAGE_EXPENSES)
   } catch (error) {
     console.error('Failed to clear localStorage:', error)
   }
@@ -166,15 +148,8 @@ export function clearMortgageData(): void {
  * Compact encoding: Only non-default values with short keys
  */
 interface CompactData {
-  [key: string]: string | number | boolean | CompactExpense[] | CompactSplitEntry[] | undefined
-  e?: CompactExpense[] // expenses
+  [key: string]: string | number | boolean | CompactSplitEntry[] | unknown[] | undefined
   sp?: CompactSplitEntry[] // split snapshot (name + amount, frozen at share time)
-}
-
-interface CompactExpense {
-  n: string // name
-  a: number // amount
-  f: string // frequency
 }
 
 interface CompactSplitEntry {
@@ -217,16 +192,6 @@ export function encodeMortgageData(
     }
     if (inputs.includeBuildingInspection !== DEFAULTS.includeBuildingInspection) {
       compact[KEY_MAP.includeBuildingInspection] = inputs.includeBuildingInspection ? 1 : 0
-    }
-
-    // Include expenses if any (with non-zero amounts)
-    const validExpenses = data.expenses.filter((e) => e.name && e.amount > 0)
-    if (validExpenses.length > 0) {
-      compact.e = validExpenses.map((exp) => ({
-        n: exp.name,
-        a: exp.amount,
-        f: EXP_FREQ_MAP[exp.frequency],
-      }))
     }
 
     // Include the frozen split snapshot, if any
@@ -288,26 +253,13 @@ export function decodeMortgageData(encoded: string): DecodedMortgageData | null 
       }
     }
 
-    // Reconstruct expenses
-    const expenses: Expense[] = []
-    if (compact.e && Array.isArray(compact.e)) {
-      for (const exp of compact.e) {
-        expenses.push({
-          id: crypto.randomUUID(),
-          name: exp.n,
-          amount: exp.a,
-          frequency: REVERSE_EXP_FREQ_MAP[exp.f] || 'monthly',
-        })
-      }
-    }
-
     // Reconstruct the split snapshot
     const splitSnapshot: SplitSnapshotEntry[] | null =
       compact.sp && Array.isArray(compact.sp) && compact.sp.length > 0
         ? compact.sp.map((entry) => ({ name: entry.n, amount: entry.a }))
         : null
 
-    return { inputs, expenses, splitSnapshot }
+    return { inputs, splitSnapshot }
   } catch (error) {
     console.error('Failed to decode mortgage data:', error)
     return null

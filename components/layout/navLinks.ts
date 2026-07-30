@@ -8,5 +8,5 @@ export interface NavLink {
 export const NAV_LINKS: NavLink[] = [
   { key: 'dashboard', label: 'Dashboard', href: '/' },
   { key: 'mortgage', label: 'Mortgage', href: '/tools/mortgage' },
-  { key: 'budget', label: 'Budget', href: '#', disabled: true },
+  { key: 'budget', label: 'Budget', href: '/tools/budget' },
 ]

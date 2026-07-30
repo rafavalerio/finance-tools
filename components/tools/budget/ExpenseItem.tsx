@@ -1,7 +1,8 @@
 'use client'
 
 import { Input, Select, Button, TrashIcon } from '@/components/ui'
-import { Expense, ExpenseFrequency } from '@/types/mortgage'
+import { Expense, ExpenseFrequency, ExpenseCategory } from '@/types/budget'
+import { EXPENSE_CATEGORIES } from '@/lib/calculations/budget'
 
 interface ExpenseItemProps {
   expense: Expense
@@ -14,6 +15,11 @@ const frequencyOptions = [
   { value: 'quarterly', label: 'Quarterly' },
   { value: 'annually', label: 'Annually' },
 ]
+
+const categoryOptions = EXPENSE_CATEGORIES.map((category) => ({
+  value: category.value,
+  label: category.label,
+}))
 
 export function ExpenseItem({ expense, onChange, onRemove }: ExpenseItemProps) {
   const handleChange = (field: keyof Expense, value: string | number) => {
@@ -49,6 +55,15 @@ export function ExpenseItem({ expense, onChange, onRemove }: ExpenseItemProps) {
           placeholder="0"
           value={expense.amount || ''}
           onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)}
+        />
+      </div>
+      <div className="w-full sm:w-40">
+        <Select
+          id={`expense-category-${expense.id}`}
+          label="Category"
+          options={categoryOptions}
+          value={expense.category}
+          onChange={(e) => handleChange('category', e.target.value as ExpenseCategory)}
         />
       </div>
       <div className="w-full sm:w-36">

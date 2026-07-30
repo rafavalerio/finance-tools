@@ -72,7 +72,7 @@ describe('MortgageCalculatorPage', () => {
 
     // Household split config seeds to "everyone" the first time there are 2+ members and
     // nothing's been configured — the mortgage page just displays the resulting breakdown.
-    expect(await screen.findByText('Split')).toBeInTheDocument()
+    expect(await screen.findByText('Repayment split')).toBeInTheDocument()
     expect(screen.getAllByText('Alex').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText('Sam').length).toBeGreaterThanOrEqual(1)
   })

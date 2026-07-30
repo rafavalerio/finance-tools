@@ -37,7 +37,6 @@ describe('useMortgageCalculator', () => {
   it('loads saved data from localStorage on mount', async () => {
     const saved: MortgageStorageData = {
       inputs: { ...baseInputs, loanAmount: 600000, deposit: 120000, interestRate: 6 },
-      expenses: [],
     }
     localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(saved.inputs))
 
@@ -57,7 +56,6 @@ describe('useMortgageCalculator', () => {
         repaymentFrequency: 'fortnightly',
         buyerType: 'first_home_buyer',
       },
-      expenses: [],
     }
     mockUseSearchParams.mockReturnValue(new URLSearchParams({ data: encodeMortgageData(shared) }))
 
@@ -81,13 +79,12 @@ describe('useMortgageCalculator', () => {
     })
   })
 
-  it('resets inputs and expenses to their defaults when confirmed', async () => {
+  it('resets inputs to their defaults when confirmed', async () => {
     const { result } = renderHook(() => useMortgageCalculator())
     await waitFor(() => expect(result.current.inputs.loanAmount).toBe(0))
 
     act(() => {
       result.current.setInputs({ ...result.current.inputs, loanAmount: 400000 })
-      result.current.setExpenses([{ id: '1', name: 'Rates', amount: 300, frequency: 'quarterly' }])
     })
     await waitFor(() => expect(result.current.inputs.loanAmount).toBe(400000))
 
@@ -96,13 +93,11 @@ describe('useMortgageCalculator', () => {
     })
 
     expect(result.current.inputs.loanAmount).toBe(0)
-    expect(result.current.expenses).toEqual([])
 
     await waitFor(() => {
       const stored = JSON.parse(localStorage.getItem('finance-tools-mortgage-inputs') || '{}')
       expect(stored.loanAmount).toBe(0)
     })
-    expect(JSON.parse(localStorage.getItem('finance-tools-mortgage-expenses') || '[]')).toEqual([])
   })
 
   it('does not reset when the confirmation is declined', async () => {
@@ -186,7 +181,6 @@ describe('useMortgageCalculator', () => {
   it('shows a frozen share snapshot until the user edits an input', async () => {
     const shared: MortgageStorageData = {
       inputs: { ...baseInputs, loanAmount: 500000, deposit: 100000, interestRate: 6 },
-      expenses: [],
     }
     const snapshot = [{ name: 'Alex', amount: 1200 }]
     mockUseSearchParams.mockReturnValue(

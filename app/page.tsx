@@ -1,14 +1,10 @@
 'use client'
 
-import {
-  MortgageSnapshotCard,
-  BudgetPlaceholderCard,
-  useDashboardData,
-} from '@/components/dashboard'
+import { MortgageSnapshotCard, BudgetSnapshotCard, useDashboardData } from '@/components/dashboard'
 import { PageContainer } from '@/components/layout'
 
 export default function HomePage() {
-  const { mortgageResults } = useDashboardData()
+  const { mortgageResults, budgetSummary, topCategories } = useDashboardData()
 
   return (
     <div className="min-h-screen bg-background">
@@ -17,7 +13,7 @@ export default function HomePage() {
           <h1 className="text-2xl font-bold text-foreground mb-6">Dashboard</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <MortgageSnapshotCard results={mortgageResults} />
-            <BudgetPlaceholderCard />
+            <BudgetSnapshotCard summary={budgetSummary} topCategories={topCategories} />
           </div>
         </PageContainer>
       </main>

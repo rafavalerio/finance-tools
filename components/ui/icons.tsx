@@ -17,6 +17,7 @@ export {
   TrendingDown as TrendingDownIcon,
   PieChart as PieChartIcon,
   User as UserIcon,
+  Users as UsersIcon,
   Settings as SettingsIcon,
   Menu as MenuIcon,
 } from 'lucide-react'

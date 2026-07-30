@@ -1,7 +1,5 @@
 export type RepaymentFrequency = 'weekly' | 'fortnightly' | 'monthly'
 
-export type ExpenseFrequency = 'monthly' | 'quarterly' | 'annually'
-
 export type BuyerType = 'standard' | 'first_home_buyer' | 'foreign_buyer'
 
 export type AustralianState = 'NSW' | 'VIC' | 'QLD' | 'WA' | 'SA' | 'TAS' | 'ACT' | 'NT'
@@ -33,13 +31,6 @@ export interface PurchaseCosts {
   estimatedLMI: number
 }
 
-export interface Expense {
-  id: string
-  name: string
-  amount: number
-  frequency: ExpenseFrequency
-}
-
 export interface AmortisationDataPoint {
   period: number
   date: string
@@ -69,18 +60,10 @@ export interface MortgageResults {
   totalInterest: number
   payoffDate: Date
 
-  // Monthly equivalents
+  // Monthly equivalent of the repayment, and how it splits across the household
   monthlyMortgagePayment: number
-  monthlyExpensesTotal: number
-  totalMonthlyOutgoing: number
   splitBreakdown: MemberSplitAmount[]
 
   // Amortisation schedule
   amortisationSchedule: AmortisationDataPoint[]
-}
-
-export interface ExpenseBreakdownItem {
-  name: string
-  value: number
-  color: string
 }
