@@ -19,15 +19,14 @@ describe('NavDropdown', () => {
     expect(screen.queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument()
   })
 
-  it('renders Dashboard, Mortgage links and a disabled Budget entry when open', () => {
+  it('renders Dashboard, Mortgage and Budget links when open', () => {
     render(<NavDropdown isOpen onClose={vi.fn()} />)
     expect(screen.getByRole('link', { name: 'Dashboard' })).toHaveAttribute('href', '/')
     expect(screen.getByRole('link', { name: 'Mortgage' })).toHaveAttribute(
       'href',
       '/tools/mortgage',
     )
-    expect(screen.queryByRole('link', { name: /budget/i })).not.toBeInTheDocument()
-    expect(screen.getByText(/budget/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Budget' })).toHaveAttribute('href', '/tools/budget')
   })
 
   it('calls onClose when a link is clicked', async () => {

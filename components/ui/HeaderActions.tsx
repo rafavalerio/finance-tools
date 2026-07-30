@@ -39,6 +39,8 @@ export function HeaderActions({ actions }: HeaderActionsProps) {
     }
   }, [open])
 
+  if (actions.length === 0) return null
+
   return (
     <div className="relative shrink-0" ref={menuRef}>
       <Button

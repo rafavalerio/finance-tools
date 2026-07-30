@@ -69,4 +69,9 @@ describe('HeaderActions', () => {
     const trigger = screen.getByRole('button', { name: 'More actions' })
     expect(trigger.className).toMatch(/rounded-full/)
   })
+
+  it('renders nothing when there are no actions', () => {
+    const { container } = render(<HeaderActions actions={[]} />)
+    expect(container).toBeEmptyDOMElement()
+  })
 })
