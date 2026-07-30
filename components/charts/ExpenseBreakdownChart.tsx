@@ -2,7 +2,7 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts'
 import { Card, CardHeader, CardTitle, CardContent, PieChartIcon } from '@/components/ui'
-import { ExpenseBreakdownItem } from '@/types/mortgage'
+import { ExpenseBreakdownItem } from '@/types/budget'
 import { formatCurrencyPrecise } from '@/lib/calculations/format'
 import { CHART_ACCENT_COLOR, CHART_PALETTE, CHART_TOOLTIP_STYLE } from './theme'
 
@@ -31,7 +31,7 @@ export function ExpenseBreakdownChart({ data }: ExpenseBreakdownChartProps) {
         </CardHeader>
         <CardContent>
           <div className="text-center py-8 text-muted">
-            <p>Enter your loan details to see the expense breakdown.</p>
+            <p>Add expenses to see the breakdown.</p>
           </div>
         </CardContent>
       </Card>

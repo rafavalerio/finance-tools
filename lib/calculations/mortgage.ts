@@ -1,8 +1,6 @@
 import {
   MortgageInputs,
   MortgageResults,
-  Expense,
-  ExpenseFrequency,
   RepaymentFrequency,
   AmortisationDataPoint,
   BuyerType,
@@ -26,20 +24,6 @@ export function getRepaymentsPerYear(frequency: RepaymentFrequency): number {
       return 26
     case 'monthly':
       return 12
-  }
-}
-
-/**
- * Convert an expense amount to its monthly equivalent
- */
-export function convertToMonthly(amount: number, frequency: ExpenseFrequency): number {
-  switch (frequency) {
-    case 'monthly':
-      return amount
-    case 'quarterly':
-      return amount / 3
-    case 'annually':
-      return amount / 12
   }
 }
 
@@ -141,7 +125,6 @@ export function generateAmortisationSchedule(
  */
 export function calculateMortgageResults(
   inputs: MortgageInputs,
-  expenses: Expense[],
   members: HouseholdMember[],
   splitConfig: HouseholdSplitConfig,
 ): MortgageResults {
@@ -175,15 +158,7 @@ export function calculateMortgageResults(
     inputs.repaymentFrequency,
   )
 
-  // Calculate monthly expenses total
-  const monthlyExpensesTotal = expenses.reduce((total, expense) => {
-    return total + convertToMonthly(expense.amount, expense.frequency)
-  }, 0)
-
-  // Calculate totals
-  const totalMonthlyOutgoing = monthlyMortgagePayment + monthlyExpensesTotal
-
-  // Split the total across the selected household members (empty if fewer than 2)
+  // Split the monthly repayment across the selected household members (empty if fewer than 2)
   const splitMembers = members.filter((member) => splitConfig.memberIds.includes(member.id))
   let splitBreakdown: MemberSplitAmount[] = []
   if (splitMembers.length >= 2) {
@@ -191,7 +166,7 @@ export function calculateMortgageResults(
     splitBreakdown = splitMembers.map((member) => ({
       memberId: member.id,
       name: member.name,
-      amount: totalMonthlyOutgoing * ratios[member.id],
+      amount: monthlyMortgagePayment * ratios[member.id],
     }))
   }
 
@@ -212,8 +187,6 @@ export function calculateMortgageResults(
     totalInterest,
     payoffDate,
     monthlyMortgagePayment,
-    monthlyExpensesTotal,
-    totalMonthlyOutgoing,
     splitBreakdown,
     amortisationSchedule,
   }
@@ -324,4 +297,37 @@ export function calculatePurchaseCosts(
     requiresLMI,
     estimatedLMI: requiresLMI ? estimatedLMI : 0,
   }
+}
+
+/**
+ * Turn saved mortgage inputs into results, or null when the inputs are not yet complete
+ * enough to calculate. Applies the same effective-deposit adjustment the mortgage page
+ * uses, so every consumer (mortgage page, dashboard, budget) shows the same repayment.
+ */
+export function calculateSavedMortgageResults(
+  inputs: MortgageInputs,
+  members: HouseholdMember[],
+  splitConfig: HouseholdSplitConfig,
+): MortgageResults | null {
+  if (inputs.loanAmount <= 0 || inputs.interestRate <= 0 || inputs.loanTermYears <= 0) {
+    return null
+  }
+
+  const purchaseCosts =
+    inputs.deposit > 0
+      ? calculatePurchaseCosts(
+          inputs.loanAmount,
+          inputs.deposit,
+          inputs.state,
+          inputs.buyerType,
+          inputs.includeLegalFees,
+          inputs.includeBuildingInspection,
+        )
+      : null
+
+  return calculateMortgageResults(
+    { ...inputs, deposit: purchaseCosts?.effectiveDeposit ?? inputs.deposit },
+    members,
+    splitConfig,
+  )
 }

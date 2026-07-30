@@ -29,7 +29,6 @@ describe('useDashboardData', () => {
 
   it('computes mortgage results from saved inputs, once loan details exist', async () => {
     localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(savedInputs))
-    localStorage.setItem('finance-tools-mortgage-expenses', JSON.stringify([]))
 
     const { result } = renderHook(() => useDashboardData())
     await waitFor(() => expect(result.current.mortgageResults).not.toBeNull())
@@ -49,7 +48,6 @@ describe('useDashboardData', () => {
       JSON.stringify({ memberIds: ['a', 'b'], mode: 'even' }),
     )
     localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(savedInputs))
-    localStorage.setItem('finance-tools-mortgage-expenses', JSON.stringify([]))
 
     const { result } = renderHook(() => useDashboardData())
     // Wait on the final split-aware result directly, not just "not null" — household members

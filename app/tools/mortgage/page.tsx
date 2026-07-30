@@ -3,14 +3,13 @@
 import { Suspense } from 'react'
 import {
   MortgageForm,
-  ExpenseList,
   ResultsSummary,
   PurchaseCostsCard,
   ShareModal,
   MortgageLoadingFallback,
   useMortgageCalculator,
 } from '@/components/tools/mortgage'
-import { AmortisationChart, ExpenseBreakdownChart } from '@/components/charts'
+import { AmortisationChart } from '@/components/charts'
 import { ShareIcon, ResetIcon } from '@/components/ui'
 import { PageContainer, ToolHeader } from '@/components/layout'
 
@@ -18,8 +17,6 @@ function MortgageCalculatorContent() {
   const {
     inputs,
     setInputs,
-    expenses,
-    setExpenses,
     showShareModal,
     setShowShareModal,
     shareUrl,
@@ -30,7 +27,6 @@ function MortgageCalculatorContent() {
     purchaseCosts,
     results,
     displaySplitBreakdown,
-    expenseBreakdownData,
   } = useMortgageCalculator()
 
   return (
@@ -68,7 +64,6 @@ function MortgageCalculatorContent() {
                 propertyPrice={inputs.loanAmount}
                 state={inputs.state}
               />
-              <ExpenseList expenses={expenses} onChange={setExpenses} />
             </div>
 
             {/* Right Column - Results */}
@@ -76,7 +71,6 @@ function MortgageCalculatorContent() {
               <ResultsSummary results={results} splitBreakdown={displaySplitBreakdown} />
               <div className="grid grid-cols-1 gap-6">
                 <AmortisationChart data={results?.amortisationSchedule || []} />
-                <ExpenseBreakdownChart data={expenseBreakdownData} />
               </div>
             </div>
           </div>

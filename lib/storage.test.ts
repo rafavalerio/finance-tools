@@ -36,10 +36,6 @@ const customData: MortgageStorageData = {
     includeLegalFees: false,
     includeBuildingInspection: false,
   },
-  expenses: [
-    { id: '1', name: 'Council Rates', amount: 400, frequency: 'quarterly' },
-    { id: '2', name: 'Home Insurance', amount: 1500, frequency: 'annually' },
-  ],
 }
 
 beforeEach(() => {
@@ -51,19 +47,19 @@ describe('saveMortgageData / loadMortgageData', () => {
     expect(loadMortgageData()).toBeNull()
   })
 
-  it('round-trips inputs and expenses through localStorage', () => {
+  it('round-trips inputs through localStorage', () => {
     saveMortgageData(customData)
     expect(loadMortgageData()).toEqual(customData)
   })
 
-  it('defaults expenses to an empty array if none were saved', () => {
+  it('loads saved inputs merged over the defaults', () => {
     localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(defaultInputs))
-    expect(loadMortgageData()).toEqual({ inputs: defaultInputs, expenses: [] })
+    expect(loadMortgageData()).toEqual({ inputs: defaultInputs })
   })
 })
 
 describe('clearMortgageData', () => {
-  it('removes saved inputs and expenses', () => {
+  it('removes saved inputs', () => {
     saveMortgageData(customData)
     clearMortgageData()
     expect(loadMortgageData()).toBeNull()
@@ -71,18 +67,12 @@ describe('clearMortgageData', () => {
 })
 
 describe('encodeMortgageData / decodeMortgageData', () => {
-  it('round-trips custom inputs and expenses (splitMemberIds/splitMode no longer exist on MortgageInputs)', () => {
+  it('round-trips custom inputs (splitMemberIds/splitMode no longer exist on MortgageInputs)', () => {
     const encoded = encodeMortgageData(customData)
     const decoded = decodeMortgageData(encoded)
 
     expect(decoded).not.toBeNull()
     expect(decoded!.inputs).toEqual(customData.inputs)
-    expect(decoded!.expenses).toHaveLength(2)
-    expect(decoded!.expenses[0]).toMatchObject({
-      name: 'Council Rates',
-      amount: 400,
-      frequency: 'quarterly',
-    })
     expect(decoded!.splitSnapshot).toBeNull()
   })
 
@@ -103,23 +93,21 @@ describe('encodeMortgageData / decodeMortgageData', () => {
   })
 
   it('decodes to the defaults when every field is default (nothing encoded)', () => {
-    const encoded = encodeMortgageData({ inputs: defaultInputs, expenses: [] })
+    const encoded = encodeMortgageData({ inputs: defaultInputs })
     const decoded = decodeMortgageData(encoded)
-    expect(decoded).toEqual({ inputs: defaultInputs, expenses: [], splitSnapshot: null })
+    expect(decoded).toEqual({ inputs: defaultInputs, splitSnapshot: null })
   })
 
-  it('omits expenses with no name or non-positive amount', () => {
-    const encoded = encodeMortgageData({
-      inputs: defaultInputs,
-      expenses: [
-        { id: '1', name: '', amount: 100, frequency: 'monthly' },
-        { id: '2', name: 'Empty', amount: 0, frequency: 'monthly' },
-        { id: '3', name: 'Valid', amount: 50, frequency: 'monthly' },
-      ],
-    })
-    const decoded = decodeMortgageData(encoded)
-    expect(decoded!.expenses).toHaveLength(1)
-    expect(decoded!.expenses[0].name).toBe('Valid')
+  it('ignores the legacy expenses field on an old share link', () => {
+    const legacy = btoa(JSON.stringify({ p: 600000, e: [{ n: 'Rates', a: 300, f: 'q' }] }))
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '')
+
+    const decoded = decodeMortgageData(legacy)
+    expect(decoded).not.toBeNull()
+    expect(decoded!.inputs.loanAmount).toBe(600000)
+    expect(decoded).not.toHaveProperty('expenses')
   })
 
   it('returns null for invalid encoded input', () => {
@@ -135,7 +123,6 @@ describe('encodeMortgageData / decodeMortgageData', () => {
   it('falls back to VIC when decoding a payload with no state key (pre-existing share links)', () => {
     const encoded = encodeMortgageData({
       inputs: { ...defaultInputs, loanAmount: 500000 },
-      expenses: [],
     })
     const decoded = decodeMortgageData(encoded)
     expect(decoded!.inputs.state).toBe('VIC')

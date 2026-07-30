@@ -1,14 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ExpenseBreakdownChart } from './ExpenseBreakdownChart'
-import { ExpenseBreakdownItem } from '@/types/mortgage'
+import { ExpenseBreakdownItem } from '@/types/budget'
 
 describe('ExpenseBreakdownChart', () => {
   it('shows an empty state when there is no data', () => {
     render(<ExpenseBreakdownChart data={[]} />)
-    expect(
-      screen.getByText('Enter your loan details to see the expense breakdown.'),
-    ).toBeInTheDocument()
+    expect(screen.getByText('Add expenses to see the breakdown.')).toBeInTheDocument()
   })
 
   it('renders the chart title when data is provided', () => {
@@ -18,8 +16,6 @@ describe('ExpenseBreakdownChart', () => {
     ]
     render(<ExpenseBreakdownChart data={data} />)
     expect(screen.getByText('Monthly Expense Breakdown')).toBeInTheDocument()
-    expect(
-      screen.queryByText('Enter your loan details to see the expense breakdown.'),
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText('Add expenses to see the breakdown.')).not.toBeInTheDocument()
   })
 })

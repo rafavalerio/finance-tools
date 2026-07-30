@@ -9,7 +9,7 @@ import {
   PlusIcon,
   ListChecksIcon,
 } from '@/components/ui'
-import { Expense } from '@/types/mortgage'
+import { Expense } from '@/types/budget'
 import { ExpenseItem } from './ExpenseItem'
 
 interface ExpenseListProps {
@@ -24,6 +24,7 @@ export function ExpenseList({ expenses, onChange }: ExpenseListProps) {
       name: '',
       amount: 0,
       frequency: 'monthly',
+      category: 'other',
     }
     onChange([...expenses, newExpense])
   }
@@ -56,16 +57,16 @@ export function ExpenseList({ expenses, onChange }: ExpenseListProps) {
       >
         <CardTitle className="flex items-center gap-2">
           <ListChecksIcon width="20" height="20" className="text-accent" />
-          Additional Expenses
+          Expenses
         </CardTitle>
         <p className="text-sm text-muted mt-1">
-          Add recurring expenses like council rates, utilities, insurance, etc.
+          Add recurring expenses like council rates, utilities, insurance, and groceries.
         </p>
       </CardHeader>
       <CardContent>
         {expenses.length === 0 ? (
           <div className="text-center py-8 text-muted">
-            <p>No additional expenses added yet.</p>
+            <p>No expenses added yet.</p>
             <p className="text-sm mt-1">Click &ldquo;Add Expense&rdquo; to get started.</p>
           </div>
         ) : (

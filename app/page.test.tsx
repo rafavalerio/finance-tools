@@ -28,7 +28,6 @@ describe('HomePage', () => {
 
   it('shows the mortgage snapshot once loan details are saved', async () => {
     localStorage.setItem('finance-tools-mortgage-inputs', JSON.stringify(savedInputs))
-    localStorage.setItem('finance-tools-mortgage-expenses', JSON.stringify([]))
     render(<HomePage />)
     expect(await screen.findByText(/\/mo$/)).toBeInTheDocument()
   })

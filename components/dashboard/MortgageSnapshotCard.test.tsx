@@ -11,8 +11,6 @@ const results: MortgageResults = {
   totalInterest: 464000,
   payoffDate: new Date('2042-06-01'),
   monthlyMortgagePayment: 2340,
-  monthlyExpensesTotal: 300,
-  totalMonthlyOutgoing: 2640,
   splitBreakdown: [],
   amortisationSchedule: [],
 }
