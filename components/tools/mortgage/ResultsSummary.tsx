@@ -1,13 +1,12 @@
 'use client'
 
 import { Card, CardHeader, CardTitle, CardContent, ChartBarIcon } from '@/components/ui'
-import { MortgageResults, SplitSnapshotEntry } from '@/types/mortgage'
+import { MortgageResults } from '@/types/mortgage'
 import { formatFrequencyLabel } from '@/lib/calculations/mortgage'
 import { formatCurrency, formatCurrencyPrecise } from '@/lib/calculations/format'
 
 interface ResultsSummaryProps {
   results: MortgageResults | null
-  splitBreakdown: SplitSnapshotEntry[]
 }
 
 function StatCard({
@@ -36,7 +35,7 @@ function StatCard({
   )
 }
 
-export function ResultsSummary({ results, splitBreakdown }: ResultsSummaryProps) {
+export function ResultsSummary({ results }: ResultsSummaryProps) {
   if (!results) {
     return (
       <Card>
@@ -82,26 +81,6 @@ export function ResultsSummary({ results, splitBreakdown }: ResultsSummaryProps)
               />
             </div>
           </div>
-
-          {/* Cost split, only shown once there's a breakdown to show */}
-          {splitBreakdown.length > 0 && (
-            <div>
-              <h4 className="text-xs font-medium text-muted uppercase tracking-wide mb-2">
-                Repayment split
-              </h4>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                {splitBreakdown.map((entry, index) => (
-                  <StatCard
-                    key={index}
-                    label={entry.name}
-                    value={formatCurrencyPrecise(entry.amount)}
-                    subtext="per month"
-                    highlight
-                  />
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Loan Summary */}
           <div>

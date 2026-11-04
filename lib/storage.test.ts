@@ -67,24 +67,12 @@ describe('clearMortgageData', () => {
 })
 
 describe('encodeMortgageData / decodeMortgageData', () => {
-  it('round-trips custom inputs (splitMemberIds/splitMode no longer exist on MortgageInputs)', () => {
+  it('round-trips custom mortgage inputs', () => {
     const encoded = encodeMortgageData(customData)
     const decoded = decodeMortgageData(encoded)
 
     expect(decoded).not.toBeNull()
     expect(decoded!.inputs).toEqual(customData.inputs)
-    expect(decoded!.splitSnapshot).toBeNull()
-  })
-
-  it('embeds and decodes a split snapshot by name and amount', () => {
-    const snapshot = [
-      { name: 'Rafael', amount: 1200 },
-      { name: 'Partner', amount: 1140 },
-    ]
-    const encoded = encodeMortgageData(customData, snapshot)
-    const decoded = decodeMortgageData(encoded)
-
-    expect(decoded!.splitSnapshot).toEqual(snapshot)
   })
 
   it('produces a URL-safe string with no base64 padding or unsafe characters', () => {
@@ -95,19 +83,7 @@ describe('encodeMortgageData / decodeMortgageData', () => {
   it('decodes to the defaults when every field is default (nothing encoded)', () => {
     const encoded = encodeMortgageData({ inputs: defaultInputs })
     const decoded = decodeMortgageData(encoded)
-    expect(decoded).toEqual({ inputs: defaultInputs, splitSnapshot: null })
-  })
-
-  it('ignores the legacy expenses field on an old share link', () => {
-    const legacy = btoa(JSON.stringify({ p: 600000, e: [{ n: 'Rates', a: 300, f: 'q' }] }))
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '')
-
-    const decoded = decodeMortgageData(legacy)
-    expect(decoded).not.toBeNull()
-    expect(decoded!.inputs.loanAmount).toBe(600000)
-    expect(decoded).not.toHaveProperty('expenses')
+    expect(decoded).toEqual({ inputs: defaultInputs })
   })
 
   it('returns null for invalid encoded input', () => {
@@ -130,20 +106,13 @@ describe('encodeMortgageData / decodeMortgageData', () => {
 })
 
 describe('generateShareUrl', () => {
-  it('builds a URL pointing at the mortgage tool with encoded data', () => {
+  it('builds a root URL with encoded mortgage data', () => {
     const url = generateShareUrl(customData)
-    expect(url).toContain('/tools/mortgage?data=')
+    expect(url).toContain('/?data=')
 
     const encoded = url.split('?data=')[1]
     const decoded = decodeMortgageData(encoded)
     expect(decoded!.inputs).toEqual(customData.inputs)
   })
 
-  it('includes a split snapshot when one is provided', () => {
-    const snapshot = [{ name: 'Rafael', amount: 1200 }]
-    const url = generateShareUrl(customData, snapshot)
-    const encoded = url.split('?data=')[1]
-    const decoded = decodeMortgageData(encoded)
-    expect(decoded!.splitSnapshot).toEqual(snapshot)
-  })
 })

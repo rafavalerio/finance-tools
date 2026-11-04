@@ -6,10 +6,6 @@ vi.mock('next/font/google', () => ({
   Geist_Mono: () => ({ variable: '--font-geist-mono' }),
 }))
 
-vi.mock('next/navigation', () => ({
-  usePathname: () => '/',
-}))
-
 const { default: RootLayout, metadata } = await import('./layout')
 
 describe('RootLayout', () => {
@@ -29,14 +25,11 @@ describe('RootLayout', () => {
         <p>Page content</p>
       </RootLayout>,
     )
-    expect(html).toContain('Finance Tools')
-    expect(html).toContain('Open navigation menu')
+    expect(html).toContain('Mortgage Planner')
   })
 
   it('sets the page metadata', () => {
-    expect(metadata.title).toBe('Finance Tools')
-    expect(metadata.description).toBe(
-      'Personal finance tools for budgeting, mortgage planning, and more',
-    )
+    expect(metadata.title).toBe('Mortgage Planner')
+    expect(metadata.description).toBe('Plan your Australian home loan, repayments, and purchase costs')
   })
 })

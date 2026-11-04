@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { MortgageInputs, SplitSnapshotEntry } from '@/types/mortgage'
+import { MortgageInputs } from '@/types/mortgage'
 import { calculateSavedMortgageResults, calculatePurchaseCosts } from '@/lib/calculations/mortgage'
 import {
   saveMortgageData,
@@ -11,7 +11,6 @@ import {
   decodeMortgageData,
   generateShareUrl,
 } from '@/lib/storage'
-import { useHousehold } from '@/components/household'
 
 const DEFAULT_INPUTS: MortgageInputs = {
   loanAmount: 0,
@@ -28,13 +27,11 @@ const DEFAULT_INPUTS: MortgageInputs = {
 
 export function useMortgageCalculator() {
   const searchParams = useSearchParams()
-  const { members, splitConfig } = useHousehold()
   const [inputs, setInputsState] = useState<MortgageInputs>(DEFAULT_INPUTS)
   const [isLoaded, setIsLoaded] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
   const [shareUrl, setShareUrl] = useState('')
   const [copied, setCopied] = useState(false)
-  const [sharedSplitSnapshot, setSharedSplitSnapshot] = useState<SplitSnapshotEntry[] | null>(null)
 
   // Load data from URL params or localStorage on mount.
   // Deferred via a microtask purely to satisfy react-hooks/set-state-in-effect's static
@@ -50,7 +47,6 @@ export function useMortgageCalculator() {
         const decoded = decodeMortgageData(urlData)
         if (decoded) {
           setInputsState(decoded.inputs)
-          setSharedSplitSnapshot(decoded.splitSnapshot)
           setIsLoaded(true)
           return
         }
@@ -74,20 +70,12 @@ export function useMortgageCalculator() {
     }
   }, [inputs, isLoaded])
 
-  // Wrapped setters: any user-driven edit invalidates a shared split snapshot, so the
-  // display falls back to the live calculation from the user's own household
-  const setInputs = useCallback((next: MortgageInputs) => {
-    setInputsState(next)
-    setSharedSplitSnapshot(null)
-  }, [])
-
   // Reset form handler
   const handleReset = useCallback(() => {
-    if (confirm('Are you sure you want to reset the form? This will clear all your data.')) {
+    if (confirm('Reset the mortgage calculator and clear your inputs?')) {
       setInputsState(DEFAULT_INPUTS)
-      setSharedSplitSnapshot(null)
       clearMortgageData()
-      window.history.replaceState({}, '', '/tools/mortgage')
+      window.history.replaceState({}, '', '/')
     }
   }, [])
 
@@ -115,20 +103,16 @@ export function useMortgageCalculator() {
 
   // Calculate mortgage results using effective loan amount (after costs)
   const results = useMemo(
-    () => calculateSavedMortgageResults(inputs, members, splitConfig),
-    [inputs, members, splitConfig],
+    () => calculateSavedMortgageResults(inputs),
+    [inputs],
   )
 
-  // Share handler - snapshots the current split breakdown by name, not member ID
   const handleShare = useCallback(() => {
-    const snapshot: SplitSnapshotEntry[] | undefined = results
-      ? results.splitBreakdown.map(({ name, amount }) => ({ name, amount }))
-      : undefined
-    const url = generateShareUrl({ inputs }, snapshot)
+    const url = generateShareUrl({ inputs })
     setShareUrl(url)
     setShowShareModal(true)
     setCopied(false)
-  }, [inputs, results])
+  }, [inputs])
 
   // Copy to clipboard handler
   const handleCopy = useCallback(async () => {
@@ -141,15 +125,9 @@ export function useMortgageCalculator() {
     }
   }, [shareUrl])
 
-  // A frozen share snapshot (if present and unedited) takes priority over the live split
-  const displaySplitBreakdown: SplitSnapshotEntry[] =
-    sharedSplitSnapshot ??
-    results?.splitBreakdown.map(({ name, amount }) => ({ name, amount })) ??
-    []
-
   return {
     inputs,
-    setInputs,
+    setInputs: setInputsState,
     showShareModal,
     setShowShareModal,
     shareUrl,
@@ -159,6 +137,5 @@ export function useMortgageCalculator() {
     handleCopy,
     purchaseCosts,
     results,
-    displaySplitBreakdown,
   }
 }

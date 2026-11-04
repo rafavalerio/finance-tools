@@ -3,21 +3,14 @@ import {
   BuyerType,
   AustralianState,
   RepaymentFrequency,
-  SplitSnapshotEntry,
 } from '@/types/mortgage'
 
 const STORAGE_KEYS = {
   MORTGAGE_INPUTS: 'finance-tools-mortgage-inputs',
-  // Expenses moved to the budget planner. `finance-tools-mortgage-expenses` is now read
-  // (and cleared) once by lib/budget's migration — never written here again.
 } as const
 
 export interface MortgageStorageData {
   inputs: MortgageInputs
-}
-
-export interface DecodedMortgageData extends MortgageStorageData {
-  splitSnapshot: SplitSnapshotEntry[] | null
 }
 
 // Default values - used to skip encoding defaults
@@ -148,23 +141,13 @@ export function clearMortgageData(): void {
  * Compact encoding: Only non-default values with short keys
  */
 interface CompactData {
-  [key: string]: string | number | boolean | CompactSplitEntry[] | unknown[] | undefined
-  sp?: CompactSplitEntry[] // split snapshot (name + amount, frozen at share time)
-}
-
-interface CompactSplitEntry {
-  n: string // name
-  a: number // amount
+  [key: string]: string | number | boolean | undefined
 }
 
 /**
  * Encode mortgage data to a compact URL-safe string.
- * `splitSnapshot`, if provided, is embedded as frozen name+amount pairs — never member IDs.
  */
-export function encodeMortgageData(
-  data: MortgageStorageData,
-  splitSnapshot?: SplitSnapshotEntry[],
-): string {
+export function encodeMortgageData(data: MortgageStorageData): string {
   try {
     const compact: CompactData = {}
 
@@ -194,11 +177,6 @@ export function encodeMortgageData(
       compact[KEY_MAP.includeBuildingInspection] = inputs.includeBuildingInspection ? 1 : 0
     }
 
-    // Include the frozen split snapshot, if any
-    if (splitSnapshot && splitSnapshot.length > 0) {
-      compact.sp = splitSnapshot.map((entry) => ({ n: entry.name, a: entry.amount }))
-    }
-
     const json = JSON.stringify(compact)
     // URL-safe base64: replace + with -, / with _, remove padding =
     return btoa(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
@@ -211,7 +189,7 @@ export function encodeMortgageData(
 /**
  * Decode mortgage data from compact URL-safe string
  */
-export function decodeMortgageData(encoded: string): DecodedMortgageData | null {
+export function decodeMortgageData(encoded: string): MortgageStorageData | null {
   try {
     // Restore URL-safe base64 to standard base64
     let base64 = encoded.replace(/-/g, '+').replace(/_/g, '/')
@@ -225,8 +203,6 @@ export function decodeMortgageData(encoded: string): DecodedMortgageData | null 
     const inputs: MortgageInputs = { ...DEFAULTS }
 
     for (const [shortKey, value] of Object.entries(compact)) {
-      if (shortKey === 'e' || shortKey === 'sp') continue // handled separately
-
       const fullKey = REVERSE_KEY_MAP[shortKey]
       if (!fullKey) continue
 
@@ -253,13 +229,7 @@ export function decodeMortgageData(encoded: string): DecodedMortgageData | null 
       }
     }
 
-    // Reconstruct the split snapshot
-    const splitSnapshot: SplitSnapshotEntry[] | null =
-      compact.sp && Array.isArray(compact.sp) && compact.sp.length > 0
-        ? compact.sp.map((entry) => ({ name: entry.n, amount: entry.a }))
-        : null
-
-    return { inputs, splitSnapshot }
+    return { inputs }
   } catch (error) {
     console.error('Failed to decode mortgage data:', error)
     return null
@@ -267,13 +237,10 @@ export function decodeMortgageData(encoded: string): DecodedMortgageData | null 
 }
 
 /**
- * Generate shareable URL with encoded mortgage data and an optional split snapshot
+ * Generate shareable URL with encoded mortgage data
  */
-export function generateShareUrl(
-  data: MortgageStorageData,
-  splitSnapshot?: SplitSnapshotEntry[],
-): string {
-  const encoded = encodeMortgageData(data, splitSnapshot)
+export function generateShareUrl(data: MortgageStorageData): string {
+  const encoded = encodeMortgageData(data)
   const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
-  return `${baseUrl}/tools/mortgage?data=${encoded}`
+  return `${baseUrl}/?data=${encoded}`
 }

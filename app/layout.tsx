@@ -14,11 +14,11 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Finance Tools',
-  description: 'Personal finance tools for budgeting, mortgage planning, and more',
+  title: 'Mortgage Planner',
+  description: 'Plan your Australian home loan, repayments, and purchase costs',
   appleWebApp: {
     capable: true,
-    title: 'Finance Tools',
+    title: 'Mortgage Planner',
     statusBarStyle: 'black-translucent',
   },
 }
