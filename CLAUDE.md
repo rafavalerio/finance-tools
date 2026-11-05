@@ -19,7 +19,7 @@ mortgage workflow rather than restoring a household profile system.
 - `app/page.tsx` composes the mortgage form, results, purchase costs, amortisation chart, and share modal.
 - `components/tools/mortgage/` contains the mortgage UI and `useMortgageCalculator` state hook.
 - `components/charts/AmortisationChart.tsx` renders the loan-balance chart.
-- `components/layout/` contains `TopNav`, `PageContainer`, and `ToolHeader`.
+- `components/layout/` contains `PageContainer` and the unified `ToolHeader`.
 - `components/ui/` contains shared form, card, modal, action, and icon components.
 - `lib/calculations/mortgage.ts` contains repayment, amortisation, purchase-cost, and LMI calculations.
 - `lib/calculations/stampDuty/` contains state schedules and the stamp-duty engine.

@@ -19,13 +19,14 @@ describe('RootLayout', () => {
     expect(html).toContain('lang="en"')
   })
 
-  it('renders the persistent top nav', () => {
+  it('does not render a page header globally', () => {
     const html = renderToStaticMarkup(
       <RootLayout>
         <p>Page content</p>
       </RootLayout>,
     )
-    expect(html).toContain('Mortgage Planner')
+    expect(html).not.toContain('Mortgage Planner')
+    expect(html).not.toContain('Mortgage Calculator')
   })
 
   it('sets the page metadata', () => {

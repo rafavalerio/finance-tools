@@ -6,9 +6,10 @@ describe('ToolHeader', () => {
   it('renders the title as a heading', () => {
     render(<ToolHeader title="Mortgage Calculator" actions={[]} />)
     expect(screen.getByRole('heading', { name: 'Mortgage Calculator' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Mortgage Planner home' })).toHaveAttribute('href', '/')
   })
 
-  it('renders the actions trigger and no back link', () => {
+  it('renders action buttons directly without a menu trigger', () => {
     render(
       <ToolHeader
         title="Mortgage Calculator"
@@ -17,7 +18,7 @@ describe('ToolHeader', () => {
         ]}
       />,
     )
-    expect(screen.getByRole('button', { name: 'More actions' })).toBeInTheDocument()
-    expect(screen.queryByRole('link')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'More actions' })).not.toBeInTheDocument()
   })
 })

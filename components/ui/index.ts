@@ -18,5 +18,4 @@ export {
   ReceiptIcon,
   ChartBarIcon,
   TrendingDownIcon,
-  SettingsIcon,
 } from './icons'

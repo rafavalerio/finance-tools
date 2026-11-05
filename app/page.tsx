@@ -39,6 +39,7 @@ function MortgageCalculatorContent() {
             label: 'Share',
             icon: <ShareIcon width="16" height="16" />,
             onClick: handleShare,
+            variant: 'primary',
           },
           {
             key: 'reset',

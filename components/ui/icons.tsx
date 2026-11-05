@@ -10,5 +10,4 @@ export {
   Receipt as ReceiptIcon,
   BarChart3 as ChartBarIcon,
   TrendingDown as TrendingDownIcon,
-  Settings as SettingsIcon,
 } from 'lucide-react'
