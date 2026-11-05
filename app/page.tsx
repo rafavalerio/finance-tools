@@ -32,7 +32,6 @@ function MortgageCalculatorContent() {
     <>
       {/* Header */}
       <ToolHeader
-        title="Mortgage Calculator"
         actions={[
           {
             key: 'share',

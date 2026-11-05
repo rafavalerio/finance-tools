@@ -14,8 +14,9 @@ beforeEach(() => {
 describe('MortgageCalculatorPage', () => {
   it('shows the mortgage calculator directly on the home page', () => {
     render(<MortgageCalculatorPage />)
-    expect(screen.getByRole('link', { name: 'Mortgage Planner home' })).toHaveAttribute('href', '/')
-    expect(screen.getByText('Mortgage Calculator')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Mortgage Planner' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Mortgage Planner' })).toHaveAttribute('href', '/')
+    expect(screen.queryByText('Mortgage Calculator')).not.toBeInTheDocument()
     expect(screen.getByLabelText('Property Price')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Reset' })).toBeInTheDocument()
