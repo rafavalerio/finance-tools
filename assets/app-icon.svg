@@ -3,7 +3,7 @@
   <rect width="512" height="512" fill="#f8f5ee" />
   <rect x="34" y="34" width="444" height="444" rx="112" fill="#fffdf8" stroke="#e2d9cc" stroke-width="8" />
   <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" transform="translate(16 16) scale(20)" fill="#d97757" />
-  <g transform="translate(141 194) scale(10)" fill="none" stroke="#fffdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <g transform="translate(133.6 227.6) scale(10.2 8.2)" fill="none" stroke="#fffdf8" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M12 2v20" />
     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
   </g>
