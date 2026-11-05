@@ -1,9 +1,9 @@
 export const CHART_TOOLTIP_STYLE = {
   contentStyle: {
-    backgroundColor: 'rgb(48, 48, 46)',
-    border: '1px solid rgb(68, 68, 64)',
+    backgroundColor: 'var(--card-bg)',
+    border: '1px solid var(--border)',
     borderRadius: '8px',
-    color: 'rgb(194, 192, 182)',
+    color: 'var(--foreground)',
   },
-  labelStyle: { color: 'rgb(194, 192, 182)', fontWeight: 'bold' },
+  labelStyle: { color: 'var(--foreground)', fontWeight: 'bold' },
 }

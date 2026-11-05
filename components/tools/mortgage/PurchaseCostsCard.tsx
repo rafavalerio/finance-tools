@@ -30,10 +30,10 @@ function CostRow({
         indent ? 'pl-4' : ''
       } ${highlight ? 'font-semibold' : ''}`}
     >
-      <span className={`text-sm ${warning ? 'text-amber-400' : 'text-foreground'}`}>{label}</span>
+      <span className={`text-sm ${warning ? 'text-amber-800' : 'text-foreground'}`}>{label}</span>
       <span
         className={`text-sm font-medium ${
-          warning ? 'text-amber-400' : highlight ? 'text-accent' : 'text-foreground'
+          warning ? 'text-amber-800' : highlight ? 'text-accent' : 'text-foreground'
         }`}
       >
         {formatCurrency(amount)}
@@ -141,21 +141,21 @@ export function PurchaseCostsCard({
 
           {/* LMI Warning */}
           {costs.requiresLMI && (
-            <div className="p-3 rounded-lg bg-amber-400/10 border border-amber-400/30">
+            <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
               <div className="flex gap-2">
                 <WarningIcon
                   width="18"
                   height="18"
-                  className="text-amber-400 flex-shrink-0 mt-0.5"
+                  className="text-amber-800 flex-shrink-0 mt-0.5"
                 />
                 <div>
-                  <p className="text-sm font-medium text-amber-400">
+                  <p className="text-sm font-medium text-amber-800">
                     Lenders Mortgage Insurance (LMI) Required
                   </p>
-                  <p className="text-xs text-amber-400/80 mt-1">
+                  <p className="text-xs text-amber-800/90 mt-1">
                     With less than 20% effective deposit, most lenders require LMI.
                   </p>
-                  <p className="text-sm font-semibold text-amber-400 mt-2">
+                  <p className="text-sm font-semibold text-amber-800 mt-2">
                     Estimated LMI: {formatCurrency(costs.estimatedLMI)}
                   </p>
                   <p className="text-xs text-muted mt-1">

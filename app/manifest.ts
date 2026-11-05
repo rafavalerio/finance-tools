@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Plan your Australian home loan, repayments, and purchase costs',
     start_url: '/',
     display: 'standalone',
-    background_color: '#262624',
+    background_color: '#f8f5ee',
     theme_color: '#d97757',
     icons: [
       {
