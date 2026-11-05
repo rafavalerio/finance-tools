@@ -14,7 +14,12 @@ describe('ToolHeader', () => {
     render(
       <ToolHeader
         actions={[
-          { key: 'share', label: 'Share', icon: <span>share-icon</span>, onClick: vi.fn() },
+          {
+            key: 'share',
+            label: 'Share',
+            icon: <span aria-hidden="true">share-icon</span>,
+            onClick: vi.fn(),
+          },
         ]}
       />,
     )
