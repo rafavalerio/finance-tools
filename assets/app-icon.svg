@@ -1,8 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- House and dollar paths use the Lucide House and DollarSign icons. -->
-  <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" transform="translate(16 26) scale(20)" fill="none" stroke="#d97757" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-  <g transform="translate(136 230.2) scale(10 7.15)" fill="none" stroke="#312b25" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 2v20" />
-    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+  <!-- Default Lucide Home icon path, rendered in the app accent colour. -->
+  <g transform="translate(16 26) scale(20)" fill="none" stroke="#d97757" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+    <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
   </g>
 </svg>
