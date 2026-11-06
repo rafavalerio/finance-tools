@@ -51,25 +51,25 @@ export function AmortisationChart({ data }: AmortisationChartProps) {
             <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="rgb(217, 119, 87)" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="rgb(217, 119, 87)" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--accent)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="var(--accent)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgb(68, 68, 64)" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
               <XAxis
                 dataKey="date"
-                stroke="rgb(128, 126, 120)"
-                tick={{ fill: 'rgb(128, 126, 120)', fontSize: 12 }}
+                stroke="var(--muted)"
+                tick={{ fill: 'var(--muted)', fontSize: 12 }}
                 tickLine={false}
-                axisLine={{ stroke: 'rgb(68, 68, 64)' }}
+                axisLine={{ stroke: 'var(--border)' }}
                 interval="preserveStartEnd"
                 minTickGap={50}
               />
               <YAxis
-                stroke="rgb(128, 126, 120)"
-                tick={{ fill: 'rgb(128, 126, 120)', fontSize: 12 }}
+                stroke="var(--muted)"
+                tick={{ fill: 'var(--muted)', fontSize: 12 }}
                 tickLine={false}
-                axisLine={{ stroke: 'rgb(68, 68, 64)' }}
+                axisLine={{ stroke: 'var(--border)' }}
                 tickFormatter={(value) => formatCurrency(value)}
                 width={80}
               />
@@ -80,7 +80,7 @@ export function AmortisationChart({ data }: AmortisationChartProps) {
               <Area
                 type="monotone"
                 dataKey="balance"
-                stroke="rgb(217, 119, 87)"
+                stroke="var(--accent)"
                 strokeWidth={2}
                 fill="url(#balanceGradient)"
               />

@@ -93,6 +93,7 @@ describe('useMortgageCalculator', () => {
     })
 
     expect(result.current.inputs.loanAmount).toBe(0)
+    expect(window.location.pathname).toBe('/')
 
     await waitFor(() => {
       const stored = JSON.parse(localStorage.getItem('finance-tools-mortgage-inputs') || '{}')
@@ -129,7 +130,7 @@ describe('useMortgageCalculator', () => {
     })
 
     expect(result.current.showShareModal).toBe(true)
-    expect(result.current.shareUrl).toContain('/tools/mortgage?data=')
+    expect(result.current.shareUrl).toContain('/?data=')
   })
 
   it('copies the share URL to the clipboard', async () => {
@@ -146,56 +147,5 @@ describe('useMortgageCalculator', () => {
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(result.current.shareUrl)
     expect(result.current.copied).toBe(true)
-  })
-
-  it('computes a live split from the household split config', async () => {
-    localStorage.setItem(
-      'finance-tools-household',
-      JSON.stringify([
-        { id: 'a', name: 'Alex', income: 100000 },
-        { id: 'b', name: 'Sam', income: 50000 },
-      ]),
-    )
-    localStorage.setItem(
-      'finance-tools-household-split',
-      JSON.stringify({ memberIds: ['a', 'b'], mode: 'even' }),
-    )
-
-    const { result } = renderHook(() => useMortgageCalculator())
-
-    act(() => {
-      result.current.setInputs({
-        ...result.current.inputs,
-        loanAmount: 500000,
-        deposit: 100000,
-        interestRate: 6,
-      })
-    })
-
-    await waitFor(() => expect(result.current.displaySplitBreakdown).toHaveLength(2))
-    expect(result.current.displaySplitBreakdown[0].amount).toBeCloseTo(
-      result.current.displaySplitBreakdown[1].amount,
-    )
-  })
-
-  it('shows a frozen share snapshot until the user edits an input', async () => {
-    const shared: MortgageStorageData = {
-      inputs: { ...baseInputs, loanAmount: 500000, deposit: 100000, interestRate: 6 },
-    }
-    const snapshot = [{ name: 'Alex', amount: 1200 }]
-    mockUseSearchParams.mockReturnValue(
-      new URLSearchParams({ data: encodeMortgageData(shared, snapshot) }),
-    )
-
-    const { result } = renderHook(() => useMortgageCalculator())
-    await waitFor(() => expect(result.current.inputs.loanAmount).toBe(500000))
-    expect(result.current.displaySplitBreakdown).toEqual(snapshot)
-
-    act(() => {
-      result.current.setInputs({ ...result.current.inputs, loanAmount: 600000 })
-    })
-
-    await waitFor(() => expect(result.current.inputs.loanAmount).toBe(600000))
-    expect(result.current.displaySplitBreakdown).not.toEqual(snapshot)
   })
 })

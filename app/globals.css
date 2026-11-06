@@ -2,12 +2,12 @@
 @import 'tw-animate-css';
 
 :root {
-  --background: rgb(38, 38, 36);
-  --foreground: rgb(194, 192, 182);
+  --background: rgb(248, 245, 238);
+  --foreground: rgb(49, 43, 37);
   --accent: rgb(217, 119, 87);
-  --card-bg: rgb(48, 48, 46);
-  --border: rgb(68, 68, 64);
-  --muted: rgb(128, 126, 120);
+  --card-bg: rgb(255, 253, 248);
+  --border: rgb(226, 217, 204);
+  --muted: rgb(105, 96, 86);
 }
 
 @theme inline {

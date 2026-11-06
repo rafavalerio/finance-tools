@@ -3,21 +3,27 @@ import { render, screen } from '@testing-library/react'
 import { ToolHeader } from './ToolHeader'
 
 describe('ToolHeader', () => {
-  it('renders the title as a heading', () => {
-    render(<ToolHeader title="Mortgage Calculator" actions={[]} />)
-    expect(screen.getByRole('heading', { name: 'Mortgage Calculator' })).toBeInTheDocument()
+  it('renders a single Mortgage Planner heading linked to home', () => {
+    render(<ToolHeader actions={[]} />)
+    expect(screen.getByRole('heading', { name: 'Mortgage Planner' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Mortgage Planner' })).toHaveAttribute('href', '/')
+    expect(screen.queryByText('Mortgage Calculator')).not.toBeInTheDocument()
   })
 
-  it('renders the actions trigger and no back link', () => {
+  it('renders action buttons directly without a menu trigger', () => {
     render(
       <ToolHeader
-        title="Mortgage Calculator"
         actions={[
-          { key: 'share', label: 'Share', icon: <span>share-icon</span>, onClick: vi.fn() },
+          {
+            key: 'share',
+            label: 'Share',
+            icon: <span aria-hidden="true">share-icon</span>,
+            onClick: vi.fn(),
+          },
         ]}
       />,
     )
-    expect(screen.getByRole('button', { name: 'More actions' })).toBeInTheDocument()
-    expect(screen.queryByRole('link')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Share' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'More actions' })).not.toBeInTheDocument()
   })
 })

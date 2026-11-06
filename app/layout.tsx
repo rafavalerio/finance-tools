@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import { TopNav } from '@/components/layout'
 import './globals.css'
 
 const geistSans = Geist({
@@ -14,11 +13,11 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Finance Tools',
-  description: 'Personal finance tools for budgeting, mortgage planning, and more',
+  title: 'Mortgage Planner',
+  description: 'Plan your Australian home loan, repayments, and purchase costs',
   appleWebApp: {
     capable: true,
-    title: 'Finance Tools',
+    title: 'Mortgage Planner',
     statusBarStyle: 'black-translucent',
   },
 }
@@ -35,7 +34,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
-        <TopNav />
         {children}
       </body>
     </html>

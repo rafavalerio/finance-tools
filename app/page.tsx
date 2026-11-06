@@ -1,38 +1,98 @@
 'use client'
 
-import { MortgageSnapshotCard, BudgetSnapshotCard, useDashboardData } from '@/components/dashboard'
-import { PageContainer } from '@/components/layout'
+import { Suspense } from 'react'
+import {
+  MortgageForm,
+  ResultsSummary,
+  PurchaseCostsCard,
+  ShareModal,
+  MortgageLoadingFallback,
+  useMortgageCalculator,
+} from '@/components/tools/mortgage'
+import { AmortisationChart } from '@/components/charts'
+import { ShareIcon, ResetIcon } from '@/components/ui'
+import { PageContainer, ToolHeader } from '@/components/layout'
 
-export default function HomePage() {
-  const { mortgageResults, budgetSummary, topCategories } = useDashboardData()
+function MortgageCalculatorContent() {
+  const {
+    inputs,
+    setInputs,
+    showShareModal,
+    setShowShareModal,
+    shareUrl,
+    copied,
+    handleReset,
+    handleShare,
+    handleCopy,
+    purchaseCosts,
+    results,
+  } = useMortgageCalculator()
 
   return (
-    <div className="min-h-screen bg-background">
+    <>
+      {/* Header */}
+      <ToolHeader
+        actions={[
+          {
+            key: 'share',
+            label: 'Share',
+            icon: <ShareIcon width="16" height="16" />,
+            onClick: handleShare,
+            variant: 'primary',
+          },
+          {
+            key: 'reset',
+            label: 'Reset',
+            icon: <ResetIcon width="16" height="16" />,
+            onClick: handleReset,
+            variant: 'danger',
+          },
+        ]}
+      />
+
+      {/* Main Content */}
       <main>
-        <PageContainer className="py-12">
-          <h1 className="text-2xl font-bold text-foreground mb-6">Dashboard</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <MortgageSnapshotCard results={mortgageResults} />
-            <BudgetSnapshotCard summary={budgetSummary} topCategories={topCategories} />
+        <PageContainer className="py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Column - Inputs */}
+            <div className="space-y-6">
+              <MortgageForm inputs={inputs} onChange={setInputs} />
+              <PurchaseCostsCard
+                costs={purchaseCosts}
+                deposit={inputs.deposit}
+                propertyPrice={inputs.loanAmount}
+                state={inputs.state}
+              />
+            </div>
+
+            {/* Right Column - Results */}
+            <div className="space-y-6">
+              <ResultsSummary results={results} />
+              <div className="grid grid-cols-1 gap-6">
+                <AmortisationChart data={results?.amortisationSchedule || []} />
+              </div>
+            </div>
           </div>
         </PageContainer>
       </main>
 
-      <footer className="border-t border-border mt-auto">
-        <PageContainer className="py-6">
-          <p className="text-sm text-muted text-center">
-            Built by{' '}
-            <a
-              href="https://rafavalerio.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-foreground hover:text-accent transition-colors"
-            >
-              Rafael Valerio
-            </a>
-          </p>
-        </PageContainer>
-      </footer>
+      <ShareModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        shareUrl={shareUrl}
+        copied={copied}
+        onCopy={handleCopy}
+      />
+    </>
+  )
+}
+
+export default function MortgageCalculatorPage() {
+  return (
+    <div className="min-h-screen bg-background">
+      <Suspense fallback={<MortgageLoadingFallback />}>
+        <MortgageCalculatorContent />
+      </Suspense>
     </div>
   )
 }

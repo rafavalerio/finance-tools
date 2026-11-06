@@ -2,12 +2,12 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Finance Tools',
-    short_name: 'Finance Tools',
-    description: 'Personal finance tools for budgeting, mortgage planning, and more',
+    name: 'Mortgage Planner',
+    short_name: 'Mortgage Planner',
+    description: 'Plan your Australian home loan, repayments, and purchase costs',
     start_url: '/',
     display: 'standalone',
-    background_color: '#262624',
+    background_color: '#f8f5ee',
     theme_color: '#d97757',
     icons: [
       {

@@ -6,10 +6,7 @@ import {
   BuyerType,
   AustralianState,
   PurchaseCosts,
-  MemberSplitAmount,
 } from '@/types/mortgage'
-import { HouseholdMember, HouseholdSplitConfig } from '@/types/household'
-import { computeSplit } from './household'
 import { calculateStampDuty } from './stampDuty/engine'
 import { STAMP_DUTY_TABLE } from './stampDuty/data'
 
@@ -123,11 +120,7 @@ export function generateAmortisationSchedule(
 /**
  * Calculate all mortgage results
  */
-export function calculateMortgageResults(
-  inputs: MortgageInputs,
-  members: HouseholdMember[],
-  splitConfig: HouseholdSplitConfig,
-): MortgageResults {
+export function calculateMortgageResults(inputs: MortgageInputs): MortgageResults {
   // Calculate principal (loan amount minus deposit)
   const principalAmount = inputs.loanAmount - inputs.deposit
 
@@ -158,18 +151,6 @@ export function calculateMortgageResults(
     inputs.repaymentFrequency,
   )
 
-  // Split the monthly repayment across the selected household members (empty if fewer than 2)
-  const splitMembers = members.filter((member) => splitConfig.memberIds.includes(member.id))
-  let splitBreakdown: MemberSplitAmount[] = []
-  if (splitMembers.length >= 2) {
-    const ratios = computeSplit(splitMembers, splitConfig.mode)
-    splitBreakdown = splitMembers.map((member) => ({
-      memberId: member.id,
-      name: member.name,
-      amount: monthlyMortgagePayment * ratios[member.id],
-    }))
-  }
-
   // Generate amortisation schedule
   const amortisationSchedule = generateAmortisationSchedule(
     effectivePrincipal,
@@ -187,7 +168,6 @@ export function calculateMortgageResults(
     totalInterest,
     payoffDate,
     monthlyMortgagePayment,
-    splitBreakdown,
     amortisationSchedule,
   }
 }
@@ -301,14 +281,10 @@ export function calculatePurchaseCosts(
 
 /**
  * Turn saved mortgage inputs into results, or null when the inputs are not yet complete
- * enough to calculate. Applies the same effective-deposit adjustment the mortgage page
- * uses, so every consumer (mortgage page, dashboard, budget) shows the same repayment.
+ * enough to calculate. Applies the same effective-deposit adjustment as the purchase-cost
+ * estimate.
  */
-export function calculateSavedMortgageResults(
-  inputs: MortgageInputs,
-  members: HouseholdMember[],
-  splitConfig: HouseholdSplitConfig,
-): MortgageResults | null {
+export function calculateSavedMortgageResults(inputs: MortgageInputs): MortgageResults | null {
   if (inputs.loanAmount <= 0 || inputs.interestRate <= 0 || inputs.loanTermYears <= 0) {
     return null
   }
@@ -325,9 +301,8 @@ export function calculateSavedMortgageResults(
         )
       : null
 
-  return calculateMortgageResults(
-    { ...inputs, deposit: purchaseCosts?.effectiveDeposit ?? inputs.deposit },
-    members,
-    splitConfig,
-  )
+  return calculateMortgageResults({
+    ...inputs,
+    deposit: purchaseCosts?.effectiveDeposit ?? inputs.deposit,
+  })
 }

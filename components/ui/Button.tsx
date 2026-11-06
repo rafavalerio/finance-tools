@@ -20,7 +20,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        'bg-accent text-background hover:bg-accent/90 hover:shadow-md hover:shadow-accent/20',
+        'bg-accent text-foreground hover:bg-accent/90 hover:shadow-md hover:shadow-accent/20',
       secondary:
         'bg-card text-foreground border border-border hover:bg-border hover:border-accent/50',
       ghost: 'text-foreground border border-transparent hover:bg-card hover:border-border',

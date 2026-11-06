@@ -9,7 +9,7 @@ describe('ShareModal', () => {
       <ShareModal
         isOpen={false}
         onClose={() => {}}
-        shareUrl="https://example.com/tools/mortgage?data=abc"
+        shareUrl="https://example.com/?data=abc"
         copied={false}
         onCopy={() => {}}
       />,
@@ -22,13 +22,13 @@ describe('ShareModal', () => {
       <ShareModal
         isOpen
         onClose={() => {}}
-        shareUrl="https://example.com/tools/mortgage?data=abc"
+        shareUrl="https://example.com/?data=abc"
         copied={false}
         onCopy={() => {}}
       />,
     )
     expect(
-      screen.getByDisplayValue('https://example.com/tools/mortgage?data=abc'),
+      screen.getByDisplayValue('https://example.com/?data=abc'),
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /copy/i })).toBeInTheDocument()
   })
@@ -39,7 +39,7 @@ describe('ShareModal', () => {
       <ShareModal
         isOpen
         onClose={() => {}}
-        shareUrl="https://example.com/tools/mortgage?data=abc"
+        shareUrl="https://example.com/?data=abc"
         copied={false}
         onCopy={onCopy}
       />,
@@ -53,7 +53,7 @@ describe('ShareModal', () => {
       <ShareModal
         isOpen
         onClose={() => {}}
-        shareUrl="https://example.com/tools/mortgage?data=abc"
+        shareUrl="https://example.com/?data=abc"
         copied
         onCopy={() => {}}
       />,

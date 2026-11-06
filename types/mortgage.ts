@@ -40,17 +40,6 @@ export interface AmortisationDataPoint {
   payment: number
 }
 
-export interface MemberSplitAmount {
-  memberId: string
-  name: string
-  amount: number
-}
-
-export interface SplitSnapshotEntry {
-  name: string
-  amount: number
-}
-
 export interface MortgageResults {
   // Loan details
   principalAmount: number
@@ -60,9 +49,8 @@ export interface MortgageResults {
   totalInterest: number
   payoffDate: Date
 
-  // Monthly equivalent of the repayment, and how it splits across the household
+  // Monthly equivalent of the repayment
   monthlyMortgagePayment: number
-  splitBreakdown: MemberSplitAmount[]
 
   // Amortisation schedule
   amortisationSchedule: AmortisationDataPoint[]

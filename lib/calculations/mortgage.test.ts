@@ -11,7 +11,6 @@ import {
   calculatePurchaseCosts,
 } from './mortgage'
 import { MortgageInputs } from '@/types/mortgage'
-import { HouseholdMember } from '@/types/household'
 
 const baseInputs: MortgageInputs = {
   loanAmount: 600000,
@@ -87,92 +86,44 @@ describe('generateAmortisationSchedule', () => {
 })
 
 describe('calculateMortgageResults', () => {
-  const noSplit = { memberIds: [], mode: 'even' as const }
-
   it('derives principal as loan amount minus deposit', () => {
-    const results = calculateMortgageResults(baseInputs, [], noSplit)
+    const results = calculateMortgageResults(baseInputs)
     expect(results.principalAmount).toBe(500000)
   })
 
   it('reduces the effective principal by the offset balance', () => {
-    const withOffset = calculateMortgageResults(
-      { ...baseInputs, offsetBalance: 50000 },
-      [],
-      noSplit,
-    )
-    const withoutOffset = calculateMortgageResults(baseInputs, [], noSplit)
+    const withOffset = calculateMortgageResults({ ...baseInputs, offsetBalance: 50000 })
+    const withoutOffset = calculateMortgageResults(baseInputs)
     expect(withOffset.repaymentAmount).toBeLessThan(withoutOffset.repaymentAmount)
   })
 
-  it('produces no split breakdown when fewer than two members are selected', () => {
-    const members: HouseholdMember[] = [{ id: 'a', name: 'Alex', income: 100000 }]
-    const results = calculateMortgageResults(baseInputs, members, {
-      memberIds: ['a'],
-      mode: 'even',
-    })
-    expect(results.splitBreakdown).toEqual([])
-  })
-
-  it('splits the monthly repayment evenly across selected members', () => {
-    const members: HouseholdMember[] = [
-      { id: 'a', name: 'Alex', income: 100000 },
-      { id: 'b', name: 'Sam', income: 50000 },
-    ]
-    const results = calculateMortgageResults(baseInputs, members, {
-      memberIds: ['a', 'b'],
-      mode: 'even',
-    })
-    expect(results.splitBreakdown).toHaveLength(2)
-    expect(results.splitBreakdown[0].amount).toBeCloseTo(results.monthlyMortgagePayment / 2)
-    expect(results.splitBreakdown[1].amount).toBeCloseTo(results.monthlyMortgagePayment / 2)
-  })
-
-  it('splits the monthly repayment by income when mode is income', () => {
-    const members: HouseholdMember[] = [
-      { id: 'a', name: 'Alex', income: 100000 },
-      { id: 'b', name: 'Sam', income: 50000 },
-    ]
-    const results = calculateMortgageResults(baseInputs, members, {
-      memberIds: ['a', 'b'],
-      mode: 'income',
-    })
-    const alex = results.splitBreakdown.find((entry) => entry.memberId === 'a')!
-    const sam = results.splitBreakdown.find((entry) => entry.memberId === 'b')!
-    expect(alex.amount).toBeCloseTo(results.monthlyMortgagePayment * (2 / 3))
-    expect(sam.amount).toBeCloseTo(results.monthlyMortgagePayment * (1 / 3))
-  })
-
   it('produces an amortisation schedule', () => {
-    const results = calculateMortgageResults(baseInputs, [], noSplit)
+    const results = calculateMortgageResults(baseInputs)
     expect(results.amortisationSchedule.length).toBeGreaterThan(0)
   })
 })
 
 describe('calculateSavedMortgageResults', () => {
-  const noSplitConfig = { memberIds: [], mode: 'even' as const }
-
   it('returns null when the loan amount is zero', () => {
-    expect(
-      calculateSavedMortgageResults({ ...baseInputs, loanAmount: 0 }, [], noSplitConfig),
-    ).toBeNull()
+    expect(calculateSavedMortgageResults({ ...baseInputs, loanAmount: 0 })).toBeNull()
   })
 
   it('returns null when the interest rate is zero', () => {
     expect(
-      calculateSavedMortgageResults({ ...baseInputs, interestRate: 0 }, [], noSplitConfig),
+      calculateSavedMortgageResults({ ...baseInputs, interestRate: 0 }),
     ).toBeNull()
   })
 
   it('returns results when the inputs are complete', () => {
-    const results = calculateSavedMortgageResults(baseInputs, [], noSplitConfig)
+    const results = calculateSavedMortgageResults(baseInputs)
     expect(results).not.toBeNull()
     expect(results!.monthlyMortgagePayment).toBeGreaterThan(0)
   })
 
   it('reduces the deposit by purchase costs, raising the repayment', () => {
     const withDeposit = { ...baseInputs, deposit: 100000 }
-    const adjusted = calculateSavedMortgageResults(withDeposit, [], noSplitConfig)!
-    const unadjusted = calculateMortgageResults(withDeposit, [], noSplitConfig)
+    const adjusted = calculateSavedMortgageResults(withDeposit)!
+    const unadjusted = calculateMortgageResults(withDeposit)
     expect(adjusted.monthlyMortgagePayment).toBeGreaterThan(unadjusted.monthlyMortgagePayment)
   })
 })
